@@ -1,8 +1,15 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\AdminController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\AuctionController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\BidController;
+use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\NotificationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,17 +27,20 @@ Route::middleware('auth')->group(function () {
 
 // Admin Routes
 Route::middleware(['auth', 'role:admin|super admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-    Route::get('/auctions', [AdminController::class, 'auctions'])->name('auctions.index');
-    Route::get('/bids', [AdminController::class, 'bids'])->name('bids.index');
-    Route::get('/users', [AdminController::class, 'users'])->name('users.index');
-    Route::get('/payments', [AdminController::class, 'payments'])->name('payments.index');
-    Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
-    Route::get('/categories', [AdminController::class, 'categories'])->name('categories.index');
-    Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
-    Route::get('/notifications', [AdminController::class, 'notifications'])->name('notifications');
-    Route::get('/profile', [AdminController::class, 'profile'])->name('profile');
-    Route::get('/blank', [AdminController::class, 'blank'])->name('blank');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/auctions', [AuctionController::class, 'index'])->name('auctions.index');
+    Route::get('/auctions/{auction}', [AuctionController::class, 'show'])->name('auctions.show');
+    Route::delete('/auctions/{auction}', [AuctionController::class, 'destroy'])->name('auctions.destroy');
+    Route::post('/auctions/{auction}/cancel', [AuctionController::class, 'cancel'])->name('auctions.cancel');
+    Route::get('/bids', [BidController::class, 'index'])->name('bids.index');
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports');
+    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
+    Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
+    Route::get('/blank', [DashboardController::class, 'blank'])->name('blank');
 
 });
 
