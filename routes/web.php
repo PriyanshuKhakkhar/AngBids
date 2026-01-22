@@ -19,7 +19,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // Admin Routes
-Route::middleware(['auth', 'role'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin|super admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/auctions', [AdminController::class, 'auctions'])->name('auctions.index');
     Route::get('/bids', [AdminController::class, 'bids'])->name('bids.index');
