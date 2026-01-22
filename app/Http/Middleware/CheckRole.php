@@ -16,7 +16,7 @@ class CheckRole
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
-        if (! $user || $user->role !== 'admin') {
+        if (! $user || ! $user->hasRole('admin')) {
             abort(403, 'Unauthorized action.');
         }
         return $next($request);
