@@ -19,8 +19,8 @@ return new class extends Migration
             $table->decimal('starting_price', 10, 2);
             $table->decimal('current_price', 10, 2);
             $table->string('image')->nullable();
-            $table->timestamp('start_time');
-            $table->timestamp('end_time');
+            $table->dateTime('start_time');
+            $table->dateTime('end_time');
             $table->enum('status', ['draft', 'active', 'closed', 'cancelled'])->default('draft');
             $table->timestamps();
         });
