@@ -71,7 +71,6 @@ Route::middleware('auth')->group(function () {
 | Admin Routes
 |--------------------------------------------------------------------------
 */
-
 Route::middleware(['auth', 'role:admin|super admin'])
     ->prefix('admin')
     ->name('admin.')
