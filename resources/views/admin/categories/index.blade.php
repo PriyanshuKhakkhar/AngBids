@@ -10,10 +10,17 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Auction Categories</h1>
-        <button class="btn btn-primary shadow-sm btn-sm" data-toggle="modal"
-            data-target="#addCategoryModal"><i class="fas fa-plus fa-sm text-white-50"></i>
-            Add New Category</button>
+        <a href="{{ route('admin.categories.create') }}" class="btn btn-primary shadow-sm btn-sm">
+            <i class="fas fa-plus fa-sm text-white-50"></i> Add New Category
+        </a>
     </div>
+
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show">
+            {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+    @endif
 
     <div class="row">
         <!-- Category Stats -->
@@ -22,9 +29,8 @@
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total
-                                Categories</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">12</div>
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Categories</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $categories->count() }}</div>
                         </div>
                         <div class="col-auto"><i class="fas fa-tags fa-2x text-gray-300"></i></div>
                     </div>
@@ -44,101 +50,40 @@
                         <tr>
                             <th>Icon</th>
                             <th>Category Name</th>
-                            <th>Total Items</th>
+                            <th>Slug</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @foreach($categories as $category)
                         <tr>
-                            <td><i class="fas fa-laptop text-primary"></i></td>
-                            <td class="font-weight-bold">Electronics</td>
-                            <td>450</td>
-                            <td><span class="badge badge-success">Active</span></td>
+                            <td><i class="{{ $category->icon ?? 'fas fa-tag' }} text-primary"></i></td>
+                            <td class="font-weight-bold">{{ $category->name }}</td>
+                            <td>{{ $category->slug }}</td>
                             <td>
-                                <button class="btn btn-sm btn-circle btn-info mr-1" title="Edit"><i
-                                        class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-circle btn-danger" title="Delete"><i
-                                        class="fas fa-trash"></i></button>
+                                @if($category->is_active)
+                                    <span class="badge badge-success">Active</span>
+                                @else
+                                    <span class="badge badge-secondary">Inactive</span>
+                                @endif
+                            </td>
+                            <td>
+                                <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-sm btn-circle btn-info mr-1" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this category?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-circle btn-danger" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
                             </td>
                         </tr>
-                        <tr>
-                            <td><i class="fas fa-clock text-info"></i></td>
-                            <td class="font-weight-bold">Watches</td>
-                            <td>120</td>
-                            <td><span class="badge badge-success">Active</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-circle btn-info mr-1" title="Edit"><i
-                                        class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-circle btn-danger" title="Delete"><i
-                                        class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><i class="fas fa-car text-warning"></i></td>
-                            <td class="font-weight-bold">Vintage Cars</td>
-                            <td>15</td>
-                            <td><span class="badge badge-secondary">Inactive</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-circle btn-info mr-1" title="Edit"><i
-                                        class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-circle btn-danger" title="Delete"><i
-                                        class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><i class="fas fa-gem text-danger"></i></td>
-                            <td class="font-weight-bold">Jewelry</td>
-                            <td>85</td>
-                            <td><span class="badge badge-success">Active</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-circle btn-info mr-1" title="Edit"><i
-                                        class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-circle btn-danger" title="Delete"><i
-                                        class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
+                        @endforeach
                     </tbody>
                 </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add Category Modal -->
-    <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="categoryName">Category Name</label>
-                            <input type="text" class="form-control" id="categoryName" placeholder="Enter category name">
-                        </div>
-                        <div class="form-group">
-                            <label for="categoryIcon">Icon Class (Font Awesome)</label>
-                            <input type="text" class="form-control" id="categoryIcon" placeholder="e.g. fas fa-laptop">
-                            <small class="form-text text-muted">Use Font Awesome classes (e.g. 'fas fa-car')</small>
-                        </div>
-                        <div class="form-group">
-                            <label for="categoryStatus">Status</label>
-                            <select class="form-control" id="categoryStatus">
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save Category</button>
-                </div>
             </div>
         </div>
     </div>
