@@ -24,10 +24,10 @@
             </ul>
             <div class="d-flex gap-3 align-items-center">
                 <!-- Search Bar -->
-                <div class="nav-search d-none d-lg-block me-3">
+                <form action="{{ route('auctions.index') }}" method="GET" class="nav-search d-none d-lg-block me-3">
                     <i class="fas fa-search"></i>
-                    <input type="text" class="form-control" placeholder="Search auctions...">
-                </div>
+                    <input type="text" name="q" class="form-control" placeholder="Search auctions..." value="{{ request('q') }}">
+                </form>
 
                 @guest
                     <!-- Guest State -->

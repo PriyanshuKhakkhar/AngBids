@@ -11,7 +11,15 @@ class WebsiteController extends Controller
      */
     public function index()
     {
-        return view('website.index');
+        $auctions = \App\Models\Auction::where('status', 'active')
+            ->latest()
+            ->take(6)
+            ->with(['user', 'category'])
+            ->get();
+            
+        $categories = \App\Models\Category::where('is_active', true)->get();
+
+        return view('website.index', compact('auctions', 'categories'));
     }
 
     /**

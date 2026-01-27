@@ -15,9 +15,6 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         // Implicitly grant "Super Admin" role all permissions
@@ -25,5 +22,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::before(function ($user, $ability) {
             return $user->hasRole('super admin') ? true : null;
         });
+
+        \Illuminate\Pagination\Paginator::useBootstrapFive();
     }
 }
