@@ -3,13 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = \App\Models\Category::latest()->get();
+        $categories = Category::latest()->get();
         return view('admin.categories.index', compact('categories'));
     }
 
@@ -20,53 +22,59 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name',
-            'icon' => 'nullable|string|max:50',
-            'is_active' => 'boolean',
+        $validated = $request->validate([
+            'name'      => 'required|string|min:2|max:255|unique:categories,name',
+            'icon'      => 'nullable|string|max:50',
+            'is_active' => 'nullable|boolean',
         ]);
 
-        \App\Models\Category::create([
-            'name' => $request->name,
-            'slug' => \Illuminate\Support\Str::slug($request->name),
-            'icon' => $request->icon,
-            'is_active' => $request->has('is_active'),
+        Category::create([
+            'name'      => trim($validated['name']),
+            'slug'      => Str::slug($validated['name']),
+            'icon'      => $validated['icon'] ?? null,
+            'is_active' => $request->boolean('is_active'),
         ]);
 
-        return redirect()->route('admin.categories.index')->with('success', 'Category created successfully');
+        return redirect()
+            ->route('admin.categories.index')
+            ->with('success', 'Category created successfully');
     }
 
     public function edit($id)
     {
-        $category = \App\Models\Category::findOrFail($id);
+        $category = Category::findOrFail($id);
         return view('admin.categories.edit', compact('category'));
     }
 
     public function update(Request $request, $id)
     {
-        $category = \App\Models\Category::findOrFail($id);
+        $category = Category::findOrFail($id);
 
-        $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
-            'icon' => 'nullable|string|max:50',
-            'is_active' => 'boolean',
+        $validated = $request->validate([
+            'name'      => 'required|string|min:2|max:255|unique:categories,name,' . $category->id,
+            'icon'      => 'nullable|string|max:50',
+            'is_active' => 'nullable|boolean',
         ]);
 
         $category->update([
-            'name' => $request->name,
-            'slug' => \Illuminate\Support\Str::slug($request->name),
-            'icon' => $request->icon,
-            'is_active' => $request->has('is_active'),
+            'name'      => trim($validated['name']),
+            'slug'      => Str::slug($validated['name']),
+            'icon'      => $validated['icon'] ?? null,
+            'is_active' => $request->boolean('is_active'),
         ]);
 
-        return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully');
+        return redirect()
+            ->route('admin.categories.index')
+            ->with('success', 'Category updated successfully');
     }
 
     public function destroy($id)
     {
-        $category = \App\Models\Category::findOrFail($id);
+        $category = Category::findOrFail($id);
         $category->delete();
 
-        return redirect()->route('admin.categories.index')->with('success', 'Category deleted successfully');
+        return redirect()
+            ->route('admin.categories.index')
+            ->with('success', 'Category deleted successfully');
     }
 }
