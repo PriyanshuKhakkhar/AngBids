@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Auction System Admin Dashboard">
     <meta name="author" content="Auction Admin">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('title', 'Auction Admin - Dashboard')</title>
 
@@ -19,6 +20,8 @@
 
     <!-- Custom styles for this template-->
     <link href="{{ asset('admin-assets/css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     @stack('styles')
 
 </head>
@@ -95,6 +98,27 @@
 
     <!-- Custom scripts for all pages-->
     <script src="{{ asset('admin-assets/js/sb-admin-2.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: "{{ session('success') }}",
+                timer: 3000,
+                showConfirmButton: false
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: "{{ session('error') }}",
+            });
+        @endif
+    </script>
 
     @stack('scripts')
 

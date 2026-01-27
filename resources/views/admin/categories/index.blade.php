@@ -15,12 +15,7 @@
         </a>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show">
-            {{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-        </div>
-    @endif
+
 
     <div class="row">
         <!-- Category Stats -->
@@ -30,7 +25,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Categories</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $categories->count() }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $total_categories }}</div>
                         </div>
                         <div class="col-auto"><i class="fas fa-tags fa-2x text-gray-300"></i></div>
                     </div>
@@ -45,9 +40,10 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-hover" id="categories-table" width="100%" cellspacing="0">
                     <thead>
                         <tr>
+                            <th width="30">#</th>
                             <th>Icon</th>
                             <th>Category Name</th>
                             <th>Slug</th>
@@ -55,34 +51,7 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach($categories as $category)
-                        <tr>
-                            <td><i class="{{ $category->icon ?? 'fas fa-tag' }} text-primary"></i></td>
-                            <td class="font-weight-bold">{{ $category->name }}</td>
-                            <td>{{ $category->slug }}</td>
-                            <td>
-                                @if($category->is_active)
-                                    <span class="badge badge-success">Active</span>
-                                @else
-                                    <span class="badge badge-secondary">Inactive</span>
-                                @endif
-                            </td>
-                            <td>
-                                <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-sm btn-circle btn-info mr-1" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this category?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-circle btn-danger" title="Delete">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
         </div>
@@ -97,7 +66,62 @@
     <!-- Page level custom scripts -->
     <script>
         $(document).ready(function () {
-            $('#dataTable').DataTable();
+            // Setup CSRF token for AJAX
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            var table = $('#categories-table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('admin.categories.index') }}",
+                columns: [
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+                    {data: 'icon', name: 'icon', orderable: false, searchable: false},
+                    {data: 'name', name: 'name'},
+                    {data: 'slug', name: 'slug'},
+                    {data: 'status', name: 'status'},
+                    {data: 'action', name: 'action', orderable: false, searchable: false},
+                ]
+            });
+
+            // Delete Category
+            $('body').on('click', '.delete-category', function () {
+                var url = $(this).data('url');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "DELETE",
+                            url: url,
+                            success: function (data) {
+                                table.draw();
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Category has been deleted.',
+                                    'success'
+                                )
+                            },
+                            error: function (data) {
+                                Swal.fire(
+                                    'Error!',
+                                    'Something went wrong.',
+                                    'error'
+                                )
+                            }
+                        });
+                    }
+                })
+            });
         });
     </script>
 @endpush

@@ -7,12 +7,40 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
+use Yajra\DataTables\Facades\DataTables;
+
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::latest()->get();
-        return view('admin.categories.index', compact('categories'));
+        if ($request->ajax()) {
+            $data = Category::latest();
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('icon', function($row){
+                    $icon = $row->icon ?? 'fas fa-tag';
+                    return '<i class="'.$icon.' text-primary"></i>';
+                })
+                ->addColumn('status', function($row){
+                    if($row->is_active){
+                         return '<span class="badge badge-success">Active</span>';
+                    }
+                    return '<span class="badge badge-secondary">Inactive</span>';
+                })
+                ->addColumn('action', function($row){
+                    $btn = '<a href="'.route('admin.categories.edit', $row->id).'" class="btn btn-sm btn-circle btn-info mr-1" title="Edit"><i class="fas fa-edit"></i></a>';
+                    
+                    $btn .= '<button type="button" class="btn btn-sm btn-circle btn-danger delete-category" data-id="'.$row->id.'" data-url="'.route('admin.categories.destroy', $row->id).'" title="Delete"><i class="fas fa-trash"></i></button>';
+                    
+                    return $btn;
+                })
+                ->rawColumns(['icon', 'status', 'action'])
+                ->make(true);
+        }
+        
+        return view('admin.categories.index', [
+            'total_categories' => Category::count()
+        ]);
     }
 
     public function create()
@@ -72,6 +100,10 @@ class CategoryController extends Controller
     {
         $category = Category::findOrFail($id);
         $category->delete();
+
+        if (request()->ajax()) {
+            return response()->json(['success' => 'Category deleted successfully']);
+        }
 
         return redirect()
             ->route('admin.categories.index')

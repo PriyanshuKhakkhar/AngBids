@@ -15,20 +15,7 @@
     </a>
 </div>
 
-{{-- Alerts --}}
-@if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show">
-        {{ session('success') }}
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-    </div>
-@endif
 
-@if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show">
-        {{ session('error') }}
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-    </div>
-@endif
 
 <div class="card shadow mb-4">
     <div class="card-header py-3">
@@ -37,98 +24,19 @@
 
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable">
+            <table class="table table-bordered" id="users-table">
                 <thead>
                 <tr>
+                    <th width="30">#</th>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Role</th>
                     <th>Status</th>
                     <th>Joined Date</th>
-                    <th width="180">Actions</th>
+                    <th width="150">Actions</th>
                 </tr>
                 </thead>
-                <tbody>
-
-                @foreach($users as $user)
-                    <tr class="{{ $user->trashed() ? 'bg-gray-100' : '' }}">
-                        <td>{{ $user->name }}</td>
-                        <td>{{ $user->email }}</td>
-
-                        <td>
-                            @foreach($user->roles as $role)
-                                <span class="badge badge-info">{{ ucfirst($role->name) }}</span>
-                            @endforeach
-                        </td>
-
-                        <td>
-                            @if($user->trashed())
-                                <span class="badge badge-danger">Deleted</span>
-                            @else
-                                <span class="badge badge-success">Active</span>
-                            @endif
-                        </td>
-                        <td>{{ $user->created_at->format('M d, Y') }}</td>
-
-                        <td>
-                            {{-- 👁️ VIEW (redirects to EDIT page) --}}
-                            <a href="{{ route('admin.users.show', $user->id) }}"
-                               class="btn btn-info btn-sm" title="View">
-                                <i class="fas fa-eye"></i>
-                            </a>
-
-                            {{-- ✏️ EDIT --}}
-                            @if(!$user->trashed())
-                                <a href="{{ route('admin.users.edit', $user->id) }}"
-                                   class="btn btn-primary btn-sm" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                            @endif
-
-                            {{-- ♻️ RESTORE --}}
-                            @if($user->trashed())
-                                <form action="{{ route('admin.users.restore', $user->id) }}"
-                                      method="POST" class="d-inline">
-                                    @csrf
-                                    <button type="submit" class="btn btn-success btn-sm" title="Restore">
-                                        <i class="fas fa-trash-restore"></i>
-                                    </button>
-                                </form>
-                            @endif
-
-                            {{-- 🗑️ DELETE / FORCE DELETE --}}
-                            @if(auth()->id() !== $user->id)
-                                @if($user->trashed())
-                                    <form action="{{ route('admin.users.force_delete', $user->id) }}"
-                                          method="POST" class="d-inline"
-                                          onsubmit="return confirm('Permanently delete this user?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" title="Permanent Delete">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </form>
-                                @else
-                                    <form action="{{ route('admin.users.destroy', $user->id) }}"
-                                          method="POST" class="d-inline"
-                                          onsubmit="return confirm('Delete this user?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" title="Delete">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                @endif
-                            @else
-                                <button class="btn btn-secondary btn-sm" disabled title="You">
-                                    <i class="fas fa-user-lock"></i>
-                                </button>
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
     </div>
@@ -141,13 +49,126 @@
 
 <script>
     $(function () {
-        $('#dataTable').DataTable();
-
-        // 🚫 Prevent row-click GET redirect
-        $('#dataTable tbody').on('click', 'tr', function (e) {
-            if (!$(e.target).is('a, button, i, form')) {
-                e.preventDefault();
+        // Setup CSRF token for AJAX
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
+        });
+
+        // Initialize DataTable
+        var table = $('#users-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('admin.users.index') }}",
+            columns: [
+                {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+                {data: 'name', name: 'name'},
+                {data: 'email', name: 'email'},
+                {data: 'role_name', name: 'role_name', orderable: false},
+                {data: 'status', name: 'status'},
+                {data: 'joined_date', name: 'created_at'},
+                {data: 'action', name: 'action', orderable: false, searchable: false},
+            ]
+        });
+
+        // Delete User
+        $('body').on('click', '.delete-user', function () {
+            var url = $(this).data('url');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: url,
+                        success: function (data) {
+                            table.draw();
+                            Swal.fire(
+                                'Deleted!',
+                                'User has been moved to trash.',
+                                'success'
+                            )
+                        },
+                        error: function (data) {
+                            Swal.fire(
+                                'Error!',
+                                'Something went wrong.',
+                                'error'
+                            )
+                        }
+                    });
+                }
+            })
+        });
+
+        // Restore User
+        $('body').on('click', '.restore-user', function () {
+            var url = $(this).data('url');
+            $.ajax({
+                type: "GET", // Using GET as route is often set up for link, but Controller handles it.
+                           // Actually restore is usually a link. If it's a link it's GET.
+                           // Controller restore method was just taking $id.
+                           // Standard resource doesn't have it.
+                           // But let's use POST to be safe if that's what we want, but controller needs to support it. 
+                           // In my controller it's just a method. 
+                           // I'll stick to GET if it was a link, but I changed it to AJAX.
+                           // To be safe I will use GET as it is safe here since it is behind auth.
+                // Wait, restore changes state, should be POST.
+                // I will use POST and ensure route supports it.
+                // The previous implementation used a form with POST.
+                type: "POST", 
+                url: url,
+                success: function (data) {
+                    table.draw();
+                    Swal.fire(
+                        'Restored!',
+                        'User has been restored.',
+                        'success'
+                    )
+                },
+                error: function (data) {
+                     Swal.fire('Error!', 'Something went wrong.', 'error');
+                }
+            });
+        });
+
+        // Force Delete User
+        $('body').on('click', '.force-delete-user', function () {
+            var url = $(this).data('url');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This user will be permanently deleted!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete permanently!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: url,
+                        success: function (data) {
+                            table.draw();
+                            Swal.fire(
+                                'Deleted!',
+                                'User has been deleted permanently.',
+                                'success'
+                            )
+                        },
+                        error: function (data) {
+                            Swal.fire('Error!', 'Something went wrong.', 'error');
+                        }
+                    });
+                }
+            })
         });
     });
 </script>

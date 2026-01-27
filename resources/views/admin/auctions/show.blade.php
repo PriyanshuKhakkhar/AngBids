@@ -60,17 +60,17 @@
                     <hr>
                     <div class="d-flex flex-column">
                         @if($auction->status != 'cancelled' && $auction->status != 'closed' && $auction->status != 'draft')
-                            <form action="{{ route('admin.auctions.cancel', $auction) }}" method="POST" class="mb-2">
+                            <form action="{{ route('admin.auctions.cancel', $auction) }}" method="POST" class="mb-2 cancel-confirm">
                                 @csrf
-                                <button type="submit" class="btn btn-warning btn-block" onclick="return confirm('Are you sure you want to cancel this auction?')">
+                                <button type="submit" class="btn btn-warning btn-block">
                                     <i class="fas fa-ban mr-2"></i> Cancel Auction
                                 </button>
                             </form>
                         @endif
-                        <form action="{{ route('admin.auctions.destroy', $auction) }}" method="POST">
+                        <form action="{{ route('admin.auctions.destroy', $auction) }}" method="POST" class="delete-confirm">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-block" onclick="return confirm('Are you sure you want to delete this auction?')">
+                            <button type="submit" class="btn btn-danger btn-block">
                                 <i class="fas fa-trash mr-2"></i> Delete Auction
                             </button>
                         </form>
@@ -83,3 +83,49 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        // Cancel Confirm
+        $('.cancel-confirm').submit(function(e) {
+            e.preventDefault();
+            var form = this;
+            
+            Swal.fire({
+                title: 'Cancel Auction?',
+                text: "This will stop bidding immediately.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f6c23e',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, cancel it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+
+        // Delete Confirm
+        $('.delete-confirm').submit(function(e) {
+            e.preventDefault();
+            var form = this;
+            
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This action cannot be undone!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+</script>
+@endpush
