@@ -31,141 +31,79 @@
             <div class="col-lg-8">
                 <div class="d-flex flex-wrap gap-2 justify-content-lg-end mt-3 mt-lg-0">
                     <a href="{{ route('auctions.index') }}" class="category-pill active">All Auctions</a>
-                    <a href="{{ route('auctions.index') }}" class="category-pill"><i class="fas fa-laptop me-2"></i>Electronics</a>
-                    <a href="{{ route('auctions.index') }}" class="category-pill"><i class="fas fa-clock me-2"></i>Watches</a>
-                    <a href="{{ route('auctions.index') }}" class="category-pill"><i class="fas fa-car me-2"></i>Vintage Cars</a>
-                    <a href="{{ route('auctions.index') }}" class="category-pill"><i class="fas fa-gem me-2"></i>Jewelry</a>
+                    @foreach($categories as $category)
+                    <a href="{{ route('auctions.index', ['category' => $category->slug]) }}" class="category-pill">
+                        <i class="{{ $category->icon }} me-2"></i>{{ $category->name }}
+                    </a>
+                    @endforeach
                 </div>
             </div>
         </div>
 
         <div class="row g-4">
-            <!-- Auction Item 1 -->
-            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+            @foreach($auctions as $index => $auction)
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ ($index + 1) * 100 }}">
                 <div class="card card-elite h-100">
                     <div class="position-relative overflow-hidden"
                         style="height: 280px; border-radius: 12px 12px 0 0;">
-                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200"
-                            class="card-img-top h-100 object-fit-cover" alt="Item">
+                        @if($auction->image)
+                            <img src="{{ str_starts_with($auction->image, 'http') ? $auction->image : asset('storage/' . $auction->image) }}" class="card-img-top h-100 object-fit-cover" alt="{{ $auction->title }}">
+                        @else
+                            <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=1200"
+                                class="card-img-top h-100 object-fit-cover" alt="{{ $auction->title }}">
+                        @endif
+                        <div class="position-absolute top-0 start-0 m-3">
+                            <span class="badge bg-gold text-dark">{{ $auction->category->name ?? 'Uncategorized' }}</span>
+                        </div>
                     </div>
                     <div class="card-body p-4">
-                        <div class="glass-timer text-center py-2 timer-val" data-days="02" data-hours="14"
-                            data-min="45" data-sec="12">
+                        @php
+                            $now = \Carbon\Carbon::now();
+                            $end = \Carbon\Carbon::parse($auction->end_time);
+                            $diff = $now->diff($end);
+                            $isClosed = $now->greaterThan($end);
+                        @endphp
+                        
+                        @if(!$isClosed)
+                        <div class="glass-timer text-center py-2 timer-val mb-3" 
+                            data-days="{{ $diff->d }}" 
+                            data-hours="{{ $diff->h }}" 
+                            data-min="{{ $diff->i }}" 
+                            data-sec="{{ $diff->s }}">
                             <div class="row g-0 px-3">
                                 <div class="col">
-                                    <div class="fw-bold fs-6" data-days>02</div><small class="opacity-50"
-                                        style="font-size: 0.6rem;">DAYS</small>
+                                    <div class="fw-bold fs-6" data-days>{{ sprintf('%02d', $diff->d) }}</div>
+                                    <small class="opacity-50" style="font-size: 0.6rem;">DAYS</small>
                                 </div>
                                 <div class="col">
-                                    <div class="fw-bold fs-6" data-hours>14</div><small class="opacity-50"
-                                        style="font-size: 0.6rem;">HRS</small>
+                                    <div class="fw-bold fs-6" data-hours>{{ sprintf('%02d', $diff->h) }}</div>
+                                    <small class="opacity-50" style="font-size: 0.6rem;">HRS</small>
                                 </div>
                                 <div class="col">
-                                    <div class="fw-bold fs-6" data-min>45</div><small class="opacity-50"
-                                        style="font-size: 0.6rem;">MIN</small>
+                                    <div class="fw-bold fs-6" data-min>{{ sprintf('%02d', $diff->i) }}</div>
+                                    <small class="opacity-50" style="font-size: 0.6rem;">MIN</small>
                                 </div>
                                 <div class="col">
-                                    <div class="fw-bold fs-6" data-sec>12</div><small class="opacity-50"
-                                        style="font-size: 0.6rem;">SEC</small>
+                                    <div class="fw-bold fs-6" data-sec>{{ sprintf('%02d', $diff->s) }}</div>
+                                    <small class="opacity-50" style="font-size: 0.6rem;">SEC</small>
                                 </div>
                             </div>
                         </div>
-                        <h3 class="h5 mb-2">Grand Complication Chronograph</h3>
-                        <p class="text-secondary small mb-4">Rare 18k Rose Gold Perpetual Calendar</p>
-                        <div
-                            class="d-flex justify-content-between align-items-center mb-4 pt-3 border-top border-white border-opacity-10">
-                            <span class="small text-secondary">CURRENT BID</span>
-                            <span class="h5 mb-0 text-gold fw-bold" style="color: var(--elite-gold);">$45,200</span>
-                        </div>
-                        <a href="{{ route('auctions.show', 1) }}" class="btn btn-gold w-100 py-2">Submit Bid</a>
-                    </div>
-                </div>
-            </div>
+                        @else
+                        <div class="alert alert-danger py-2 mb-3 text-center small">Closed</div>
+                        @endif
 
-            <!-- Auction Item 2 -->
-            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="card card-elite h-100">
-                    <div class="position-relative overflow-hidden"
-                        style="height: 280px; border-radius: 12px 12px 0 0;">
-                        <img src="https://images.unsplash.com/photo-1542281286-9e0a16bb7366?auto=format&fit=crop&w=1200"
-                            class="card-img-top h-100 object-fit-cover" alt="Item">
-                    </div>
-                    <div class="card-body p-4">
-                        <div class="glass-timer text-center py-2 timer-val" data-days="00" data-hours="08"
-                            data-min="12" data-sec="34">
-                            <div class="row g-0 px-3">
-                                <div class="col">
-                                    <div class="fw-bold fs-6" data-days>00</div><small class="opacity-50"
-                                        style="font-size: 0.6rem;">DAYS</small>
-                                </div>
-                                <div class="col">
-                                    <div class="fw-bold fs-6" data-hours>08</div><small class="opacity-50"
-                                        style="font-size: 0.6rem;">HRS</small>
-                                </div>
-                                <div class="col">
-                                    <div class="fw-bold fs-6" data-min>12</div><small class="opacity-50"
-                                        style="font-size: 0.6rem;">MIN</small>
-                                </div>
-                                <div class="col">
-                                    <div class="fw-bold fs-6" data-sec>34</div><small class="opacity-50"
-                                        style="font-size: 0.6rem;">SEC</small>
-                                </div>
-                            </div>
-                        </div>
-                        <h3 class="h5 mb-2">Midnight Sapphire GT</h3>
-                        <p class="text-secondary small mb-4">V12 Twin-Turbo Heritage Edition</p>
-                        <div
-                            class="d-flex justify-content-between align-items-center mb-4 pt-3 border-top border-white border-opacity-10">
+                        <h3 class="h5 mb-2">{{ $auction->title }}</h3>
+                        <p class="text-secondary small mb-4 line-clamp-2">{{ Str::limit($auction->description, 60) }}</p>
+                        <div class="d-flex justify-content-between align-items-center mb-4 pt-3 border-top border-white border-opacity-10">
                             <span class="small text-secondary">CURRENT BID</span>
-                            <span class="h5 mb-0 text-gold fw-bold"
-                                style="color: var(--elite-gold);">$210,000</span>
+                            <span class="h5 mb-0 text-gold fw-bold" style="color: var(--elite-gold);">${{ number_format($auction->current_price, 2) }}</span>
                         </div>
-                        <a href="{{ route('auctions.show', 2) }}" class="btn btn-gold w-100 py-2">Bid Now</a>
+                        <a href="{{ route('auctions.show', $auction->id) }}" class="btn btn-gold w-100 py-2">Submit Bid</a>
                     </div>
                 </div>
             </div>
-
-            <!-- Auction Item 3 -->
-            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="card card-elite h-100">
-                    <div class="position-relative overflow-hidden"
-                        style="height: 280px; border-radius: 12px 12px 0 0;">
-                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200"
-                            class="card-img-top h-100 object-fit-cover" alt="Item">
-                    </div>
-                    <div class="card-body p-4">
-                        <div class="glass-timer text-center py-2 timer-val" data-days="04" data-hours="19"
-                            data-min="05" data-sec="56">
-                            <div class="row g-0 px-3">
-                                <div class="col">
-                                    <div class="fw-bold fs-6" data-days>04</div><small class="opacity-50"
-                                        style="font-size: 0.6rem;">DAYS</small>
-                                </div>
-                                <div class="col">
-                                    <div class="fw-bold fs-6" data-hours>19</div><small class="opacity-50"
-                                        style="font-size: 0.6rem;">HRS</small>
-                                </div>
-                                <div class="col">
-                                    <div class="fw-bold fs-6" data-min>05</div><small class="opacity-50"
-                                        style="font-size: 0.6rem;">MIN</small>
-                                </div>
-                                <div class="col">
-                                    <div class="fw-bold fs-6" data-sec>56</div><small class="opacity-50"
-                                        style="font-size: 0.6rem;">SEC</small>
-                                </div>
-                            </div>
-                        </div>
-                        <h3 class="h5 mb-2">The Crystal Pavillion</h3>
-                        <p class="text-secondary small mb-4">6-Bedroom Ultra-Modern Estate</p>
-                        <div
-                            class="d-flex justify-content-between align-items-center mb-4 pt-3 border-top border-white border-opacity-10">
-                            <span class="small text-secondary">CURRENT BID</span>
-                            <span class="h5 mb-0 text-gold fw-bold" style="color: var(--elite-gold);">$3.45M</span>
-                        </div>
-                        <a href="{{ route('auctions.show', 3) }}" class="btn btn-gold w-100 py-2">Submit Bid</a>
-                    </div>
-                </div>
-            </div>
+            @endforeach
         </div>
     </div>
 </section>
