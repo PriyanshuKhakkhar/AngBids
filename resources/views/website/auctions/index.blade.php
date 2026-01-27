@@ -17,14 +17,19 @@
     <div class="container py-lg-5">
         <!-- Category Filters -->
         <div class="d-flex flex-wrap gap-2 justify-content-center mb-5" data-aos="fade-up">
-            <a href="{{ route('auctions.index', request()->only(['q'])) }}" 
+            
+            {{-- 1. "All Auctions": Link to the clean route. Clears both Category and Search. --}}
+            <a href="{{ route('auctions.index') }}" 
                class="category-pill {{ !request('category') ? 'active' : '' }}">All Auctions</a>
+
+            {{-- 2. Specific Category: Pass ONLY the category. This automatically drops 'q'. --}}
             @foreach($categories as $category)
-            <a href="{{ route('auctions.index', array_merge(request()->only(['q']), ['category' => $category->slug])) }}" 
+            <a href="{{ route('auctions.index', ['category' => $category->slug]) }}" 
                class="category-pill {{ request('category') == $category->slug ? 'active' : '' }}">
                 <i class="{{ $category->icon }} me-2"></i>{{ $category->name }}
             </a>
             @endforeach
+
         </div>
 
         <!-- Auction Grid -->
