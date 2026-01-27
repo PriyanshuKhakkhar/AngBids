@@ -18,18 +18,62 @@
         <!-- Category Filters -->
         <div class="d-flex flex-wrap gap-2 justify-content-center mb-5" data-aos="fade-up">
             
-            {{-- 1. "All Auctions": Link to the clean route. Clears both Category and Search. --}}
-            <a href="{{ route('auctions.index') }}" 
+            {{-- 1. "All Auctions": Link to the clean route. Clears Category but keeps Search/Price/Sort. --}}
+            <a href="{{ route('auctions.index', request()->except('category')) }}" 
                class="category-pill {{ !request('category') ? 'active' : '' }}">All Auctions</a>
-
-            {{-- 2. Specific Category: Pass ONLY the category. This automatically drops 'q'. --}}
+            
+            {{-- 2. Specific Category: Merge with current Search/Price/Sort. --}}
             @foreach($categories as $category)
-            <a href="{{ route('auctions.index', ['category' => $category->slug]) }}" 
+            <a href="{{ route('auctions.index', array_merge(request()->query(), ['category' => $category->slug])) }}" 
                class="category-pill {{ request('category') == $category->slug ? 'active' : '' }}">
                 <i class="{{ $category->icon }} me-2"></i>{{ $category->name }}
             </a>
             @endforeach
 
+        <!-- Filters & Sorting Bar -->
+        <div class="glass-panel p-4 mb-5" data-aos="fade-up">
+            <form action="{{ route('auctions.index') }}" method="GET" class="row g-3 align-items-center">
+                {{-- Preserve existing filters --}}
+                @if(request('category'))
+                    <input type="hidden" name="category" value="{{ request('category') }}">
+                @endif
+                @if(request('q'))
+                    <input type="hidden" name="q" value="{{ request('q') }}">
+                @endif
+
+                <!-- Price Range -->
+                <div class="col-md-5">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="text-secondary small text-nowrap">Price Range:</span>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-dark border-gold border-opacity-25 text-gold">$</span>
+                            <input type="number" name="min_price" class="form-control bg-dark text-white border-gold border-opacity-25" 
+                                placeholder="Min" value="{{ request('min_price') }}">
+                            <input type="number" name="max_price" class="form-control bg-dark text-white border-gold border-opacity-25" 
+                                placeholder="Max" value="{{ request('max_price') }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sort -->
+                <div class="col-md-5">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="text-secondary small text-nowrap">Sort By:</span>
+                        <select name="sort" class="form-select form-select-sm bg-dark text-white border-gold border-opacity-25 shadow-none" onchange="this.form.submit()">
+                            <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Newly Listed</option>
+                            <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
+                            <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
+                            <option value="ending_soon" {{ request('sort') == 'ending_soon' ? 'selected' : '' }}>Ending Soon</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="col-md-2 d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-gold btn-sm px-3">Filter</button>
+                    <a href="{{ route('auctions.index', request()->only(['category', 'q'])) }}" class="btn btn-outline-danger btn-sm px-3">Clear</a>
+                </div>
+            </form>
         </div>
 
         <!-- Auction Grid -->

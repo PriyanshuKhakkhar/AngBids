@@ -35,9 +35,33 @@ class AuctionController extends Controller
             });
         }
 
+        // Price range filter
+        if ($request->filled('min_price')) {
+            $query->where('current_price', '>=', $request->input('min_price'));
+        }
+        if ($request->filled('max_price')) {
+            $query->where('current_price', '<=', $request->input('max_price'));
+        }
+
+        // Sorting
+        $sort = $request->input('sort', 'latest');
+        switch ($sort) {
+            case 'price_asc':
+                $query->orderBy('current_price', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('current_price', 'desc');
+                break;
+            case 'ending_soon':
+                $query->orderBy('end_time', 'asc');
+                break;
+            default:
+                $query->latest();
+                break;
+        }
+
         // Paginate results
-        $auctions = $query->latest()
-            ->with(['user', 'category'])
+        $auctions = $query->with(['user', 'category'])
             ->paginate(9)
             ->withQueryString();
 
