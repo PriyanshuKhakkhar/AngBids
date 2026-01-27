@@ -47,7 +47,7 @@
                     <div class="position-relative overflow-hidden"
                         style="height: 280px; border-radius: 12px 12px 0 0;">
                         @if($auction->image)
-                            <img src="{{ asset('storage/' . $auction->image) }}" class="card-img-top h-100 object-fit-cover" alt="{{ $auction->title }}">
+                            <img src="{{ str_starts_with($auction->image, 'http') ? $auction->image : asset('storage/' . $auction->image) }}" class="card-img-top h-100 object-fit-cover" alt="{{ $auction->title }}">
                         @else
                             <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=1200"
                                 class="card-img-top h-100 object-fit-cover" alt="{{ $auction->title }}">

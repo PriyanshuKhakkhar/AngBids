@@ -20,7 +20,7 @@
             <div class="col-lg-6" data-aos="fade-right">
                 <div class="position-relative overflow-hidden rounded-3 mb-3" style="height: 500px;">
                     @if($auction->image)
-                        <img src="{{ asset('storage/' . $auction->image) }}" class="w-100 h-100 object-fit-cover" alt="{{ $auction->title }}">
+                        <img src="{{ str_starts_with($auction->image, 'http') ? $auction->image : asset('storage/' . $auction->image) }}" class="w-100 h-100 object-fit-cover" alt="{{ $auction->title }}">
                     @else
                         <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=1200"
                             class="w-100 h-100 object-fit-cover" alt="{{ $auction->title }}">

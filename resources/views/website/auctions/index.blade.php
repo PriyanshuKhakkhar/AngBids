@@ -15,24 +15,6 @@
 <!-- Auctions Listing -->
 <section class="py-5">
     <div class="container py-lg-5">
-        <!-- Search Bar -->
-        <div class="row justify-content-center mb-5">
-            <div class="col-md-8 col-lg-6">
-                <form action="{{ route('auctions.index') }}" method="GET" class="search-form-elite">
-                    <div class="input-group">
-                        <input type="text" name="q" class="form-control bg-dark text-white border-gold border-opacity-25" 
-                            placeholder="Search for auctions..." value="{{ request('q') }}">
-                        @if(request('category'))
-                            <input type="hidden" name="category" value="{{ request('category') }}">
-                        @endif
-                        <button class="btn btn-gold px-4" type="submit">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
         <!-- Category Filters -->
         <div class="d-flex flex-wrap gap-2 justify-content-center mb-5" data-aos="fade-up">
             <a href="{{ route('auctions.index', request()->only(['q'])) }}" 
@@ -52,7 +34,7 @@
                 <div class="card card-elite h-100">
                     <div class="position-relative overflow-hidden" style="height: 280px; border-radius: 12px 12px 0 0;">
                         @if($auction->image)
-                            <img src="{{ asset('storage/' . $auction->image) }}" class="card-img-top h-100 object-fit-cover" alt="{{ $auction->title }}">
+                            <img src="{{ str_starts_with($auction->image, 'http') ? $auction->image : asset('storage/' . $auction->image) }}" class="card-img-top h-100 object-fit-cover" alt="{{ $auction->title }}">
                         @else
                             <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=1200"
                                 class="card-img-top h-100 object-fit-cover" alt="{{ $auction->title }}">
