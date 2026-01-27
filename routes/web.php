@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -117,7 +118,8 @@ Route::middleware(['auth', 'role:admin|super admin'])
         Route::get('/settings', [SettingController::class, 'index'])->name('settings');
 
         // Admin Profile
-        Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
+        Route::get('/profile', [AdminProfileController::class, 'edit'])->name('profile');
+        Route::put('/profile', [AdminProfileController::class, 'update'])->name('profile.update');
 
         // Blank Page
         Route::get('/blank', [DashboardController::class, 'blank'])->name('blank');

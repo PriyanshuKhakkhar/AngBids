@@ -12,11 +12,6 @@ class DashboardController extends Controller
         return view('admin.dashboard');
     }
 
-    public function profile()
-    {
-        return view('admin.profile');
-    }
-
     public function blank()
     {
         return view('admin.blank');
