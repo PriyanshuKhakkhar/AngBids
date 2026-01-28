@@ -13,7 +13,7 @@ class WebsiteController extends Controller
     {
         $auctions = \App\Models\Auction::where('status', 'active')
             ->latest()
-            ->take(6)
+            ->take(3)
             ->with(['user', 'category'])
             ->get();
             
