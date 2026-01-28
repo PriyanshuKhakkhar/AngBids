@@ -82,6 +82,9 @@ Route::middleware(['auth', 'role:admin|super admin'])
         // Auctions
         Route::get('/auctions', [AdminAuctionController::class, 'index'])->name('auctions.index');
         Route::get('/auctions/{auction}', [AdminAuctionController::class, 'show'])->name('auctions.show');
+        Route::post('/auctions/{id}/restore', [AdminAuctionController::class, 'restore'])->name('auctions.restore');
+        Route::post('/auctions/{id}/approve', [AdminAuctionController::class, 'approve'])->name('auctions.approve');
+        Route::delete('/auctions/{id}/force-delete', [AdminAuctionController::class, 'forceDelete'])->name('auctions.force_delete');
         Route::delete('/auctions/{auction}', [AdminAuctionController::class, 'destroy'])->name('auctions.destroy');
         Route::post('/auctions/{auction}/cancel', [AdminAuctionController::class, 'cancel'])->name('auctions.cancel');
 
@@ -112,6 +115,15 @@ Route::middleware(['auth', 'role:admin|super admin'])
         Route::get('/reports', [ReportController::class, 'index'])->name('reports');
 
         // Categories
+        Route::post('categories/toggle-status', [CategoryController::class, 'toggleStatus'])
+            ->name('categories.toggle_status');
+
+        Route::post('categories/{category}/restore', [CategoryController::class, 'restore'])
+            ->name('categories.restore');
+            
+        Route::delete('categories/{category}/force-delete', [CategoryController::class, 'forceDelete'])
+            ->name('categories.force_delete');
+            
         Route::resource('categories', CategoryController::class);
 
         // Settings

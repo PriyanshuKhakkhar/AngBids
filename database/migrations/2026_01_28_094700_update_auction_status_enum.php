@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('auctions', function (Blueprint $table) {
-            $table->foreignId('category_id')->nullable()->after('user_id')->constrained()->onDelete('set null');
-            $table->string('category_name')->nullable()->after('category_id');
+            $table->enum('status', ['pending', 'active', 'closed', 'cancelled'])->default('pending')->change();
         });
     }
 
@@ -23,8 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('auctions', function (Blueprint $table) {
-            $table->dropForeign(['category_id']);
-            $table->dropColumn(['category_id', 'category_name']);
+            $table->enum('status', ['draft', 'active', 'closed', 'cancelled'])->default('draft')->change();
         });
     }
 };
