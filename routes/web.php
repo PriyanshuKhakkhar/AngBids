@@ -30,8 +30,8 @@ Route::post('/contact', [WebsiteController::class, 'contactStore'])->name('conta
 
 // Auction Routes (Public)
 Route::get('/auctions', [AuctionController::class, 'index'])->name('auctions.index');
-Route::get('/auctions/{id}', [AuctionController::class, 'show'])->name('auctions.show');
 Route::get('/search', [AuctionController::class, 'search'])->name('auctions.search');
+
 
 // Smart Dashboard Redirect - Redirects to appropriate dashboard based on user role
 Route::get('/dashboard', function () {
@@ -57,6 +57,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Auction Creation Routes
+    Route::get('/auctions/create', [AuctionController::class, 'create'])->name('auctions.create');
+    Route::post('/auctions', [AuctionController::class, 'store'])->name('auctions.store');
+
     // User Dashboard Routes
     Route::prefix('user')->name('user.')->group(function () {
         Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
@@ -66,6 +70,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/profile', [UserDashboardController::class, 'profile'])->name('profile');
     });
 });
+
+// Parameterized Routes (Catch-all for /auctions/ prefix)
+Route::get('/auctions/{id}', [AuctionController::class, 'show'])->name('auctions.show');
+
 
 /*
 |--------------------------------------------------------------------------

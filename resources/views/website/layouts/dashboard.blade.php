@@ -22,43 +22,57 @@
 
     <div class="d-flex">
         <!-- Sidebar -->
-        <aside class="sidebar-elite p-4" style="width: 280px;">
-            <div class="text-center mb-5">
-                <a href="{{ route('home') }}">
-                    <span class="gold-text display-font fw-bold fs-3">LaraBids</span>
+        <aside class="sidebar-elite p-3 shadow" style="width: 250px;">
+            <div class="text-center py-3 mb-2">
+                <a href="{{ route('home') }}" class="text-decoration-none">
+                    <span class="text-white display-font fw-bold fs-4 text-uppercase letter-spacing-2">LaraBids</span>
                 </a>
             </div>
 
+            <hr class="sidebar-divider">
+
+
             <nav>
+                <div class="sidebar-heading">Core Dashboard</div>
                 <a href="{{ route('user.dashboard') }}" 
-                   class="sidebar-link rounded mb-2 {{ request()->routeIs('user.dashboard') ? 'active' : '' }}">
-                    <i class="fas fa-th-large me-3"></i> Overview
+                   class="sidebar-link rounded mb-1 {{ request()->routeIs('user.dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-fw fa-tachometer-alt me-2"></i> Overview
                 </a>
+                
+                <hr class="sidebar-divider">
+                <div class="sidebar-heading">My Activity</div>
+                
                 <a href="{{ route('user.my-bids') }}" 
-                   class="sidebar-link rounded mb-2 {{ request()->routeIs('user.my-bids') ? 'active' : '' }}">
-                    <i class="fas fa-gavel me-3"></i> My Active Bids
+                   class="sidebar-link rounded mb-1 {{ request()->routeIs('user.my-bids') ? 'active' : '' }}">
+                    <i class="fas fa-fw fa-gavel me-2"></i> Active Bids
                 </a>
                 <a href="{{ route('user.winning-items') }}" 
-                   class="sidebar-link rounded mb-2 {{ request()->routeIs('user.winning-items') ? 'active' : '' }}">
-                    <i class="fas fa-trophy me-3"></i> Won Items
+                   class="sidebar-link rounded mb-1 {{ request()->routeIs('user.winning-items') ? 'active' : '' }}">
+                    <i class="fas fa-fw fa-trophy me-2"></i> Won Items
                 </a>
                 <a href="{{ route('user.wishlist') }}" 
-                   class="sidebar-link rounded mb-2 {{ request()->routeIs('user.wishlist') ? 'active' : '' }}">
-                    <i class="fas fa-heart me-3"></i> Watchlist
+                   class="sidebar-link rounded mb-1 {{ request()->routeIs('user.wishlist') ? 'active' : '' }}">
+                    <i class="fas fa-fw fa-heart me-2"></i> Watchlist
                 </a>
+                
+                <hr class="sidebar-divider">
+                <div class="sidebar-heading">Settings</div>
+                
                 <a href="{{ route('user.profile') }}" 
-                   class="sidebar-link rounded mb-2 {{ request()->routeIs('user.profile') ? 'active' : '' }}">
-                    <i class="fas fa-user-edit me-3"></i> Profile Settings
+                   class="sidebar-link rounded mb-1 {{ request()->routeIs('user.profile') ? 'active' : '' }}">
+                    <i class="fas fa-fw fa-cog me-2"></i> Profile
                 </a>
-                <div class="mt-5 pt-5">
+                
+                <div class="mt-5">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="sidebar-link rounded text-danger opacity-75 w-100 border-0 bg-transparent text-start">
-                            <i class="fas fa-sign-out-alt me-3"></i> Secure Logout
+                        <button type="submit" class="sidebar-link rounded text-white opacity-50 w-100 border-0 bg-transparent text-start">
+                            <i class="fas fa-fw fa-sign-out-alt me-2"></i> Logout
                         </button>
                     </form>
                 </div>
             </nav>
+
         </aside>
 
         <!-- Sidebar Overlay for Mobile -->
@@ -71,7 +85,8 @@
 
         <!-- Main Content -->
         <main class="flex-grow-1"
-            style="background: radial-gradient(at top left, #0e0e0e 0%, #000000 100%); min-height: 100vh;">
+            style="background: #f8f9fc; min-height: 100vh;">
+
 
             <div class="p-4 p-lg-5">
                 @yield('content')

@@ -81,6 +81,54 @@ class AuctionController extends Controller
     }
 
     /**
+     * Show the form for creating a new auction
+     */
+    public function create()
+    {
+        $categories = Category::where('is_active', true)->get();
+        return view('website.auctions.create', compact('categories'));
+    }
+
+    /**
+     * Store a newly created auction in storage
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'description' => 'required|string',
+            'starting_price' => 'required|numeric|min:0',
+            'start_time' => 'required|date|after_or_equal:now',
+            'end_time' => 'required|date|after:start_time',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $auction = new Auction();
+        $auction->user_id = auth()->id();
+        $auction->category_id = $request->category_id;
+        $auction->title = $request->title;
+        $auction->description = $request->description;
+        $auction->starting_price = $request->starting_price;
+        $auction->current_price = $request->starting_price;
+        $auction->start_time = $request->start_time;
+        $auction->end_time = $request->end_time;
+        $auction->status = 'active';
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('auctions', 'public');
+            $auction->image = $path;
+        }
+
+        $auction->save();
+
+        return redirect()->route('auctions.show', $auction->id)
+            ->with('success', 'Auction created successfully!');
+    }
+
+
+
+    /**
      * Search auctions
      */
     public function search(Request $request)
@@ -88,3 +136,4 @@ class AuctionController extends Controller
         return $this->index($request);
     }
 }
+
