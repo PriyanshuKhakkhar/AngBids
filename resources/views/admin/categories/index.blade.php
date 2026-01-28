@@ -47,7 +47,8 @@
                             <th>Icon</th>
                             <th>Category Name</th>
                             <th>Slug</th>
-                            <th>Status</th>
+                            <th>Count</th>
+                            {{-- <th>Status</th> --}}
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -82,10 +83,13 @@
                     {data: 'icon', name: 'icon', orderable: false, searchable: false},
                     {data: 'name', name: 'name'},
                     {data: 'slug', name: 'slug'},
-                    {data: 'status', name: 'status'},
+                    {data: 'count', name: 'auctions_count', searchable: false},
+                    // {data: 'status', name: 'status', orderable: false, searchable: false},
                     {data: 'action', name: 'action', orderable: false, searchable: false},
                 ]
             });
+
+            // Toggle Status Removed
 
             // Delete Category
             $('body').on('click', '.delete-category', function () {
@@ -97,7 +101,7 @@
                     showCancelButton: true,
                     confirmButtonColor: '#d33',
                     cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete it!'
+                    confirmButtonText: 'Yes, move to trash!'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
@@ -107,7 +111,7 @@
                                 table.draw();
                                 Swal.fire(
                                     'Deleted!',
-                                    'Category has been deleted.',
+                                    'Category has been moved to trash.',
                                     'success'
                                 )
                             },
@@ -117,6 +121,62 @@
                                     'Something went wrong.',
                                     'error'
                                 )
+                            }
+                        });
+                    }
+                })
+            });
+
+            // Restore Category
+            $('body').on('click', '.restore-category', function () {
+                var url = $(this).data('url');
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    success: function (data) {
+                        table.draw();
+                        Swal.fire(
+                            'Restored!',
+                            'Category has been restored.',
+                            'success'
+                        )
+                    },
+                    error: function (data) {
+                        Swal.fire('Error!', 'Something went wrong.', 'error');
+                    }
+                });
+            });
+
+            // Force Delete Category
+            $('body').on('click', '.force-delete-category', function () {
+                var url = $(this).data('url');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This category will be permanently deleted!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete permanently!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "DELETE",
+                            url: url,
+                            success: function (data) {
+                                table.draw();
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Category has been deleted permanently.',
+                                    'success'
+                                )
+                            },
+                            error: function (xhr) { // Changed data to xhr to get response text
+                                var errorMsg = 'Something went wrong.';
+                                if(xhr.responseJSON && xhr.responseJSON.error) {
+                                    errorMsg = xhr.responseJSON.error;
+                                }
+                                Swal.fire('Error!', errorMsg, 'error');
                             }
                         });
                     }

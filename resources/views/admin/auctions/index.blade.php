@@ -68,27 +68,29 @@
                 ]
             });
 
-            // Cancel Auction
-            $('body').on('click', '.cancel-auction', function () {
+            // Cancel Auction Removed - Only in View now
+
+            // Delete Auction
+            $('body').on('click', '.delete-auction', function () {
                 var url = $(this).data('url');
                 Swal.fire({
-                    title: 'Cancel Auction?',
-                    text: "This will stop bidding immediately.",
+                    title: 'Are you sure?',
+                    text: "Move to trash?",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#f6c23e',
+                    confirmButtonColor: '#d33',
                     cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, cancel it!'
+                    confirmButtonText: 'Yes, delete it!'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            type: "POST",
+                            type: "DELETE",
                             url: url,
                             success: function (data) {
                                 table.draw();
                                 Swal.fire(
-                                    'Cancelled!',
-                                    'Auction has been cancelled.',
+                                    'Deleted!',
+                                    'Auction has been moved to trash.',
                                     'success'
                                 )
                             },
@@ -104,17 +106,41 @@
                 })
             });
 
-            // Delete Auction
-            $('body').on('click', '.delete-auction', function () {
+            // Restore Auction
+            $('body').on('click', '.restore-auction', function () {
+                var url = $(this).data('url');
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    success: function (data) {
+                        table.draw();
+                        Swal.fire(
+                            'Restored!',
+                            'Auction has been restored.',
+                            'success'
+                        )
+                    },
+                    error: function (data) {
+                        Swal.fire(
+                            'Error!',
+                            'Something went wrong.',
+                            'error'
+                        )
+                    }
+                });
+            });
+
+            // Force Delete Auction
+            $('body').on('click', '.force-delete-auction', function () {
                 var url = $(this).data('url');
                 Swal.fire({
                     title: 'Are you sure?',
-                    text: "This action cannot be undone!",
+                    text: "You will not be able to recover this auction!",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#d33',
                     cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete it!'
+                    confirmButtonText: 'Yes, permanently delete it!'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
@@ -124,7 +150,7 @@
                                 table.draw();
                                 Swal.fire(
                                     'Deleted!',
-                                    'Auction has been deleted.',
+                                    'Auction has been permanently deleted.',
                                     'success'
                                 )
                             },
