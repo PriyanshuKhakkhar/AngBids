@@ -7,68 +7,120 @@
 <!-- Dashboard Header -->
 <div class="d-flex justify-content-between align-items-center mb-5">
     <div>
-        <span class="badge-elite mb-1 d-block opacity-75">Welcome Back,</span>
-        <h1 class="h3 text-white fw-bold mb-0">{{ auth()->user()->name }}</h1>
+        <span class="text-primary fw-bold small text-uppercase mb-1 d-block">User Dashboard</span>
+        <h1 class="h3 text-dark fw-bold mb-0">Overview</h1>
     </div>
-    <div class="d-flex align-items-center gap-4">
-        <div class="glass-panel p-2 px-3 small border-0">
-            <i class="fas fa-wallet text-gold me-2"></i> Balance: <span
-                class="text-white fw-bold">$0.00</span>
+    <div class="d-flex align-items-center gap-3">
+        <div class="bg-white p-2 px-3 small border rounded shadow-sm text-dark fw-bold">
+            <i class="fas fa-wallet text-primary me-2"></i> Balance: <span class="text-primary">$0.00</span>
         </div>
-        <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=d4af37&color=0a192f"
-            class="rounded-circle border border-gold border-opacity-25" height="45" alt="Avatar">
+        <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=4e73df&color=ffffff"
+            class="rounded-circle border border-light shadow-sm" height="45" alt="Avatar">
     </div>
 </div>
+
 
 <!-- Stats Grid -->
 <div class="row g-4 mb-5">
-    <div class="col-md-4">
-        <div class="glass-panel p-4 border-0">
-            <p class="small text-secondary mb-1">Active Bids</p>
-            <h4 class="h2 text-white fw-bold mb-0">0</h4>
+    <div class="col-xl-3 col-md-6">
+        <div class="card shadow h-100 py-2 border-start-primary border-0 border-4 border-start">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2 ps-3">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1 small">Active Bids</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                    </div>
+                    <div class="col-auto pe-3">
+                        <i class="fas fa-gavel fa-2x text-gray-300 opacity-25"></i>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="glass-panel p-4 border-0">
-            <p class="small text-secondary mb-1">Total Wins</p>
-            <h4 class="h2 text-gold fw-bold mb-0">0</h4>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card shadow h-100 py-2 border-start-success border-0 border-4 border-start">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2 ps-3">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1 small">Total Wins</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                    </div>
+                    <div class="col-auto pe-3">
+                        <i class="fas fa-trophy fa-2x text-gray-300 opacity-25"></i>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="glass-panel p-4 border-0">
-            <p class="small text-secondary mb-1">Watchlist Items</p>
-            <h4 class="h2 text-white fw-bold mb-0">0</h4>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card shadow h-100 py-2 border-start-info border-0 border-4 border-start">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2 ps-3">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1 small">Watchlist</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                    </div>
+                    <div class="col-auto pe-3">
+                        <i class="fas fa-heart fa-2x text-gray-300 opacity-25"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card shadow h-100 py-2 border-start-warning border-0 border-4 border-start">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2 ps-3">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1 small">Messages</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                    </div>
+                    <div class="col-auto pe-3">
+                        <i class="fas fa-comments fa-2x text-gray-300 opacity-25"></i>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
+
 <!-- Recent Activity -->
-<div class="glass-panel p-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h5 class="display-font text-white h6 mb-0">Active Bids Monitoring</h5>
-        <a href="{{ route('user.my-bids') }}" class="small text-gold text-decoration-none">View All</a>
+<div class="card card-elite p-0 overflow-hidden shadow-sm">
+    <div class="card-header bg-white py-3 border-light">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="text-primary fw-bold h6 mb-0">Active Bids Monitoring</h5>
+            <a href="{{ route('user.my-bids') }}" class="btn btn-primary btn-sm rounded-pill px-3">View All</a>
+        </div>
     </div>
 
     <div class="table-responsive">
-        <table class="table table-dark table-hover mb-0" style="--bs-table-bg: transparent;">
-            <thead class="text-secondary small">
+        <table class="table table-hover mb-0">
+            <thead class="bg-light">
                 <tr>
-                    <th class="border-secondary border-opacity-10 py-3">AUCTION ITEM</th>
-                    <th class="border-secondary border-opacity-10 py-3">STATUS</th>
-                    <th class="border-secondary border-opacity-10 py-3">CURRENT BID</th>
-                    <th class="border-secondary border-opacity-10 py-3 text-end">ACTION</th>
+                    <th class="border-light py-3 ps-4 text-xs font-weight-bold text-gray-600 text-uppercase small">AUCTION ITEM</th>
+                    <th class="border-light py-3 text-xs font-weight-bold text-gray-600 text-uppercase small">STATUS</th>
+                    <th class="border-light py-3 text-xs font-weight-bold text-gray-600 text-uppercase small">CURRENT BID</th>
+                    <th class="border-light py-3 pe-4 text-end text-xs font-weight-bold text-gray-600 text-uppercase small">ACTION</th>
                 </tr>
             </thead>
-            <tbody class="text-white align-middle">
+            <tbody class="align-middle bg-white">
                 <tr>
-                    <td colspan="4" class="text-center py-5 text-secondary">
-                        <i class="fas fa-inbox fs-1 mb-3 d-block opacity-25"></i>
-                        No active bids yet. <a href="{{ route('auctions.index') }}" class="text-gold">Browse Auctions</a>
+                    <td colspan="4" class="text-center py-5">
+                        <i class="fas fa-inbox fs-1 mb-3 d-block text-gray-300 opacity-25"></i>
+                        <span class="text-secondary small">No active bids yet.</span>
+                        <div class="mt-2">
+                             <a href="{{ route('auctions.index') }}" class="btn btn-outline-primary btn-sm px-4">Browse Auctions</a>
+                        </div>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
 </div>
+
 
 @endsection

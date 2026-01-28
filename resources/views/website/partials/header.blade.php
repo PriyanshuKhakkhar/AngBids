@@ -3,10 +3,11 @@
         <a class="navbar-brand" href="{{ route('home') }}">
             <span class="gold-text display-font fw-bold fs-3">LaraBids</span>
         </a>
-        <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse"
+        <button class="navbar-toggler border-0 text-dark" type="button" data-bs-toggle="collapse"
             data-bs-target="#navbarNav">
             <i class="fas fa-bars"></i>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mx-auto">
                 <li class="nav-item px-3">
@@ -32,34 +33,40 @@
                 @guest
                     <!-- Guest State -->
                     <div class="d-none d-sm-flex gap-2">
-                        <a href="{{ route('login') }}" class="btn btn-outline-gold px-4 btn-sm">Sign In</a>
-                        <a href="{{ route('register') }}" class="btn btn-gold px-4 btn-sm text-dark fw-bold">Join Now</a>
+                        <a href="{{ route('login') }}" class="btn btn-outline-primary px-4 btn-sm">Sign In</a>
+                        <a href="{{ route('register') }}" class="btn btn-primary px-4 btn-sm fw-bold">Join Now</a>
                     </div>
+
                 @else
                     <!-- Member State -->
+                    <a href="{{ route('auctions.create') }}" class="btn btn-primary d-none d-lg-inline-block rounded-pill px-4 fw-bold me-2 shadow-sm">
+                        <i class="fas fa-plus-circle me-1"></i> Sell Item
+                    </a>
                     <div class="dropdown">
-                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-white"
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
                             data-bs-toggle="dropdown">
-                            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=d4af37&color=0a192f"
-                                class="rounded-circle border border-gold border-opacity-25 me-2" height="35" alt="Avatar">
+                            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=4e73df&color=ffffff"
+                                class="rounded-circle border border-primary border-opacity-25 me-2" height="35" alt="Avatar">
                             <span class="small d-none d-md-inline">{{ auth()->user()->name }}</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end glass-panel border-gold border-opacity-25">
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+
                             <li>
-                                <a class="dropdown-item text-white small" href="{{ route('user.dashboard') }}">
-                                    <i class="fas fa-th-large me-2 text-gold"></i> Dashboard
+                                <a class="dropdown-item text-dark small" href="{{ route('user.dashboard') }}">
+                                    <i class="fas fa-th-large me-2 text-primary"></i> Dashboard
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item text-white small" href="{{ route('user.profile') }}">
-                                    <i class="fas fa-user-edit me-2 text-gold"></i> Profile
+                                <a class="dropdown-item text-dark small" href="{{ route('user.profile') }}">
+                                    <i class="fas fa-user-edit me-2 text-primary"></i> Profile
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item text-white small" href="{{ route('user.wishlist') }}">
-                                    <i class="fas fa-heart me-2 text-gold"></i> Watchlist
+                                <a class="dropdown-item text-dark small" href="{{ route('user.wishlist') }}">
+                                    <i class="fas fa-heart me-2 text-primary"></i> Watchlist
                                 </a>
                             </li>
+
                             <li>
                                 <hr class="dropdown-divider border-white border-opacity-10">
                             </li>

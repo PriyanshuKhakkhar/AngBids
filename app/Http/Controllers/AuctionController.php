@@ -35,9 +35,33 @@ class AuctionController extends Controller
             });
         }
 
+        // Price range filter
+        if ($request->filled('min_price')) {
+            $query->where('current_price', '>=', $request->input('min_price'));
+        }
+        if ($request->filled('max_price')) {
+            $query->where('current_price', '<=', $request->input('max_price'));
+        }
+
+        // Sorting
+        $sort = $request->input('sort', 'latest');
+        switch ($sort) {
+            case 'price_asc':
+                $query->orderBy('current_price', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('current_price', 'desc');
+                break;
+            case 'ending_soon':
+                $query->orderBy('end_time', 'asc');
+                break;
+            default:
+                $query->latest();
+                break;
+        }
+
         // Paginate results
-        $auctions = $query->latest()
-            ->with(['user', 'category'])
+        $auctions = $query->with(['user', 'category'])
             ->paginate(9)
             ->withQueryString();
 
@@ -57,6 +81,62 @@ class AuctionController extends Controller
     }
 
     /**
+     * Show the form for creating a new auction
+     */
+    public function create()
+    {
+        $categories = Category::where('is_active', true)->get();
+        return view('website.auctions.create', compact('categories'));
+    }
+
+    /**
+     * Store a newly created auction in storage
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'description' => 'required|string',
+            'starting_price' => 'required|numeric|min:0',
+            'start_time' => 'required|date|after_or_equal:now',
+            'end_time' => 'required|date|after:start_time',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'document' => 'nullable|file|mimes:pdf,jpg,png,doc,docx|max:5120',
+            'specifications' => 'nullable|array',
+        ]);
+
+        $auction = new Auction();
+        $auction->user_id = auth()->id();
+        $auction->category_id = $request->category_id;
+        $auction->title = $request->title;
+        $auction->description = $request->description;
+        $auction->starting_price = $request->starting_price;
+        $auction->current_price = $request->starting_price;
+        $auction->start_time = $request->start_time;
+        $auction->end_time = $request->end_time;
+        $auction->status = 'active';
+        $auction->specifications = $request->specifications;
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('auctions', 'public');
+            $auction->image = $path;
+        }
+
+        if ($request->hasFile('document')) {
+            $path = $request->file('document')->store('auctions/documents', 'public');
+            $auction->document = $path;
+        }
+
+        $auction->save();
+
+        return redirect()->route('auctions.show', $auction->id)
+            ->with('success', 'Auction created successfully!');
+    }
+
+
+
+    /**
      * Search auctions
      */
     public function search(Request $request)
@@ -64,3 +144,4 @@ class AuctionController extends Controller
         return $this->index($request);
     }
 }
+

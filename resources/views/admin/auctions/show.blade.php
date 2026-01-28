@@ -57,23 +57,55 @@
                         </span>
                     </p>
                     <p><strong>Created At:</strong> {{ $auction->created_at->format('M d, Y H:i') }}</p>
+                    
+                    {{-- Display Cancellation Reason if Cancelled --}}
+                    @if($auction->status == 'cancelled' && $auction->cancellation_reason)
+                        <div class="alert alert-danger mt-3">
+                            <strong>Cancellation Reason:</strong><br>
+                            {{ $auction->cancellation_reason }}
+                        </div>
+                    @endif
+
                     <hr>
                     <div class="d-flex flex-column">
-                        @if($auction->status != 'cancelled' && $auction->status != 'closed' && $auction->status != 'draft')
-                            <form action="{{ route('admin.auctions.cancel', $auction) }}" method="POST" class="mb-2">
+                        @if($auction->trashed())
+                            {{-- Restore --}}
+                            <form action="{{ route('admin.auctions.restore', $auction->id) }}" method="POST" class="mb-2">
                                 @csrf
-                                <button type="submit" class="btn btn-warning btn-block" onclick="return confirm('Are you sure you want to cancel this auction?')">
-                                    <i class="fas fa-ban mr-2"></i> Cancel Auction
+                                <button type="submit" class="btn btn-success btn-block">
+                                    <i class="fas fa-trash-restore mr-2"></i> Restore Auction
                                 </button>
                             </form>
-                        @endif
-                        <form action="{{ route('admin.auctions.destroy', $auction) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-block" onclick="return confirm('Are you sure you want to delete this auction?')">
-                                <i class="fas fa-trash mr-2"></i> Delete Auction
+                            {{-- Permanent Delete --}}
+                            <button type="button" class="btn btn-danger btn-block mb-2 trigger-force-delete" data-url="{{ route('admin.auctions.force_delete', $auction->id) }}">
+                                <i class="fas fa-times mr-2"></i> Permanently Delete
                             </button>
-                        </form>
+                        @elseif($auction->status == 'closed')
+                             <div class="alert alert-secondary text-center">
+                                <i class="fas fa-lock mr-1"></i> Auction Closed
+                             </div>
+                        @else
+                            {{-- Actions for Pending, Active, or Cancelled --}}
+                            
+                            {{-- Approve/Re-Activate Button --}}
+                            {{-- Show for Pending or Cancelled --}}
+                            @if($auction->status == 'pending' || $auction->status == 'cancelled')
+                                <form action="{{ route('admin.auctions.approve', $auction->id) }}" method="POST" class="mb-2">
+                                    @csrf
+                                    <button type="submit" class="btn btn-success btn-block">
+                                        <i class="fas fa-check mr-2"></i> {{ $auction->status == 'cancelled' ? 'Re-Approve (Activate)' : 'Approve & Activate' }}
+                                    </button>
+                                </form>
+                            @endif
+
+                            {{-- Cancel Button --}}
+                            {{-- Show for Pending or Active --}}
+                            @if($auction->status == 'pending' || $auction->status == 'active')
+                                <button type="button" class="btn btn-warning btn-block mb-2 trigger-cancel" data-url="{{ route('admin.auctions.cancel', $auction->id) }}">
+                                    <i class="fas fa-ban mr-2"></i> Cancel Auction
+                                </button>
+                            @endif
+                        @endif
                     </div>
                     <div class="alert alert-info mt-3 small">
                         <i class="fas fa-info-circle mr-1"></i> Admins cannot edit auction details created by users, but can cancel or delete them if necessary.
@@ -83,3 +115,100 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        // Cancel Confirm with Reason
+        $('.trigger-cancel').click(function() {
+            var url = $(this).data('url');
+            
+            Swal.fire({
+                title: 'Cancel Auction',
+                input: 'textarea',
+                inputLabel: 'Reason for cancellation',
+                inputPlaceholder: 'Type your reason here...',
+                inputAttributes: {
+                    'aria-label': 'Type your reason here'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Submit Cancellation',
+                confirmButtonColor: '#f6c23e',
+                showLoaderOnConfirm: true,
+                preConfirm: (reason) => {
+                    if (!reason) {
+                        Swal.showValidationMessage('You need to provide a reason')
+                    }
+                    return $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            reason: reason
+                        }
+                    })
+                    .then(response => {
+                        return response; // Success, pass response to result
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(
+                            `Request failed: ${error}`
+                        )
+                    })
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Cancelled!',
+                        text: 'Auction has been cancelled.',
+                        icon: 'success'
+                    }).then(() => {
+                        location.reload(); // Reload to show updated status
+                    });
+                }
+            })
+        });
+
+        // Force Delete Confirm
+        $('.trigger-force-delete').click(function() {
+            var url = $(this).data('url');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You will not be able to recover this auction!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, permanently delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: url,
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function (data) {
+                            Swal.fire(
+                                'Deleted!',
+                                'Auction has been permanently deleted.',
+                                'success'
+                            ).then(() => {
+                                window.location.href = "{{ route('admin.auctions.index') }}";
+                            });
+                        },
+                        error: function (data) {
+                            Swal.fire(
+                                'Error!',
+                                'Something went wrong.',
+                                'error'
+                            )
+                        }
+                    });
+                }
+            })
+        });
+    });
+</script>
+@endpush

@@ -2,85 +2,169 @@
 
 @section('title', 'Manage Auctions - LaraBids')
 
+@push('styles')
+    <link href="{{ asset('admin-assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+@endpush
+
 @section('content')
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Manage Auctions</h1>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
+
 
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">All Auctions</h6>
+            <h6 class="m-0 font-weight-bold text-primary">All Auctions ({{ $total_auctions }})</h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered" id="auctions-table" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th width="30">#</th>
                             <th>Title</th>
                             <th>User</th>
                             <th>Current Price</th>
                             <th>Status</th>
                             <th>End Time</th>
-                            <th>Actions</th>
+                            <th width="150">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @forelse($auctions as $auction)
-                            <tr>
-                                <td>{{ $auction->id }}</td>
-                                <td>{{ $auction->title }}</td>
-                                <td>{{ $auction->user->name }}</td>
-                                <td>${{ number_format($auction->current_price, 2) }}</td>
-                                <td>
-                                    <span class="badge badge-{{ $auction->status == 'active' ? 'success' : ($auction->status == 'closed' ? 'secondary' : ($auction->status == 'cancelled' ? 'danger' : 'warning')) }}">
-                                        {{ ucfirst($auction->status) }}
-                                    </span>
-                                </td>
-                                <td>{{ $auction->end_time->format('M d, Y H:i') }}</td>
-                                <td>
-                                    <div class="d-flex">
-                                        <a href="{{ route('admin.auctions.show', $auction) }}" class="btn btn-info btn-sm mr-1">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        @if($auction->status != 'cancelled' && $auction->status != 'closed')
-                                            <form action="{{ route('admin.auctions.cancel', $auction) }}" method="POST" class="mr-1">
-                                                @csrf
-                                                <button type="submit" class="btn btn-warning btn-sm" onclick="return confirm('Are you sure you want to cancel this auction?')">
-                                                    <i class="fas fa-ban"></i>
-                                                </button>
-                                            </form>
-                                        @endif
-                                        <form action="{{ route('admin.auctions.destroy', $auction) }}" method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this auction? This action cannot be undone.')">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center">No auctions found.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
+                    <tbody></tbody>
                 </table>
-            </div>
-            <div class="mt-4">
-                {{ $auctions->links() }}
             </div>
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <!-- Page level plugins -->
+    <script src="{{ asset('admin-assets/vendor/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('admin-assets/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
+
+    <!-- Page level custom scripts -->
+    <script>
+        $(document).ready(function () {
+            // Setup CSRF token for AJAX
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            var table = $('#auctions-table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('admin.auctions.index') }}",
+                columns: [
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+                    {data: 'title', name: 'title'},
+                    {data: 'user', name: 'user.name'}, // Ensure this matches controller
+                    {data: 'current_price', name: 'current_price'},
+                    {data: 'status', name: 'status'},
+                    {data: 'end_time', name: 'end_time'},
+                    {data: 'action', name: 'action', orderable: false, searchable: false},
+                ]
+            });
+
+            // Cancel Auction Removed - Only in View now
+
+            // Delete Auction
+            $('body').on('click', '.delete-auction', function () {
+                var url = $(this).data('url');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Move to trash?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "DELETE",
+                            url: url,
+                            success: function (data) {
+                                table.draw();
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Auction has been moved to trash.',
+                                    'success'
+                                )
+                            },
+                            error: function (data) {
+                                Swal.fire(
+                                    'Error!',
+                                    'Something went wrong.',
+                                    'error'
+                                )
+                            }
+                        });
+                    }
+                })
+            });
+
+            // Restore Auction
+            $('body').on('click', '.restore-auction', function () {
+                var url = $(this).data('url');
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    success: function (data) {
+                        table.draw();
+                        Swal.fire(
+                            'Restored!',
+                            'Auction has been restored.',
+                            'success'
+                        )
+                    },
+                    error: function (data) {
+                        Swal.fire(
+                            'Error!',
+                            'Something went wrong.',
+                            'error'
+                        )
+                    }
+                });
+            });
+
+            // Force Delete Auction
+            $('body').on('click', '.force-delete-auction', function () {
+                var url = $(this).data('url');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You will not be able to recover this auction!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, permanently delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "DELETE",
+                            url: url,
+                            success: function (data) {
+                                table.draw();
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Auction has been permanently deleted.',
+                                    'success'
+                                )
+                            },
+                            error: function (data) {
+                                Swal.fire(
+                                    'Error!',
+                                    'Something went wrong.',
+                                    'error'
+                                )
+                            }
+                        });
+                    }
+                })
+            });
+        });
+    </script>
+@endpush
