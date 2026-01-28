@@ -2,7 +2,7 @@
 
 @section('title', 'Edit Category - LaraBids')
 
-@section('content')
+@section('content')php
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Edit Category: {{ $category->name }}</h1>
         <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary shadow-sm btn-sm">
@@ -27,7 +27,7 @@
                         <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
                     @enderror
                 </div>
-                
+
                 <div class="form-group">
                     <label for="icon">Icon Class (Font Awesome)</label>
                     <input type="text" class="form-control @error('icon') is-invalid @enderror" id="icon" name="icon" value="{{ old('icon', $category->icon) }}" placeholder="e.g. fas fa-laptop">
@@ -37,12 +37,7 @@
                     @enderror
                 </div>
 
-                <div class="form-group">
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="is_active" name="is_active" value="1" {{ old('is_active', $category->is_active) ? 'checked' : '' }}>
-                        <label class="custom-control-label" for="is_active">Active Status</label>
-                    </div>
-                </div>
+                <!-- Active Status Removed -->
 
                 <hr>
                 <div class="form-group mb-0">
@@ -67,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function validateName() {
         const value = nameInput.value.trim();
         const errorDiv = document.getElementById('name-error');
-        
+
         if (value === '') {
             nameInput.classList.add('is-invalid');
             nameInput.classList.remove('is-valid');
@@ -94,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function validateIcon() {
         const value = iconInput.value.trim();
         const errorDiv = document.getElementById('icon-error');
-        
+
         if (value !== '' && value.length > 50) {
             iconInput.classList.add('is-invalid');
             iconInput.classList.remove('is-valid');
@@ -132,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!isNameValid || !isIconValid) {
             e.preventDefault();
-            
+
             // Focus on first invalid field
             if (!isNameValid) {
                 nameInput.focus();
