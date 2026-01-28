@@ -111,6 +111,67 @@
                                 @enderror
                             </div>
 
+                            <!-- Dynamic Category Fields -->
+                            <div id="dynamicFieldsContainer" class="col-12 mt-4 d-none">
+                                <h5 class="fw-bold text-dark border-start border-primary border-4 ps-3 mb-4">Category Specific Details</h5>
+                                
+                                <!-- Vintage Cars (3) -->
+                                <div id="category_fields_3" class="category-fields-group d-none">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label small text-uppercase fw-bold">Year</label>
+                                            <input type="number" name="specifications[year]" class="form-control bg-light border-0 shadow-none" placeholder="e.g. 1965">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small text-uppercase fw-bold">Mileage (km)</label>
+                                            <input type="number" name="specifications[mileage]" class="form-control bg-light border-0 shadow-none" placeholder="e.g. 50000">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small text-uppercase fw-bold">Fuel Type</label>
+                                            <select name="specifications[fuel_type]" class="form-select bg-light border-0 shadow-none">
+                                                <option value="">Select Fuel</option>
+                                                <option value="Petrol">Petrol</option>
+                                                <option value="Diesel">Diesel</option>
+                                                <option value="Electric">Electric</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 mt-3">
+                                            <label class="form-label small text-uppercase fw-bold">Vehicle Documentation (PDF/Image)</label>
+                                            <input type="file" name="document" class="form-control bg-light border-0 shadow-none">
+                                            <small class="text-muted">Registration, Title, or Inspection reports.</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Jewelry (4) -->
+                                <div id="category_fields_4" class="category-fields-group d-none">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label small text-uppercase fw-bold">Metal Type</label>
+                                            <input type="text" name="specifications[metal]" class="form-control bg-light border-0 shadow-none" placeholder="e.g. 24K Gold">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small text-uppercase fw-bold">Certificate of Authenticity</label>
+                                            <input type="file" name="document" class="form-control bg-light border-0 shadow-none">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Art (5) -->
+                                <div id="category_fields_5" class="category-fields-group d-none">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label small text-uppercase fw-bold">Artist Name</label>
+                                            <input type="text" name="specifications[artist]" class="form-control bg-light border-0 shadow-none" placeholder="e.g. Vincent van Gogh">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small text-uppercase fw-bold">Authenticity Document</label>
+                                            <input type="file" name="document" class="form-control bg-light border-0 shadow-none">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
 
                             <div class="col-12 mt-4 text-center">
                                 <div id="imagePreviewContainer" class="d-none">
@@ -179,13 +240,47 @@
     const imageInput = document.getElementById('imageInput');
     const imagePreviewContainer = document.getElementById('imagePreviewContainer');
     const imagePreview = document.getElementById('imagePreview');
+    const categorySelect = document.querySelector('select[name="category_id"]');
+    const dynamicFieldsContainer = document.getElementById('dynamicFieldsContainer');
+    const categoryGroups = document.querySelectorAll('.category-fields-group');
 
+    // Image Preview
     imageInput.onchange = evt => {
         const [file] = imageInput.files;
         if (file) {
             imagePreview.src = URL.createObjectURL(file);
             imagePreviewContainer.classList.remove('d-none');
         }
+    }
+
+    // Dynamic Category Fields
+    categorySelect.onchange = function() {
+        const categoryId = this.value;
+        
+        // Hide all groups first
+        categoryGroups.forEach(group => group.classList.add('d-none'));
+        dynamicFieldsContainer.classList.add('d-none');
+
+        // Show relevant group
+        const targetGroup = document.getElementById(`category_fields_${categoryId}`);
+        if (targetGroup) {
+            dynamicFieldsContainer.classList.remove('d-none');
+            targetGroup.classList.remove('d-none');
+            
+            // Add fade-in effect
+            targetGroup.style.opacity = 0;
+            let opacity = 0;
+            const timer = setInterval(function() {
+                if (opacity >= 1) clearInterval(timer);
+                targetGroup.style.opacity = opacity;
+                opacity += 0.1;
+            }, 20);
+        }
+    }
+
+    // Trigger change on load if category already selected (e.g. after validation error)
+    if (categorySelect.value) {
+        categorySelect.dispatchEvent(new Event('change'));
     }
 </script>
 @endpush

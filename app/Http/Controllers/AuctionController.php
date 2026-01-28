@@ -102,6 +102,8 @@ class AuctionController extends Controller
             'start_time' => 'required|date|after_or_equal:now',
             'end_time' => 'required|date|after:start_time',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'document' => 'nullable|file|mimes:pdf,jpg,png,doc,docx|max:5120',
+            'specifications' => 'nullable|array',
         ]);
 
         $auction = new Auction();
@@ -114,10 +116,16 @@ class AuctionController extends Controller
         $auction->start_time = $request->start_time;
         $auction->end_time = $request->end_time;
         $auction->status = 'active';
+        $auction->specifications = $request->specifications;
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('auctions', 'public');
             $auction->image = $path;
+        }
+
+        if ($request->hasFile('document')) {
+            $path = $request->file('document')->store('auctions/documents', 'public');
+            $auction->document = $path;
         }
 
         $auction->save();

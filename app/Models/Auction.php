@@ -18,9 +18,11 @@ class Auction extends Model
         'starting_price',
         'current_price',
         'image',
+        'document',
         'start_time',
         'end_time',
         'status',
+        'specifications',
     ];
 
     protected $casts = [
@@ -28,6 +30,7 @@ class Auction extends Model
         'end_time' => 'datetime',
         'starting_price' => 'decimal:2',
         'current_price' => 'decimal:2',
+        'specifications' => 'array',
     ];
 
     /**

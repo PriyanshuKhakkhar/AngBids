@@ -4,36 +4,8 @@
 
 @section('content')
 
-<!-- Hero Header -->
-<section class="hero-section text-white d-flex align-items-center">
-    <div class="container" data-aos="fade-up">
-        <div class="row align-items-center">
-            <div class="col-lg-7 text-center text-lg-start mb-5 mb-lg-0">
-                <span class="badge bg-white text-primary fw-bold px-3 py-2 rounded-pill mb-3 shadow-sm">
-                    🔍 AUCTION PREVIEW
-                </span>
-                <h1 class="display-3 fw-bold mb-3">Auction <span class="text-white">Details</span></h1>
-                <p class="lead opacity-75 pe-lg-5">
-                    Viewing item #{{ $auction->id }}. Review details, check bid history, and place your bid for a chance to win.
-                </p>
-            </div>
-            <div class="col-lg-5 d-none d-lg-block">
-                <div class="hero-illustration-wrapper ps-lg-4 text-center">
-                    <div class="hero-glow-blob"></div>
-                    <img src="{{ asset('assets/images/banner-3.png') }}" 
-                         class="img-fluid" 
-                         alt="Auction Details LaraBids"
-                         style="max-height: 350px; filter: drop-shadow(0 20px 50px rgba(0,0,0,0.3));">
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-
 <!-- Auction Details -->
-<section class="py-5">
+<section class="py-5 mt-5">
     <div class="container py-lg-5">
         <div class="row g-5">
             <!-- Image Gallery -->
@@ -161,6 +133,42 @@
                         {!! nl2br(e($auction->description)) !!}
                     </div>
                 </div>
+
+                <!-- Specifications Card -->
+                @if($auction->specifications && count(array_filter($auction->specifications)) > 0)
+                <div class="card card-elite p-4 border-0 shadow-sm mt-4" data-aos="fade-up">
+                    <h4 class="h5 text-dark mb-4 fw-bold">Technical Specifications</h4>
+                    <div class="table-responsive">
+                        <table class="table table-borderless table-sm mb-0">
+                            <tbody>
+                                @foreach($auction->specifications as $key => $value)
+                                    @if($value)
+                                    <tr>
+                                        <td class="text-secondary small text-uppercase fw-bold py-2" style="width: 40%;">{{ str_replace('_', ' ', $key) }}</td>
+                                        <td class="text-dark fw-bold py-2">{{ $value }}</td>
+                                    </tr>
+                                    @endif
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @endif
+
+                <!-- Documents Card -->
+                @if($auction->document)
+                <div class="card card-elite p-4 border-0 shadow-sm mt-4" data-aos="fade-up">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h4 class="h5 text-dark mb-1 fw-bold">Verification Documents</h4>
+                            <p class="text-secondary small mb-0">Authenticated and verified by the seller.</p>
+                        </div>
+                        <a href="{{ asset('storage/' . $auction->document) }}" target="_blank" class="btn btn-outline-primary rounded-pill px-4 fw-bold">
+                            <i class="fas fa-download me-2"></i>Download
+                        </a>
+                    </div>
+                </div>
+                @endif
 
                 <!-- Recent Bids Card -->
                 <div class="card card-elite p-4 border-0 shadow-sm mt-4" data-aos="fade-up">
