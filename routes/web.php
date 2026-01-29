@@ -16,11 +16,7 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 
-/*
-|--------------------------------------------------------------------------
-| Front Routes
-|--------------------------------------------------------------------------
-*/
+// Public Routes
 
 // Public Website Routes
 Route::get('/', [WebsiteController::class, 'index'])->name('home');
@@ -33,24 +29,12 @@ Route::get('/auctions', [AuctionController::class, 'index'])->name('auctions.ind
 Route::get('/search', [AuctionController::class, 'search'])->name('auctions.search');
 
 
-// Smart Dashboard Redirect - Redirects to appropriate dashboard based on user role
-Route::get('/dashboard', function () {
-    if (auth()->check()) {
-        // Check if user is admin or super admin
-        if (auth()->user()->role === 'admin' || auth()->user()->role === 'super admin') {
-            return redirect()->route('admin.dashboard');
-        }
-        // Regular user
-        return redirect()->route('user.dashboard');
-    }
-    return redirect()->route('login');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Smart Dashboard Redirect
+Route::get('/dashboard', [WebsiteController::class, 'dashboard'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
-/*
-|--------------------------------------------------------------------------
-| Profile Routes
-|--------------------------------------------------------------------------
-*/
+// Profile Routes
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -75,11 +59,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/auctions/{id}', [AuctionController::class, 'show'])->name('auctions.show');
 
 
-/*
-|--------------------------------------------------------------------------
-| Admin Routes
-|--------------------------------------------------------------------------
-*/
+// Admin Routes
 Route::middleware(['auth', 'role:admin|super admin'])
     ->prefix('admin')
     ->name('admin.')
@@ -90,9 +70,9 @@ Route::middleware(['auth', 'role:admin|super admin'])
         // Auctions
         Route::get('/auctions', [AdminAuctionController::class, 'index'])->name('auctions.index');
         Route::get('/auctions/{auction}', [AdminAuctionController::class, 'show'])->name('auctions.show');
-        Route::post('/auctions/{id}/restore', [AdminAuctionController::class, 'restore'])->name('auctions.restore');
-        Route::post('/auctions/{id}/approve', [AdminAuctionController::class, 'approve'])->name('auctions.approve');
-        Route::delete('/auctions/{id}/force-delete', [AdminAuctionController::class, 'forceDelete'])->name('auctions.force_delete');
+        Route::post('/auctions/{auction}/restore', [AdminAuctionController::class, 'restore'])->name('auctions.restore');
+        Route::post('/auctions/{auction}/approve', [AdminAuctionController::class, 'approve'])->name('auctions.approve');
+        Route::delete('/auctions/{auction}/force-delete', [AdminAuctionController::class, 'forceDelete'])->name('auctions.force_delete');
         Route::delete('/auctions/{auction}', [AdminAuctionController::class, 'destroy'])->name('auctions.destroy');
         Route::post('/auctions/{auction}/cancel', [AdminAuctionController::class, 'cancel'])->name('auctions.cancel');
 
@@ -145,10 +125,6 @@ Route::middleware(['auth', 'role:admin|super admin'])
         Route::get('/blank', [DashboardController::class, 'blank'])->name('blank');
     });
 
-/*
-|--------------------------------------------------------------------------
-| Auth Routes
-|--------------------------------------------------------------------------
-*/
+// Auth Routes
 
 require __DIR__.'/auth.php';

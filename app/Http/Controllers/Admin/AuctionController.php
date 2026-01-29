@@ -4,17 +4,27 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Auction;
+use App\Services\AuctionService;
+use App\Http\Requests\Admin\CancelAuctionRequest;
 use Illuminate\Http\Request;
-
 use Yajra\DataTables\Facades\DataTables;
 
 class AuctionController extends Controller
 {
+    protected $auctionService;
+
+    public function __construct(AuctionService $auctionService)
+    {
+        $this->auctionService = $auctionService;
+    }
+
+    // List auctions
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Auction::with('user')->withTrashed()->latest();
-            
+            $data = $this->auctionService->getFilteredAuctions($request, false)
+                ->withTrashed();
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('user', function($row){
@@ -29,13 +39,7 @@ class AuctionController extends Controller
                     return '$' . number_format($row->current_price, 2);
                 })
                 ->addColumn('status', function($row){
-                    $badgeClass = match($row->status) {
-                        'active' => 'success',
-                        'pending' => 'info',
-                        'closed' => 'secondary',
-                        'cancelled' => 'danger',
-                        default => 'warning'
-                    };
+                    $badgeClass = $row->getStatusBadgeClass();
                     return '<span class="badge badge-'.$badgeClass.'">'.ucfirst($row->status).'</span>';
                 })
                 ->addColumn('end_time', function($row){
@@ -43,21 +47,29 @@ class AuctionController extends Controller
                 })
                 ->addColumn('action', function($row){
                     $btn = '';
-                    
+
                     // View (Always visible)
                     $btn .= '<a href="'.route('admin.auctions.show', $row->id).'" class="btn btn-info btn-sm mr-1" title="View"><i class="fas fa-eye"></i></a>';
-                    
+
+                    if ($row->status === 'pending') {
+                        // Approve Button
+                         $btn .= '<form action="'.route('admin.auctions.approve', $row->id).'" method="POST" class="d-inline mr-1">
+                                    '.csrf_field().'
+                                    <button type="submit" class="btn btn-success btn-sm" title="Approve"><i class="fas fa-check"></i></button>
+                                  </form>';
+                    }
+
                     if ($row->trashed()) {
                          // Restore
                          $btn .= '<button type="button" class="btn btn-success btn-sm mr-1 restore-auction" data-id="'.$row->id.'" data-url="'.route('admin.auctions.restore', $row->id).'" title="Restore"><i class="fas fa-trash-restore"></i></button>';
-                         
+
                          // Permanent Delete
                          $btn .= '<button type="button" class="btn btn-danger btn-sm force-delete-auction" data-id="'.$row->id.'" data-url="'.route('admin.auctions.force_delete', $row->id).'" title="Permanent Delete"><i class="fas fa-times"></i></button>';
                     } else {
-                        // Delete (Soft Delete) - Cancel is removed from here as per request
+                        // Delete (Soft Delete)
                         $btn .= '<button type="button" class="btn btn-danger btn-sm delete-auction" data-id="'.$row->id.'" data-url="'.route('admin.auctions.destroy', $row->id).'" title="Delete"><i class="fas fa-trash"></i></button>';
                     }
-                    
+
                     return $btn;
                 })
                 ->rawColumns(['status', 'action'])
@@ -69,16 +81,17 @@ class AuctionController extends Controller
         ]);
     }
 
+    // Show auction
     public function show($id)
     {
         $auction = Auction::withTrashed()->findOrFail($id);
         return view('admin.auctions.show', compact('auction'));
     }
 
+    // Delete auction
     public function destroy($id)
     {
-        $auction = Auction::findOrFail($id);
-        $auction->delete();
+        $this->auctionService->deleteAuction($id);
 
         if (request()->ajax()) {
             return response()->json(['success' => 'Auction deleted successfully.']);
@@ -87,17 +100,11 @@ class AuctionController extends Controller
         return redirect()->route('admin.auctions.index')->with('success', 'Auction deleted successfully.');
     }
 
-    public function cancel(Request $request, $id)
+    // Cancel auction
+    public function cancel(CancelAuctionRequest $request, $id)
     {
-        $request->validate([
-            'reason' => 'required|string|max:255'
-        ]);
-
         $auction = Auction::findOrFail($id);
-        $auction->update([
-            'status' => 'cancelled',
-            'cancellation_reason' => $request->reason
-        ]);
+        $this->auctionService->updateStatus($auction, 'cancelled', $request->reason);
 
         if (request()->ajax()) {
              return response()->json(['success' => 'Auction cancelled successfully.']);
@@ -106,21 +113,19 @@ class AuctionController extends Controller
         return redirect()->back()->with('success', 'Auction cancelled successfully.');
     }
 
+    // Approve auction
     public function approve($id)
     {
         $auction = Auction::findOrFail($id);
-        $auction->update([
-            'status' => 'active',
-            'cancellation_reason' => null
-        ]);
+        $this->auctionService->updateStatus($auction, 'active');
 
         return redirect()->back()->with('success', 'Auction approved (activated) successfully.');
     }
 
+    // Restore auction
     public function restore($id)
     {
-        $auction = Auction::withTrashed()->findOrFail($id);
-        $auction->restore();
+        $this->auctionService->restoreAuction($id);
 
         if (request()->ajax()) {
             return response()->json(['success' => 'Auction restored successfully.']);
@@ -129,10 +134,10 @@ class AuctionController extends Controller
         return redirect()->back()->with('success', 'Auction restored successfully.');
     }
 
+    // Force delete
     public function forceDelete($id)
     {
-        $auction = Auction::withTrashed()->findOrFail($id);
-        $auction->forceDelete();
+        $this->auctionService->forceDeleteAuction($id);
 
         if (request()->ajax()) {
             return response()->json(['success' => 'Auction permanently deleted.']);
