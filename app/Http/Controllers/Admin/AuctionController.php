@@ -109,7 +109,10 @@ class AuctionController extends Controller
     public function approve($id)
     {
         $auction = Auction::findOrFail($id);
-        $auction->update(['status' => 'active']);
+        $auction->update([
+            'status' => 'active',
+            'cancellation_reason' => null
+        ]);
 
         return redirect()->back()->with('success', 'Auction approved (activated) successfully.');
     }
