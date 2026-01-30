@@ -365,7 +365,7 @@
 }
 
 /* Form Controls */
-.form-control {
+#contact-content .form-control {
     background-color: #f8f9fc;
     border: 2px solid #eaecf4;
     font-size: 0.95rem;
@@ -374,14 +374,14 @@
     transition: all 0.3s ease;
 }
 
-.form-control:focus {
+#contact-content .form-control:focus {
     background-color: #fff;
     border-color: #4e73df;
     box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.15);
     color: #4e73df;
 }
 
-.form-label {
+#contact-content .form-label {
     font-weight: 600;
     color: #5a5c69;
     font-size: 0.9rem;
@@ -389,19 +389,19 @@
 }
 
 /* Submit Button */
-.btn-primary {
+#contact-content .btn-primary {
     background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
     border: none;
     transition: all 0.3s ease;
     letter-spacing: 0.5px;
 }
 
-.btn-primary:hover {
+#contact-content .btn-primary:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 20px rgba(78, 115, 223, 0.4);
 }
 
-.btn-primary:active {
+#contact-content .btn-primary:active {
     transform: translateY(-1px);
 }
 
