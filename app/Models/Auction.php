@@ -36,18 +36,48 @@ class Auction extends Model
     ];
 
     /**
-     * Get the user that owns the auction.
+     * Scope for active auctions
      */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    /**
+     * Scope for latest auctions
+     */
+    public function scopeLatestFirst($query)
+    {
+        return $query->latest();
+    }
+
+    // Badge class for status
+    public function getStatusBadgeClass(): string
+    {
+        return match($this->status) {
+            'active' => 'success',
+            'pending' => 'info',
+            'closed' => 'secondary',
+            'cancelled' => 'danger',
+            default => 'warning'
+        };
+    }
+
+    // Get owner
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the category that the auction belongs to.
-     */
+    // Get category
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class)->withTrashed();
+    }
+
+    // Get images
+    public function images()
+    {
+        return $this->hasMany(AuctionImage::class)->orderBy('sort_order');
     }
 }
