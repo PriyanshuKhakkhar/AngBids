@@ -118,7 +118,6 @@ h4,
 .nav-search .form-control:focus {
     background: #fff;
     border-color: #4e73df;
-    width: 280px;
     box-shadow: 0 4px 15px rgba(78, 115, 223, 0.1);
 }
 
