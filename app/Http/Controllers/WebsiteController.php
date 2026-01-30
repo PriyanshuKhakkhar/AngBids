@@ -19,8 +19,9 @@ class WebsiteController extends Controller
             ->get();
             
         $categories = Category::where('is_active', true)->get();
+        $testimonials = \App\Models\Testimonial::where('is_active', true)->get();
 
-        return view('website.index', compact('auctions', 'categories'));
+        return view('website.index', compact('auctions', 'categories', 'testimonials'));
     }
 
     // Dashboard redirect
