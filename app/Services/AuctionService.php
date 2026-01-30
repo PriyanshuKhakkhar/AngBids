@@ -94,16 +94,35 @@ class AuctionService
             $auction->end_time = $endTime;
         }
 
-        // Handle file uploads
-        if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
-            $auction->image = $data['image']->store('auctions', 'public');
-        }
-
         if (isset($data['document']) && $data['document'] instanceof \Illuminate\Http\UploadedFile) {
             $auction->document = $data['document']->store('auctions/documents', 'public');
         }
 
         $auction->save();
+
+        // Handle multiple image uploads
+        if (isset($data['images']) && is_array($data['images'])) {
+            $primaryIndex = $data['primary_image_index'] ?? 0;
+            
+            foreach ($data['images'] as $index => $imageFile) {
+                if ($imageFile instanceof \Illuminate\Http\UploadedFile) {
+                    $path = $imageFile->store('auctions', 'public');
+                    $isPrimary = ($index == $primaryIndex);
+                    
+                    $auction->images()->create([
+                        'image_path' => $path,
+                        'sort_order' => $index,
+                        'is_primary' => $isPrimary,
+                    ]);
+
+                    // Set the primary image on the auction table itself
+                    if ($isPrimary) {
+                        $auction->image = $path;
+                        $auction->save();
+                    }
+                }
+            }
+        }
 
         return $auction;
     }
