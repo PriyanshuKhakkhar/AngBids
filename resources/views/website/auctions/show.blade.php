@@ -95,14 +95,32 @@
 
                         @if(!$isClosed)
                         @auth
-                            <form action="#" method="POST" class="mb-4">
+                            @if(session('success'))
+                                <div class="alert alert-success alert-dismissible fade show mb-4 rounded-4" role="alert">
+                                    {{ session('success') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            @endif
+
+                            @if(session('error'))
+                                <div class="alert alert-danger alert-dismissible fade show mb-4 rounded-4" role="alert">
+                                    {{ session('error') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            @endif
+
+                            <form action="{{ route('auctions.bid', $auction->id) }}" method="POST" class="mb-4">
                                 @csrf
                                 <div class="mb-3">
                                     <div class="input-group input-group-lg">
                                         <span class="input-group-text bg-white border-end-0 text-primary fw-bold">$</span>
-                                        <input type="number" class="form-control bg-white border-start-0 ps-0 fw-bold" id="bid-amount" 
+                                        <input type="number" name="amount" class="form-control bg-white border-start-0 ps-0 fw-bold @error('amount') is-invalid @enderror" id="bid-amount" 
                                             placeholder="{{ number_format($auction->current_price + 10, 2, '.', '') }}" 
+                                            value="{{ old('amount') }}"
                                             min="{{ $auction->current_price + 0.01 }}" step="0.01">
+                                            @error('amount')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                     </div>
                                     <small class="text-muted mt-2 d-block text-center">Enter more than ${{ number_format($auction->current_price, 2) }}</small>
                                 </div>
@@ -208,10 +226,24 @@
                 <div class="card card-elite p-4 border-0 shadow-sm">
                     <h4 class="h5 text-dark mb-4 fw-bold border-bottom pb-3">Recent Bids</h4>
                     <ul class="list-unstyled mb-0">
+                        @forelse($auction->bids->take(5) as $bid)
+                        <li class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-light last-child-border-0">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="https://ui-avatars.com/api/?name={{ urlencode($bid->user->name) }}&background=random" 
+                                    class="rounded-circle" height="35" width="35" alt="{{ $bid->user->name }}">
+                                <div>
+                                    <span class="d-block text-dark fw-bold small">{{ $bid->user->name }}</span>
+                                    <small class="text-muted" style="font-size: 0.7rem;">{{ $bid->created_at->diffForHumans() }}</small>
+                                </div>
+                            </div>
+                            <span class="text-primary fw-bold">${{ number_format($bid->amount, 2) }}</span>
+                        </li>
+                        @empty
                         <li class="text-center py-4 text-secondary">
                             <i class="fas fa-history d-block mb-3 opacity-25 fs-2"></i>
                             <span class="small">No bids placed in the last 24 hours.</span>
                         </li>
+                        @endforelse
                     </ul>
                 </div>
             </div>

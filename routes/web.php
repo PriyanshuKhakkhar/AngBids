@@ -58,6 +58,9 @@ Route::middleware('auth')->group(function () {
 
 // Parameterized Routes (Catch-all for /auctions/ prefix)
 Route::get('/auctions/{id}', [AuctionController::class, 'show'])->name('auctions.show');
+Route::post('/auctions/{auction}/bid', [\App\Http\Controllers\BidController::class, 'store'])
+    ->middleware('auth')
+    ->name('auctions.bid');
 
 
 // Admin Routes
