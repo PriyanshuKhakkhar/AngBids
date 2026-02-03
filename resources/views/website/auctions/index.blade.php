@@ -27,9 +27,14 @@
             
             {{-- 1. "All Auctions": Full reset. Clears Category AND Search. --}}
             <a href="{{ route('auctions.index') }}" 
-               class="category-pill {{ !request('category') ? 'active' : '' }}">All Auctions</a>
+               class="category-pill {{ !request('category') && !request('status') ? 'active' : '' }}">All Auctions</a>
             
-            {{-- 2. Specific Category: Passes ONLY category. Automatically drops 'q' (search). --}}
+            {{-- 2. Past Auctions: Filter by expired status --}}
+            <a href="{{ route('auctions.index', ['status' => 'past']) }}" 
+               class="category-pill {{ request('status') == 'past' ? 'active' : '' }}">
+                <i class="fas fa-history me-2"></i>Past Auctions</a>
+            
+            {{-- 3. Specific Category: Passes ONLY category. Automatically drops 'q' (search). --}}
             @foreach($categories as $category)
             <a href="{{ route('auctions.index', ['category' => $category->slug]) }}" 
                class="category-pill {{ request('category') == $category->slug ? 'active' : '' }}">
@@ -47,6 +52,9 @@
                 @endif
                 @if(request('q'))
                     <input type="hidden" name="q" value="{{ request('q') }}">
+                @endif
+                @if(request('status'))
+                    <input type="hidden" name="status" value="{{ request('status') }}">
                 @endif
 
                 <div class="col-lg-5 col-md-12">

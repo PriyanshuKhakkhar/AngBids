@@ -58,6 +58,11 @@
                                 </a>
                             </li>
                             <li>
+                                <a class="dropdown-item text-dark small" href="{{ route('user.my-auctions') }}">
+                                    <i class="fas fa-gavel me-2 text-primary"></i> My Auctions
+                                </a>
+                            </li>
+                            <li>
                                 <a class="dropdown-item text-dark small" href="{{ route('user.profile') }}">
                                     <i class="fas fa-user-edit me-2 text-primary"></i> Profile
                                 </a>

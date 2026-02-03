@@ -60,4 +60,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Bid::class)->latest();
     }
+
+    // Get auctions created by the user
+    public function auctions()
+    {
+        return $this->hasMany(Auction::class)->latest();
+    }
 }

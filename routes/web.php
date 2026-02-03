@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
     // User Dashboard Routes
     Route::prefix('user')->name('user.')->group(function () {
         Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/my-auctions', [UserDashboardController::class, 'myAuctions'])->name('my-auctions');
         Route::get('/my-bids', [UserDashboardController::class, 'myBids'])->name('my-bids');
         Route::get('/winning-items', [UserDashboardController::class, 'winningItems'])->name('winning-items');
         Route::get('/wishlist', [UserDashboardController::class, 'wishlist'])->name('wishlist');

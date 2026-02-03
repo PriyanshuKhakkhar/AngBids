@@ -40,7 +40,7 @@
 
             <!-- Right: Action Sidebar (Col-lg-5) -->
             <div class="col-lg-5">
-                <div class="sticky-top" style="top: 100px;">
+                <div class="sticky-lg-top" style="top: 120px; z-index: 1010;">
                     <div class="card card-elite p-4 mb-4 border-0 shadow-sm" data-aos="fade-left">
                         <h2 class="h3 text-dark mb-2 fw-bold">{{ $auction->title }}</h2>
                         <div class="mb-4">
