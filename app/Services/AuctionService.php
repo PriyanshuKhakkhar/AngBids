@@ -67,7 +67,13 @@ class AuctionService
                 break;
         }
 
-        return $query->with(['user', 'category']);
+        return $query->with(['user', 'category', 'watchlists' => function($q) {
+            if (auth()->check()) {
+                $q->where('user_id', auth()->id());
+            } else {
+                $q->whereRaw('1 = 0');
+            }
+        }]);
     }
 
     // Create new auction

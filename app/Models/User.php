@@ -66,4 +66,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Auction::class)->latest();
     }
+
+    // Get user's watchlist
+    public function watchlist()
+    {
+        return $this->hasMany(Watchlist::class);
+    }
 }
