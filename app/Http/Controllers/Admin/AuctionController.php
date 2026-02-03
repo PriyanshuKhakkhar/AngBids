@@ -84,7 +84,9 @@ class AuctionController extends Controller
     // Show auction
     public function show($id)
     {
-        $auction = Auction::withTrashed()->findOrFail($id);
+        $auction = Auction::with(['user', 'category', 'images' => function($query) {
+            $query->orderBy('sort_order');
+        }])->withTrashed()->findOrFail($id);
         return view('admin.auctions.show', compact('auction'));
     }
 

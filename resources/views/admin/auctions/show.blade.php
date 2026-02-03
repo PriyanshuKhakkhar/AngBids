@@ -2,6 +2,58 @@
 
 @section('title', 'View Auction - ' . $auction->title)
 
+@push('styles')
+<style>
+    .image-gallery-item {
+        overflow: hidden;
+        border-radius: 0.35rem;
+        transition: all 0.3s ease;
+    }
+    
+    .image-gallery-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .image-gallery-item img {
+        transition: transform 0.3s ease;
+    }
+    
+    .image-gallery-item:hover img {
+        transform: scale(1.05);
+    }
+
+    /* Lightbox Modal */
+    .lightbox-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10000;
+    }
+
+    .lightbox-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 9999;
+    }
+
+    /* Main Image Hover Effect */
+    #mainAuctionImage:hover ~ #zoomOverlay {
+        background: rgba(0, 0, 0, 0.3) !important;
+    }
+
+    #mainAuctionImage:hover ~ #zoomOverlay i {
+        opacity: 1 !important;
+    }
+</style>
+@endpush
+
 @section('content')
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Auction Details</h1>
@@ -17,16 +69,63 @@
                     <h6 class="m-0 font-weight-bold text-primary">{{ $auction->title }}</h6>
                 </div>
                 <div class="card-body">
-                    <div class="text-center mb-4">
-                        @if($auction->image)
-                            <img src="{{ asset('storage/' . $auction->image) }}" class="img-fluid rounded" style="max-height: 400px;" alt="{{ $auction->title }}">
-                        @else
+                    {{-- Main Image Display --}}
+                    @if($auction->images && $auction->images->count() > 0)
+                        @php
+                            $primaryImage = $auction->images->where('is_primary', true)->first() ?? $auction->images->first();
+                        @endphp
+                        <div class="mb-4">
+                            <h6 class="font-weight-bold text-primary mb-3">
+                                <i class="fas fa-images mr-2"></i>Auction Images ({{ $auction->images->count() }})
+                            </h6>
+                            
+                            {{-- Main Image Container --}}
+                            <div class="position-relative overflow-hidden rounded mb-3" style="height: 400px; cursor: zoom-in; background: #f8f9fc;">
+                                <img src="{{ asset('storage/' . $primaryImage->image_path) }}" 
+                                     class="w-100 h-100" 
+                                     style="object-fit: contain;"
+                                     alt="{{ $auction->title }}"
+                                     id="mainAuctionImage"
+                                     onclick="openImageLightbox()">
+                                <div class="position-absolute w-100 h-100 d-flex align-items-center justify-content-center" 
+                                     style="top: 0; left: 0; background: rgba(0,0,0,0); transition: all 0.3s; pointer-events: none;"
+                                     id="zoomOverlay">
+                                    <i class="fas fa-search-plus fa-3x text-white" style="opacity: 0; transition: opacity 0.3s;"></i>
+                                </div>
+                            </div>
+
+                            {{-- Thumbnail Slider --}}
+                            @if($auction->images->count() > 1)
+                                <div class="row g-2">
+                                    @foreach($auction->images as $index => $image)
+                                        <div class="col-2">
+                                            <div class="position-relative rounded overflow-hidden border {{ $image->is_primary ? 'border-primary border-2' : 'border-light' }} shadow-sm" 
+                                                 style="height: 70px; cursor: pointer; transition: all 0.2s;"
+                                                 onclick="changeMainImage('{{ asset('storage/' . $image->image_path) }}', this, {{ $index }})">
+                                                <img src="{{ asset('storage/' . $image->image_path) }}" 
+                                                     class="w-100 h-100" 
+                                                     style="object-fit: cover;" 
+                                                     alt="Thumbnail {{ $index + 1 }}">
+                                                @if($image->is_primary)
+                                                    <span class="badge badge-success position-absolute" style="top: 5px; right: 5px; font-size: 0.65rem;">
+                                                        <i class="fas fa-star"></i>
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    @else
+                        <div class="text-center mb-4">
                             <div class="bg-light p-5 rounded">
                                 <i class="fas fa-image fa-4x text-gray-300"></i>
-                                <p class="text-gray-500 mt-2">No Image Provided</p>
+                                <p class="text-gray-500 mt-2">No Images Uploaded</p>
                             </div>
-                        @endif
-                    </div>
+                        </div>
+                    @endif
+                    <hr>
                     <h5>Description</h5>
                     <p>{{ $auction->description }}</p>
                     <hr>
@@ -114,11 +213,117 @@
             </div>
         </div>
     </div>
+
+    {{-- Lightbox Modal --}}
+    <div id="imageLightbox" class="lightbox-modal" style="display: none;">
+        <div class="lightbox-backdrop" onclick="closeLightbox()"></div>
+        
+        <div class="lightbox-controls" style="position: fixed; top: 20px; right: 20px; z-index: 10002; display: flex; gap: 15px; align-items: center;">
+            <span class="lightbox-counter badge badge-dark px-3 py-2" id="lightboxCounter">1 / 1</span>
+            <button class="btn btn-danger btn-sm" onclick="closeLightbox()" title="Close (Esc)">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <button class="btn btn-light" style="position: fixed; left: 20px; top: 50%; transform: translateY(-50%); z-index: 10002; width: 50px; height: 50px; border-radius: 50%;" onclick="changeLightboxImage(-1)" title="Previous" id="prevBtn">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        
+        <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10001; max-width: 90%; max-height: 90%;">
+            <img class="img-fluid" id="lightboxImage" style="max-height: 90vh; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+        </div>
+        
+        <button class="btn btn-light" style="position: fixed; right: 20px; top: 50%; transform: translateY(-50%); z-index: 10002; width: 50px; height: 50px; border-radius: 50%;" onclick="changeLightboxImage(1)" title="Next" id="nextBtn">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
 @endsection
 
 @push('scripts')
 <script>
     $(document).ready(function() {
+        // Image Gallery Variables
+        let currentImageIndex = 0;
+        const images = [
+            @if($auction->images && $auction->images->count() > 0)
+                @foreach($auction->images as $index => $image)
+                    "{{ asset('storage/' . $image->image_path) }}"{{ $loop->last ? '' : ',' }}
+                @endforeach
+            @endif
+        ];
+
+        // Initialize
+        @if($auction->images && $auction->images->count() > 0)
+            @php
+                $primaryIndex = 0;
+                foreach($auction->images as $idx => $img) {
+                    if($img->is_primary) {
+                        $primaryIndex = $idx;
+                        break;
+                    }
+                }
+            @endphp
+            currentImageIndex = {{ $primaryIndex }};
+        @endif
+
+        // Change Main Image Function
+        window.changeMainImage = function(imageSrc, element, index) {
+            $('#mainAuctionImage').attr('src', imageSrc);
+            currentImageIndex = index;
+            
+            // Update thumbnail borders
+            $('.col-2 .border-primary').removeClass('border-primary border-2').addClass('border-light');
+            $(element).removeClass('border-light').addClass('border-primary border-2');
+        };
+
+        // Open Lightbox
+        window.openImageLightbox = function() {
+            if (images.length === 0) return;
+            
+            $('#imageLightbox').fadeIn(300);
+            $('#lightboxImage').attr('src', images[currentImageIndex]);
+            updateLightboxCounter();
+            $('body').css('overflow', 'hidden');
+        };
+
+        // Close Lightbox
+        window.closeLightbox = function() {
+            $('#imageLightbox').fadeOut(300);
+            $('body').css('overflow', 'auto');
+        };
+
+        // Change Lightbox Image
+        window.changeLightboxImage = function(direction) {
+            currentImageIndex += direction;
+            
+            if (currentImageIndex < 0) {
+                currentImageIndex = images.length - 1;
+            } else if (currentImageIndex >= images.length) {
+                currentImageIndex = 0;
+            }
+            
+            $('#lightboxImage').attr('src', images[currentImageIndex]);
+            updateLightboxCounter();
+        };
+
+        // Update Counter
+        function updateLightboxCounter() {
+            $('#lightboxCounter').text((currentImageIndex + 1) + ' / ' + images.length);
+        }
+
+        // Keyboard Navigation
+        $(document).keydown(function(e) {
+            if ($('#imageLightbox').is(':visible')) {
+                if (e.key === 'Escape') {
+                    closeLightbox();
+                } else if (e.key === 'ArrowLeft') {
+                    changeLightboxImage(-1);
+                } else if (e.key === 'ArrowRight') {
+                    changeLightboxImage(1);
+                }
+            }
+        });
+
         // Cancel Confirm with Reason
         $('.trigger-cancel').click(function() {
             var url = $(this).data('url');
