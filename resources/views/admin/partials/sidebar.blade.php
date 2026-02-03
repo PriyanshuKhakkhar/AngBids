@@ -34,12 +34,6 @@
             <span>Auctions</span></a>
     </li>
 
-    <!-- Nav Item - Bids -->
-    <li class="nav-item {{ request()->routeIs('admin.bids.*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('admin.bids.index') }}">
-            <i class="fas fa-fw fa-hand-holding-usd"></i>
-            <span>Bids History</span></a>
-    </li>
 
     <!-- Nav Item - Users -->
     <li class="nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">

@@ -141,6 +141,71 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Bid History --}}
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-history mr-2"></i>Bid History
+                    </h6>
+                    <span class="badge badge-primary badge-pill">{{ $auction->bids->count() }} Bids</span>
+                </div>
+                <div class="card-body">
+                    @if($auction->bids->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th style="width: 40%">Bidder</th>
+                                        <th style="width: 30%">Amount</th>
+                                        <th style="width: 30%">Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($auction->bids as $bid)
+                                        <tr class="{{ $loop->first ? 'table-success' : '' }}">
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rounded-circle {{ $loop->first ? 'bg-success' : 'bg-secondary' }} text-white d-flex align-items-center justify-content-center mr-3 shadow-sm" style="width: 35px; height: 35px; min-width: 35px;">
+                                                        {{ strtoupper(substr($bid->user->name ?? 'U', 0, 1)) }}
+                                                    </div>
+                                                    <div class="text-truncate">
+                                                        <div class="font-weight-bold text-dark">{{ $bid->user->name ?? 'Unknown User' }}</div>
+                                                        <div class="small text-muted">{{ $bid->user->email ?? '' }}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="align-middle">
+                                                <span class="font-weight-bold text-dark h5 mb-0">${{ number_format($bid->amount, 2) }}</span>
+                                                @if($loop->first)
+                                                    <div class="small text-success font-weight-bold">
+                                                        <i class="fas fa-trophy mr-1"></i> Highest Bid
+                                                    </div>
+                                                @endif
+                                            </td>
+                                            <td class="align-middle">
+                                                <div class="text-dark">{{ $bid->created_at->format('M d, Y h:i A') }}</div>
+                                                <div class="small text-muted">{{ $bid->created_at->diffForHumans() }}</div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="text-center py-5">
+                            <div class="mb-3">
+                                <span class="fa-stack fa-2x">
+                                    <i class="fas fa-circle fa-stack-2x text-gray-200"></i>
+                                    <i class="fas fa-gavel fa-stack-1x text-gray-400"></i>
+                                </span>
+                            </div>
+                            <h5 class="text-gray-500 font-weight-bold">No Bids Yet</h5>
+                            <p class="text-gray-400 mb-0">Be the first to see the action!</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
         </div>
         <div class="col-lg-4">
             <div class="card shadow mb-4">
@@ -151,8 +216,23 @@
                     <p><strong>ID:</strong> #{{ $auction->id }}</p>
                     <p><strong>Seller:</strong> {{ $auction->user->name }} ({{ $auction->user->email }})</p>
                     <p><strong>Status:</strong> 
-                        <span class="badge badge-{{ $auction->status == 'active' ? 'success' : ($auction->status == 'closed' ? 'secondary' : ($auction->status == 'cancelled' ? 'danger' : 'warning')) }}">
-                            {{ ucfirst($auction->status) }}
+                        @php
+                            $displayStatus = $auction->status;
+                            // If auction is marked as 'active' but time has expired, show as 'closed'
+                            if ($auction->status === 'active' && $auction->end_time && $auction->end_time->isPast()) {
+                                $displayStatus = 'closed';
+                            }
+                            
+                            $badgeClass = match($displayStatus) {
+                                'active' => 'success',
+                                'pending' => 'info',
+                                'closed' => 'secondary',
+                                'cancelled' => 'danger',
+                                default => 'warning'
+                            };
+                        @endphp
+                        <span class="badge badge-{{ $badgeClass }}">
+                            {{ ucfirst($displayStatus) }}
                         </span>
                     </p>
                     <p><strong>Created At:</strong> {{ $auction->created_at->format('M d, Y H:i') }}</p>

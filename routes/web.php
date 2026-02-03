@@ -8,13 +8,11 @@ use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AuctionController as AdminAuctionController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\BidController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingController;
-use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\Admin\ContactController;
 
 // Public Routes
@@ -81,9 +79,6 @@ Route::middleware(['auth', 'role:admin|super admin'])
         Route::delete('/auctions/{auction}', [AdminAuctionController::class, 'destroy'])->name('auctions.destroy');
         Route::post('/auctions/{auction}/cancel', [AdminAuctionController::class, 'cancel'])->name('auctions.cancel');
 
-        // Bids
-        Route::get('/bids', [BidController::class, 'index'])->name('bids.index');
-
         /*
         |--------------------------------------------------------------------------
         | Users CRUD (FULL: index, create, store, show, edit, update, delete)
@@ -113,10 +108,10 @@ Route::middleware(['auth', 'role:admin|super admin'])
 
         Route::post('categories/{category}/restore', [CategoryController::class, 'restore'])
             ->name('categories.restore');
-            
+
         Route::delete('categories/{category}/force-delete', [CategoryController::class, 'forceDelete'])
             ->name('categories.force_delete');
-            
+
         Route::resource('categories', CategoryController::class);
 
         // Contacts
@@ -128,10 +123,6 @@ Route::middleware(['auth', 'role:admin|super admin'])
 
         // Settings
         Route::get('/settings', [SettingController::class, 'index'])->name('settings');
-
-        // Admin Profile
-        Route::get('/profile', [AdminProfileController::class, 'edit'])->name('profile');
-        Route::put('/profile', [AdminProfileController::class, 'update'])->name('profile.update');
 
         // Blank Page
         Route::get('/blank', [DashboardController::class, 'blank'])->name('blank');

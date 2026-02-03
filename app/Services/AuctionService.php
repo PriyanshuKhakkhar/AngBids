@@ -12,14 +12,21 @@ class AuctionService
     // Get filtered auctions
     public function getFilteredAuctions(Request $request, bool $activeOnly = true)
     {
-        $query = Auction::query();
+        $query = Auction::select('auctions.*');
 
         $status = $request->input('status', $activeOnly ? 'active' : 'all');
 
         if ($status === 'active') {
             $query->active();
-        } elseif ($status === 'past') {
-            $query->past();
+        } elseif ($status === 'past' || $status === 'closed') {
+            $query->where(function($q) {
+                $q->where('status', 'closed')
+                  ->orWhere(function($sq) {
+                      $sq->where('status', 'active')->where('end_time', '<=', now());
+                  });
+            });
+        } elseif ($status !== 'all' && !empty($status)) {
+            $query->where('status', $status);
         }
 
         // Search filter
@@ -63,7 +70,7 @@ class AuctionService
                 $query->orderBy('end_time', 'asc');
                 break;
             default:
-                $query->latest();
+                $query->orderBy('auctions.created_at', 'desc');
                 break;
         }
 
