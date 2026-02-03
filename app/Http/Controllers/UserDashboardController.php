@@ -24,6 +24,17 @@ class UserDashboardController extends Controller
         return view('website.user.my-bids', compact('bids'));
     }
 
+    // My auctions
+    public function myAuctions()
+    {
+        $auctions = auth()->user()->auctions()
+            ->with(['category', 'bids'])
+            ->latest()
+            ->paginate(10);
+
+        return view('website.user.my-auctions', compact('auctions'));
+    }
+
     // Winning items
     public function winningItems()
     {

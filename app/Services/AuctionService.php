@@ -14,8 +14,12 @@ class AuctionService
     {
         $query = Auction::query();
 
-        if ($activeOnly) {
-            $query->where('status', 'active');
+        $status = $request->input('status', $activeOnly ? 'active' : 'all');
+
+        if ($status === 'active') {
+            $query->active();
+        } elseif ($status === 'past') {
+            $query->past();
         }
 
         // Search filter

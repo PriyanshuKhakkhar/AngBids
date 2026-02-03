@@ -36,11 +36,30 @@ class Auction extends Model
     ];
 
     /**
-     * Scope for active auctions
+     * Scope for active auctions (Approved and not ended)
      */
     public function scopeActive($query)
     {
-        return $query->where('status', 'active');
+        return $query->where('status', 'active')
+                     ->where('end_time', '>', now());
+    }
+
+    /**
+     * Scope for live auctions (Currently open for bidding)
+     */
+    public function scopeLive($query)
+    {
+        return $query->active()
+                     ->where('start_time', '<=', now());
+    }
+
+    /**
+     * Scope for past auctions (Ended)
+     */
+    public function scopePast($query)
+    {
+        return $query->where('status', 'active')
+                     ->where('end_time', '<=', now());
     }
 
     /**
