@@ -27,8 +27,10 @@
             <div class="d-flex gap-3 align-items-center">
                 <!-- Search Bar -->
                 <form action="{{ route('auctions.index') }}" method="GET" class="nav-search d-none d-lg-block me-3 mb-0">
-                    <i class="fas fa-search"></i>
-                    <input type="text" name="q" class="form-control" placeholder="Search auctions..." value="{{ request('q') }}">
+                    <button type="submit" class="search-submit-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <input type="search" name="q" class="form-control" placeholder="Search auctions..." value="{{ request('q') }}">
                 </form>
 
                 @guest
