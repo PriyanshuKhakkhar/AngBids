@@ -111,4 +111,10 @@ class Auction extends Model
     {
         return $this->bids()->first();
     }
+
+    // Get watchlists count or check if user watchlisted it
+    public function watchlists()
+    {
+        return $this->hasMany(Watchlist::class);
+    }
 }
