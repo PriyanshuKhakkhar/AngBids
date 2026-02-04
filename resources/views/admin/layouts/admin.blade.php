@@ -119,10 +119,8 @@
             <!-- Main Content -->
             <div id="content">
 
-                @include('admin.partials.topbar')
-
                 <!-- Begin Page Content -->
-                <div class="container-fluid">
+                <div class="container-fluid pt-4">
                     @yield('content')
                 </div>
                 <!-- /.container-fluid -->

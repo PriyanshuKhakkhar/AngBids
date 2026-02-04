@@ -168,7 +168,14 @@ class AuctionService
             $payload['cancellation_reason'] = null;
         }
         
-        return $auction->update($payload);
+        $result = $auction->update($payload);
+
+        // Send notification to auction owner when cancelled
+        if ($status === 'cancelled' && $reason && $auction->user) {
+            $auction->user->notify(new \App\Notifications\AuctionCanceledNotification($auction, $reason));
+        }
+        
+        return $result;
     }
 
     // Delete auction (Soft delete)

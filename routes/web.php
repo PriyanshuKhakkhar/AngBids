@@ -54,6 +54,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/watchlist', [UserDashboardController::class, 'watchlist'])->name('watchlist');
         Route::post('/watchlist/{auction}/toggle', [WatchlistController::class, 'toggle'])->name('watchlist.toggle');
         Route::get('/profile', [UserDashboardController::class, 'profile'])->name('profile');
+        
+        // Notifications
+        Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+        Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+        Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.read_all');
+        Route::delete('/notifications/{id}', [\App\Http\Controllers\NotificationController::class, 'destroy'])->name('notifications.destroy');
     });
 });
 
