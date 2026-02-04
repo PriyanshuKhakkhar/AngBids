@@ -48,8 +48,8 @@
                     <div class="dropdown">
                         <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
                             data-bs-toggle="dropdown">
-                            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=4e73df&color=ffffff"
-                                class="rounded-circle border border-primary border-opacity-25 me-2" height="35" alt="Avatar">
+                            <img src="{{ auth()->user()->avatar_url }}"
+                                class="rounded-circle border border-primary border-opacity-25 me-2" height="35" width="35" style="object-fit: cover;" alt="Avatar">
                             <span class="small d-none d-md-inline">{{ auth()->user()->name }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">

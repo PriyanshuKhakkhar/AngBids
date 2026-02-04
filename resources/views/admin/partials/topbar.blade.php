@@ -24,6 +24,13 @@
     <!-- Topbar Navbar -->
     <ul class="navbar-nav ml-auto">
 
+        <!-- Nav Item - Back to Site -->
+        <li class="nav-item mx-2 d-flex align-items-center">
+            <a class="btn btn-sm btn-outline-primary rounded-pill px-3" href="{{ route('home') }}">
+                <i class="fas fa-external-link-alt fa-sm fw-bold mr-1"></i> Back to Site
+            </a>
+        </li>
+
         <!-- Nav Item - Alerts -->
         <li class="nav-item dropdown no-arrow mx-1">
             <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
@@ -83,7 +90,7 @@
             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->name }}</span>
-                <img class="img-profile rounded-circle" src="{{ asset('admin-assets/img/undraw_profile.svg') }}">
+                <img class="img-profile rounded-circle" width="32" height="32" style="object-fit: cover;" src="{{ Auth::user()->avatar_url }}">
             </a>
             <!-- Dropdown - User Information -->
             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"

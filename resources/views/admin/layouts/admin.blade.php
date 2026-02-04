@@ -100,6 +100,18 @@
                 width: 100%;
             }
         }
+        /* Sidebar Alignment Fix */
+        #accordionSidebar .nav-item .nav-link {
+            padding-left: 1.5rem;
+        }
+        #accordionSidebar .sidebar-heading {
+            padding-left: 1.5rem;
+            margin-top: 1rem;
+        }
+        #accordionSidebar .sidebar-brand {
+            padding-left: 1.5rem;
+            justify-content: flex-start !important;
+        }
     </style>
     
     @stack('styles')
