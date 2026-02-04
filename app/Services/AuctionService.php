@@ -50,11 +50,23 @@ class AuctionService
         }
 
         // Price range filter
-        if ($request->filled('min_price')) {
-            $query->where('current_price', '>=', $request->input('min_price'));
+        $minPrice = $request->input('min_price');
+        $maxPrice = $request->input('max_price');
+
+        if ($request->filled('min_price') && $request->filled('max_price')) {
+            if ($minPrice > $maxPrice) {
+                // Swap values if ordered incorrectly
+                $temp = $minPrice;
+                $minPrice = $maxPrice;
+                $maxPrice = $temp;
+            }
         }
-        if ($request->filled('max_price')) {
-            $query->where('current_price', '<=', $request->input('max_price'));
+
+        if ($minPrice !== null && $minPrice !== '') {
+            $query->where('current_price', '>=', $minPrice);
+        }
+        if ($maxPrice !== null && $maxPrice !== '') {
+            $query->where('current_price', '<=', $maxPrice);
         }
 
         // Sorting

@@ -46,10 +46,10 @@
                                    id="email" 
                                    name="email" 
                                    value="{{ old('email') }}" 
-                                   placeholder="Enter your email"
-                                   autofocus>
+                                   placeholder="Enter your email">
+                            <div class="invalid-feedback" id="email-error"></div>
                             @error('email')
-                                <div class="invalid-feedback" data-server-error>{{ $message }}</div>
+                                <div class="invalid-feedback d-block" data-server-error>{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -61,8 +61,9 @@
                                    id="password" 
                                    name="password" 
                                    placeholder="Enter your password">
+                            <div class="invalid-feedback" id="password-error"></div>
                             @error('password')
-                                <div class="invalid-feedback" data-server-error>{{ $message }}</div>
+                                <div class="invalid-feedback d-block" data-server-error>{{ $message }}</div>
                             @enderror
                         </div>
 
