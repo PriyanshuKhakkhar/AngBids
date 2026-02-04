@@ -36,6 +36,9 @@ Route::get('/dashboard', [WebsiteController::class, 'dashboard'])
 
 // Profile Routes
 
+// Public Seller Profiles
+Route::get('/sellers/{id}', [App\Http\Controllers\PublicProfileController::class, 'show'])->name('sellers.show');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
