@@ -24,9 +24,24 @@ class AuctionController extends Controller
             ->paginate(9)
             ->withQueryString();
 
-        $categories = Category::where('is_active', true)->get();
+        $categories = Category::topLevel()->active()->get();
+        $subCategories = collect();
+        $parentCategory = null;
 
-        return view('website.auctions.index', compact('auctions', 'categories'));
+        if ($request->has('category')) {
+            $currentCategory = Category::where('slug', $request->category)->first();
+            if ($currentCategory) {
+                if ($currentCategory->parent_id) {
+                    $parentCategory = $currentCategory->parent;
+                    $subCategories = $parentCategory->children()->active()->get();
+                } else {
+                    $parentCategory = $currentCategory;
+                    $subCategories = $currentCategory->children()->active()->get();
+                }
+            }
+        }
+
+        return view('website.auctions.index', compact('auctions', 'categories', 'subCategories', 'parentCategory'));
     }
 
     // Show auction

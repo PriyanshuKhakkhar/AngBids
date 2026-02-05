@@ -41,21 +41,17 @@
 
 
 <!-- Live Auctions -->
-<section id="auctions" class="py-5 metrics-overlap">
-    <div class="container py-lg-5">
-        <div class="row align-items-center mb-5" data-aos="fade-right">
-            <div class="col-lg-4">
-                <h2 class="display-4 fw-bold">Live Now</h2>
+<section id="auctions" class="pb-5 pt-5">
+    <div class="container pb-lg-5 pt-lg-5">
+        <div class="row align-items-end mb-5" data-aos="fade-right">
+            <div class="col-lg-6">
+                <h2 class="display-4 fw-bold mb-3">Live Now</h2>
+                <p class="text-secondary lead mb-0">Explore our most popular auctions currently open for bidding.</p>
             </div>
-            <div class="col-lg-8">
-                <div class="d-flex flex-wrap gap-2 justify-content-lg-end mt-3 mt-lg-0">
-                    <a href="{{ route('auctions.index') }}" class="category-pill active">All Auctions</a>
-                    @foreach($categories as $category)
-                    <a href="{{ route('auctions.index', ['category' => $category->slug]) }}" class="category-pill">
-                        <i class="{{ $category->icon }} me-2"></i>{{ $category->name }}
-                    </a>
-                    @endforeach
-                </div>
+            <div class="col-lg-6 text-lg-end">
+                <a href="{{ route('auctions.index') }}" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold shadow-sm mt-3 mt-lg-0">
+                    View All Auctions <i class="fas fa-chevron-right ms-2"></i>
+                </a>
             </div>
         </div>
 

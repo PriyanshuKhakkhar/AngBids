@@ -799,11 +799,6 @@ footer {
     }
 }
 
-.metrics-overlap {
-    margin-top: -60px;
-    position: relative;
-    z-index: 10;
-}
 
 ::-webkit-scrollbar {
     width: 10px;
