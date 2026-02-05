@@ -14,15 +14,16 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Category::withTrashed()->withCount('auctions')->latest();
+            $data = Category::withTrashed()->with(['parent'])->withCount('auctions')->latest();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('icon', function($row){
                     $icon = $row->icon ?? 'fas fa-tag';
                     return '<i class="'.$icon.' text-primary"></i>';
                 })
-                // Status removed as per request
-
+                ->addColumn('parent', function($row){
+                    return $row->parent ? $row->parent->name : '<span class="text-muted">None</span>';
+                })
                 ->addColumn('count', function($row){
                     return '<span class="badge badge-info badge-pill px-2 py-1">'.$row->auctions_count.' Items</span>';
                 })
@@ -49,7 +50,7 @@ class CategoryController extends Controller
                     
                     return $btn;
                 })
-                ->rawColumns(['icon', 'count', 'action'])
+                ->rawColumns(['icon', 'parent', 'count', 'action'])
                 ->make(true);
         }
         
@@ -58,27 +59,26 @@ class CategoryController extends Controller
         ]);
     }
 
-    // Status toggle removed
-
-
     public function create()
     {
-        return view('admin.categories.create');
+        $parentCategories = Category::topLevel()->active()->orderBy('name')->get();
+        return view('admin.categories.create', compact('parentCategories'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name'      => 'required|string|min:2|max:255|unique:categories,name',
+            'parent_id' => 'nullable|exists:categories,id',
             'icon'      => 'nullable|string|max:50',
             'is_active' => 'nullable|boolean',
         ]);
 
         Category::create([
             'name'      => trim($validated['name']),
+            'parent_id' => $validated['parent_id'] ?? null,
             'slug'      => Str::slug($validated['name']),
             'icon'      => $validated['icon'] ?? null,
-            // 'is_active' => $request->boolean('is_active'), // Removed
         ]);
 
         return redirect()
@@ -89,7 +89,8 @@ class CategoryController extends Controller
     public function edit($id)
     {
         $category = Category::withTrashed()->findOrFail($id);
-        return view('admin.categories.edit', compact('category'));
+        $parentCategories = Category::topLevel()->where('id', '!=', $id)->active()->orderBy('name')->get();
+        return view('admin.categories.edit', compact('category', 'parentCategories'));
     }
 
     public function update(Request $request, $id)
@@ -98,15 +99,16 @@ class CategoryController extends Controller
 
         $validated = $request->validate([
             'name'      => 'required|string|min:2|max:255|unique:categories,name,' . $category->id,
+            'parent_id' => 'nullable|exists:categories,id',
             'icon'      => 'nullable|string|max:50',
             'is_active' => 'nullable|boolean',
         ]);
 
         $category->update([
             'name'      => trim($validated['name']),
+            'parent_id' => $validated['parent_id'] ?? null,
             'slug'      => Str::slug($validated['name']),
             'icon'      => $validated['icon'] ?? null,
-            // 'is_active' => $request->boolean('is_active'), // Removed
         ]);
 
         return redirect()

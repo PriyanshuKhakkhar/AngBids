@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // 3. Dynamic Category Fields Logic
-    const categorySelect = document.querySelector('select[name="category_id"]');
+    const categorySelect = document.querySelector('[name="category_id"]');
     const dynamicFieldsContainer = document.getElementById('dynamicFieldsContainer');
     const categoryGroups = document.querySelectorAll('.category-fields-group');
 

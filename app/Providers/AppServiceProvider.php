@@ -6,6 +6,9 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Auth\Events\Login;
+use App\Listeners\PruneOldSessions;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -51,5 +54,11 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
         );
+        Event::listen(
+            Login::class,
+            PruneOldSessions::class,
+        );
+
+        \Illuminate\Pagination\Paginator::useBootstrapFive();
     }
 }

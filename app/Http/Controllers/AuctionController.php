@@ -60,8 +60,19 @@ class AuctionController extends Controller
     // Create form
     public function create()
     {
-        $categories = Category::where('is_active', true)->get();
-        return view('website.auctions.create', compact('categories'));
+        $categories = Category::topLevel()->active()->with('children')->get();
+        
+        $categoryTree = $categories->map(function($cat) {
+            return [
+                'id' => $cat->id,
+                'name' => $cat->name,
+                'children' => $cat->children->map(function($child) {
+                    return ['id' => $child->id, 'name' => $child->name];
+                })
+            ];
+        });
+
+        return view('website.auctions.create', compact('categories', 'categoryTree'));
     }
 
     // Store auction

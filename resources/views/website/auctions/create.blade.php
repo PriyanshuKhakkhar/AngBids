@@ -40,20 +40,42 @@
                                 @enderror
                             </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold text-dark small text-uppercase">Category</label>
-                                <select name="category_id" class="form-select form-select-lg bg-light border-0 shadow-none @error('category_id') is-invalid @enderror">
-                                    <option value="" disabled selected>Select Category</option>
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                            {{ $category->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                            <div class="col-12">
+                                <label class="form-label fw-bold text-dark small text-uppercase mb-3">Item Category <span class="text-danger">*</span></label>
+                                
+                                <input type="hidden" name="category_id" id="selected_category_id" value="{{ old('category_id') }}">
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <select id="mainCategorySelect" class="form-select form-select-lg bg-light border-0 shadow-none">
+                                            <option value="" disabled selected>Choose Main Category</option>
+                                            @foreach($categories as $parent)
+                                                <option value="{{ $parent->id }}" 
+                                                    {{ old('category_id') && ($parent->id == old('category_id') || $parent->children->contains('id', old('category_id'))) ? 'selected' : '' }}>
+                                                    {{ $parent->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div id="subCategoryDropdownWrapper" style="display: none;">
+                                            <select id="subCategorySelect" class="form-select form-select-lg bg-light border-0 shadow-none">
+                                                <option value="" disabled selected>Choose Sub-Category</option>
+                                                {{-- Populated via JS --}}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 @error('category_id')
-                                    <div class="invalid-feedback" data-server-error>{{ $message }}</div>
+                                    <div class="invalid-feedback d-block" data-server-error>{{ $message }}</div>
                                 @enderror
                             </div>
+
+                            <!-- Pass child data to JS -->
+                            <script>
+                                window.categoryTree = @json($categoryTree);
+                            </script>
 
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark small text-uppercase">Starting Price ($)</label>
@@ -249,12 +271,14 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/image-upload.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/category-selection.css') }}">
 @endpush
 
 @push('scripts')
 <script src="{{ asset('assets/js/image-upload-manager.js') }}"></script>
 <script src="{{ asset('assets/js/auction-form-validation.js') }}"></script>
 <script src="{{ asset('assets/js/auction-create.js') }}"></script>
+<script src="{{ asset('assets/js/category-selection.js') }}"></script>
 @endpush
 
 @endsection
