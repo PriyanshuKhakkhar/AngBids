@@ -11,12 +11,21 @@
         <h1 class="h3 text-dark fw-bold mb-0">All Alerts</h1>
     </div>
     @if($notifications->total() > 0)
-        <form action="{{ route('user.notifications.read_all') }}" method="POST" class="d-inline">
-            @csrf
-            <button type="submit" class="btn btn-primary btn-sm rounded-pill px-4">
-                <i class="fas fa-check-double me-1"></i> Mark All as Read
-            </button>
-        </form>
+        <div class="d-flex gap-2">
+            <form action="{{ route('user.notifications.read_all') }}" method="POST" class="d-inline">
+                @csrf
+                <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                    <i class="fas fa-check-double me-1"></i> Mark All as Read
+                </button>
+            </form>
+            <form action="{{ route('user.notifications.clear_all') }}" method="POST" class="d-inline">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="return confirm('Are you sure you want to clear all notifications?')">
+                    <i class="fas fa-trash-alt me-1"></i> Clear All
+                </button>
+            </form>
+        </div>
     @endif
 </div>
 
@@ -83,8 +92,8 @@
                             <form action="{{ route('user.notifications.destroy', $notification->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-light text-danger border-0 rounded-circle" style="width: 32px; height: 32px;" title="Delete" 
-                                        onclick="return confirm('Are you sure you want to delete this notification?')">
+                                <button type="submit" class="btn btn-sm btn-light text-secondary border-0 rounded-circle" style="width: 32px; height: 32px;" title="Clear" 
+                                        onclick="return confirm('Are you sure you want to clear this notification?')">
                                     <i class="fas fa-times"></i>
                                 </button>
                             </form>
