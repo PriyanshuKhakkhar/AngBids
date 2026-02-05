@@ -20,89 +20,89 @@
     @endif
 </div>
 
-<!-- Notifications List -->
-<div class="card card-elite p-0 overflow-hidden shadow-sm">
-    <div class="card-header bg-white py-3 border-light">
-        <div class="d-flex justify-content-between align-items-center">
-            <h5 class="text-primary fw-bold h6 mb-0">Recent Notifications</h5>
-            <span class="badge bg-primary rounded-pill">{{ $notifications->total() }} Total</span>
-        </div>
-    </div>
-
-    <div class="list-group list-group-flush">
+    <!-- Notifications List -->
+    <div>
         @forelse($notifications as $notification)
-            <div class="list-group-item list-group-item-action {{ $notification->read_at ? 'bg-light bg-opacity-25' : 'bg-primary bg-opacity-5' }}">
-                <div class="d-flex w-100 align-items-start justify-content-between">
-                    <div class="d-flex align-items-start flex-grow-1">
-                        <!-- Icon -->
-                        <div class="me-3 mt-1">
-                            <div class="bg-{{ isset($notification->data['type']) && $notification->data['type'] === 'auction_cancelled' ? 'danger' : 'primary' }} text-white rounded-circle d-flex align-items-center justify-content-center" 
-                                 style="width: 48px; height: 48px;">
-                                <i class="fas fa-{{ isset($notification->data['type']) && $notification->data['type'] === 'auction_cancelled' ? 'ban' : 'bell' }} fa-lg"></i>
-                            </div>
-                        </div>
-
-                        <!-- Content -->
-                        <div class="flex-grow-1">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h6 class="mb-1 fw-bold">
-                                    {{ $notification->data['title'] ?? 'Notification' }}
-                                    @if(!$notification->read_at)
-                                        <span class="badge bg-primary badge-sm ms-2">New</span>
-                                    @endif
-                                </h6>
-                            </div>
-                            <p class="mb-1 text-secondary">{{ $notification->data['message'] ?? '' }}</p>
-                            @if(isset($notification->data['reason']) && $notification->data['reason'])
-                                <div class="alert alert-light border mt-1 mb-2 p-2 small">
-                                    <strong>Reason:</strong> {{ $notification->data['reason'] }}
+            <div class="card mb-3 shadow-sm border-0 overflow-hidden" style="border-radius: 10px;">
+                <div class="card-body p-3 {{ $notification->read_at ? 'bg-white' : 'bg-primary bg-opacity-5' }}">
+                    <div class="d-flex w-100 align-items-center justify-content-between">
+                        <div class="d-flex align-items-center flex-grow-1">
+                            <!-- Icon -->
+                            <div class="me-3">
+                                <div class="bg-{{ isset($notification->data['type']) && $notification->data['type'] === 'auction_cancelled' ? 'danger' : 'primary' }} text-white rounded-circle d-flex align-items-center justify-content-center" 
+                                     style="width: 36px; height: 36px;">
+                                    <i class="fas fa-{{ isset($notification->data['type']) && $notification->data['type'] === 'auction_cancelled' ? 'ban' : 'bell' }}"></i>
                                 </div>
-                            @endif
-                            <small class="text-muted">
-                                <i class="fas fa-clock me-1"></i>
-                                {{ $notification->created_at->diffForHumans() }}
-                            </small>
-                        </div>
-                    </div>
+                            </div>
 
-                    <!-- Actions -->
-                    <div class="ms-3 d-flex gap-2 flex-nowrap">
-                        @if(!$notification->read_at)
-                            <form action="{{ route('user.notifications.read', $notification->id) }}" method="POST" class="d-inline">
+                            <!-- Content -->
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.95rem;">
+                                        {{ $notification->data['title'] ?? 'Notification' }}
+                                        @if(!$notification->read_at)
+                                            <span class="badge bg-primary rounded-pill badge-sm ms-2" style="font-size: 0.6em;">NEW</span>
+                                        @endif
+                                    </h6>
+                                    <small class="text-muted" style="font-size: 0.75rem;">
+                                        <i class="fas fa-clock me-1"></i>
+                                        {{ $notification->created_at->diffForHumans() }}
+                                    </small>
+                                </div>
+                                <p class="mb-0 text-secondary small" style="line-height: 1.4;">{{ $notification->data['message'] ?? '' }}</p>
+                                @if(isset($notification->data['reason']) && $notification->data['reason'])
+                                    <div class="mt-2 p-2 bg-light rounded border border-light small text-muted">
+                                        <strong>Reason:</strong> {{ $notification->data['reason'] }}
+                                    </div>
+                                @endif
+                                
+                                <!-- View Auction Link (if applicable) -->
+                                @if(isset($notification->data['auction_id']))
+                                    <div class="mt-2">
+                                        <a href="{{ route('auctions.show', $notification->data['auction_id']) }}" 
+                                           class="text-decoration-none small fw-bold text-primary">
+                                            View Auction <i class="fas fa-arrow-right ms-1"></i>
+                                        </a>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="ms-3 d-flex flex-column gap-2">
+                            @if(!$notification->read_at)
+                                <form action="{{ route('user.notifications.read', $notification->id) }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="stay" value="1">
+                                    <button type="submit" class="btn btn-sm btn-light text-success border-0 rounded-circle" style="width: 32px; height: 32px;" title="Mark as Read">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </form>
+                            @endif
+                            
+                            <form action="{{ route('user.notifications.destroy', $notification->id) }}" method="POST">
                                 @csrf
-                                <button type="submit" class="btn btn-sm btn-success" title="Mark as Read">
-                                    <i class="fas fa-check"></i>
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-light text-danger border-0 rounded-circle" style="width: 32px; height: 32px;" title="Delete" 
+                                        onclick="return confirm('Are you sure you want to delete this notification?')">
+                                    <i class="fas fa-times"></i>
                                 </button>
                             </form>
-                        @endif
-                        
-                        <form action="{{ route('user.notifications.destroy', $notification->id) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger" title="Delete" 
-                                    onclick="return confirm('Are you sure you want to delete this notification?')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </form>
+                        </div>
                     </div>
                 </div>
-
-                <!-- View Auction Link (if applicable) -->
-                @if(isset($notification->data['auction_id']))
-                    <div class="mt-3 ms-5 ps-3">
-                        <a href="{{ route('auctions.show', $notification->data['auction_id']) }}" 
-                           class="btn btn-sm btn-outline-primary">
-                            <i class="fas fa-external-link-alt me-1"></i> View Auction
-                        </a>
-                    </div>
-                @endif
             </div>
         @empty
-            <div class="text-center py-5">
-                <i class="fas fa-bell-slash fa-3x mb-3 d-block text-gray-300 opacity-25"></i>
-                <span class="text-secondary">No notifications yet.</span>
-                <div class="mt-3">
-                    <a href="{{ route('user.dashboard') }}" class="btn btn-outline-primary btn-sm px-4">
+            <div class="card shadow-sm border-0 p-5 text-center">
+                <div class="mb-3">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                        <i class="fas fa-bell-slash fa-2x text-secondary opacity-50"></i>
+                    </div>
+                </div>
+                <h5 class="text-dark fw-bold">No notifications yet</h5>
+                <p class="text-muted mb-4">You're all caught up! Check back later for updates.</p>
+                <div>
+                    <a href="{{ route('user.dashboard') }}" class="btn btn-outline-primary rounded-pill px-4">
                         Go to Dashboard
                     </a>
                 </div>
