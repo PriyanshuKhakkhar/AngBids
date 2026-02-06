@@ -78,9 +78,9 @@
                             </script>
 
                             <div class="col-md-6">
-                                <label class="form-label fw-bold text-dark small text-uppercase">Starting Price ($)</label>
+                                <label class="form-label fw-bold text-dark small text-uppercase">Starting Price (₹)</label>
                                 <div class="input-group input-group-lg">
-                                    <span class="input-group-text bg-light border-0 text-primary fw-bold border-end">$</span>
+                                    <span class="input-group-text bg-light border-0 text-primary fw-bold border-end">₹</span>
                                     <input type="number" name="starting_price" step="0.01" min="0.01" class="form-control bg-light border-0 shadow-none @error('starting_price') is-invalid @enderror" 
                                         placeholder="0.00" value="{{ old('starting_price') }}">
                                 </div>
@@ -90,9 +90,9 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label fw-bold text-dark small text-uppercase">Min Bid Increment ($)</label>
+                                <label class="form-label fw-bold text-dark small text-uppercase">Min Bid Increment (₹)</label>
                                 <div class="input-group input-group-lg">
-                                    <span class="input-group-text bg-light border-0 text-primary fw-bold border-end">$</span>
+                                    <span class="input-group-text bg-light border-0 text-primary fw-bold border-end">₹</span>
                                     <input type="number" name="min_increment" step="0.01" min="0.01" max="1000.00" class="form-control bg-light border-0 shadow-none @error('min_increment') is-invalid @enderror" 
                                         placeholder="0.01" value="{{ old('min_increment', '0.01') }}">
                                 </div>
@@ -168,8 +168,8 @@
                             <div id="dynamicFieldsContainer" class="col-12 mt-4 d-none">
                                 <h5 class="fw-bold text-dark border-start border-primary border-4 ps-3 mb-4">Category Specific Details</h5>
                                 
-                                <!-- Vintage Cars (3) -->
-                                <div id="category_fields_3" class="category-fields-group d-none">
+                                <!-- Vintage Cars (vintage-cars) -->
+                                <div id="category_fields_vintage-cars" class="category-fields-group d-none">
                                     <div class="row g-3">
                                         <div class="col-md-4">
                                             <label class="form-label small text-uppercase fw-bold">Year</label>
@@ -196,8 +196,8 @@
                                     </div>
                                 </div>
 
-                                <!-- Jewelry (4) -->
-                                <div id="category_fields_4" class="category-fields-group d-none">
+                                <!-- Jewelry (jewelry) -->
+                                <div id="category_fields_jewelry" class="category-fields-group d-none">
                                     <div class="row g-3">
                                         <div class="col-md-6">
                                             <label class="form-label small text-uppercase fw-bold">Metal Type</label>
@@ -210,8 +210,8 @@
                                     </div>
                                 </div>
 
-                                <!-- Art (5) -->
-                                <div id="category_fields_5" class="category-fields-group d-none">
+                                <!-- Art (art) -->
+                                <div id="category_fields_art" class="category-fields-group d-none">
                                     <div class="row g-3">
                                         <div class="col-md-6">
                                             <label class="form-label small text-uppercase fw-bold">Artist Name</label>
