@@ -837,18 +837,6 @@ footer {
 }
 
 /* --- Premium UI Utilities --- */
-.bg-gold-soft {
-    background-color: rgba(212, 175, 55, 0.1) !important;
-}
-
-.text-gold {
-    color: #d4af37 !important;
-}
-
-.border-gold-subtle {
-    border-color: rgba(212, 175, 55, 0.2) !important;
-}
-
 .hover-up {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
