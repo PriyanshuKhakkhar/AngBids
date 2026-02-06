@@ -215,6 +215,17 @@
                 <div class="card-body">
                     <p><strong>ID:</strong> #{{ $auction->id }}</p>
                     <p><strong>Seller:</strong> {{ $auction->user->name }} ({{ $auction->user->email }})</p>
+                    <p><strong>Category:</strong> 
+                        @if($auction->category)
+                            @if($auction->category->parent)
+                                <span class="text-muted">{{ $auction->category->parent->name }}</span> 
+                                <i class="fas fa-chevron-right fa-xs mx-1 text-gray-400"></i>
+                            @endif
+                            <span class="font-weight-bold text-primary">{{ $auction->category->name }}</span>
+                        @else
+                            <span class="text-muted font-italic">Uncategorized</span>
+                        @endif
+                    </p>
                     <p><strong>Status:</strong> 
                         @php
                             $displayStatus = $auction->status;

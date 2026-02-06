@@ -22,10 +22,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        /**
-         * Implicitly grant "Super Admin" role all permissions
-         * Works with auth()->user()->can() and @can()
-         */
+        // Implicitly grant "Super Admin" role all permissions
         Gate::before(function ($user, $ability) {
             return $user->hasRole('super admin') ? true : null;
         });
@@ -54,11 +51,11 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
         );
+
+        // Prune old sessions on login
         Event::listen(
             Login::class,
-            PruneOldSessions::class,
+            PruneOldSessions::class
         );
-
-        \Illuminate\Pagination\Paginator::useBootstrapFive();
     }
 }

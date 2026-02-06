@@ -121,7 +121,7 @@ class AuctionService
         $auction->description    = $data['description'];
         $auction->starting_price = $data['starting_price'];
         $auction->current_price  = $data['starting_price'];
-        $auction->status         = 'pending';
+        $auction->status         = $user->hasAnyRole(['admin', 'super admin']) ? 'active' : 'pending';
         $auction->specifications = $data['specifications'] ?? null;
 
         // Start time (snap to now if past)
