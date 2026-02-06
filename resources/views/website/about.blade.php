@@ -69,7 +69,7 @@
                             <p class="text-dark small fw-bold mb-0">Auctions Completed</p>
                         </div>
                         <div class="col-6">
-                            <h3 class="display-5 fw-bold text-primary">$10M+</h3>
+                            <h3 class="display-5 fw-bold text-primary">₹10M+</h3>
                             <p class="text-dark small fw-bold mb-0">Total Value</p>
                         </div>
                         <div class="col-6">

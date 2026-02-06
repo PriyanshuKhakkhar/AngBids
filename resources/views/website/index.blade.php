@@ -124,7 +124,7 @@
                         <div class="mt-auto">
                             <div class="d-flex justify-content-between align-items-center mb-3 pt-3 border-top">
                                 <span class="small text-secondary fw-bold text-uppercase">Current Bid</span>
-                                <span class="h5 mb-0 text-primary fw-bold">${{ number_format($auction->current_price, 2) }}</span>
+                                <span class="h5 mb-0 text-primary fw-bold">₹{{ number_format($auction->current_price, 2) }}</span>
                             </div>
                             <a href="{{ route('auctions.show', $auction->id) }}" class="btn btn-primary w-100 py-3 rounded-pill fw-bold stretched-link shadow-sm transition-all">
                                 Submit Bid <i class="fas fa-gavel ms-2"></i>

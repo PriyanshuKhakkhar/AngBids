@@ -81,8 +81,9 @@ class AuctionController extends Controller
             return [
                 'id' => $cat->id,
                 'name' => $cat->name,
+                'slug' => $cat->slug,
                 'children' => $cat->children->map(function($child) {
-                    return ['id' => $child->id, 'name' => $child->name];
+                    return ['id' => $child->id, 'name' => $child->name, 'slug' => $child->slug];
                 })
             ];
         });

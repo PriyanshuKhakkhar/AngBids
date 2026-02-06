@@ -39,7 +39,7 @@
                                     high bid on "Vintage Watch"</h5>
                                 <small>10 mins ago</small>
                             </div>
-                            <p class="mb-1">User "johndoe" placed a bid of $500.00.</p>
+                            <p class="mb-1">User "johndoe" placed a bid of ₹500.00.</p>
                         </a>
                         <a href="#"
                             class="list-group-item list-group-item-action flex-column align-items-start">
@@ -48,7 +48,7 @@
                                     received for Auction #4502</h5>
                                 <small class="text-muted">3 hours ago</small>
                             </div>
-                            <p class="mb-1">Payment of $1,200.00 has been verified via PayPal.</p>
+                            <p class="mb-1">Payment of ₹1,200.00 has been verified via PayPal.</p>
                         </a>
                         <a href="#"
                             class="list-group-item list-group-item-action flex-column align-items-start">
