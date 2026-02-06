@@ -15,7 +15,7 @@
         </nav>
     </div>
     <div class="bg-white p-2 px-3 small border rounded shadow-sm text-dark fw-bold">
-        <i class="fas fa-wallet text-primary me-2"></i> Balance: <span class="text-primary">$0.00</span>
+        <i class="fas fa-wallet text-primary me-2"></i> Balance: <span class="text-primary">₹0.00</span>
     </div>
 </div>
 

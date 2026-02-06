@@ -115,19 +115,19 @@
                         <div class="mb-4 p-4 bg-light rounded-4">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="text-secondary small fw-bold">Current Bid</span>
-                                <span class="h2 mb-0 text-primary fw-bold">${{ number_format($auction->current_price, 2) }}</span>
+                                <span class="h2 mb-0 text-primary fw-bold">₹{{ number_format($auction->current_price, 2) }}</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="text-secondary small">Starting Price</span>
-                                <span class="text-dark small fw-bold">${{ number_format($auction->starting_price, 2) }}</span>
+                                <span class="text-dark small fw-bold">₹{{ number_format($auction->starting_price, 2) }}</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mt-2">
                                 <span class="text-secondary small">Min Increment</span>
-                                <span class="text-dark small fw-bold">${{ number_format($auction->min_increment, 2) }}</span>
+                                <span class="text-dark small fw-bold">₹{{ number_format($auction->min_increment, 2) }}</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mt-2 border-top pt-2">
                                 <span class="text-secondary small fw-bold">Max Bid Increment</span>
-                                <span class="text-danger small fw-bold">${{ number_format(\App\Models\Auction::MAX_INCREMENT_ALLOWED, 2) }}</span>
+                                <span class="text-danger small fw-bold">₹{{ number_format(\App\Models\Auction::MAX_INCREMENT_ALLOWED, 2) }}</span>
                             </div>
                         </div>
 
@@ -151,13 +151,13 @@
                                 @csrf
                                 <div class="mb-3">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <label class="form-label fw-bold text-dark small text-uppercase mb-0">Your Bid Increment ($)</label>
+                                        <label class="form-label fw-bold text-dark small text-uppercase mb-0">Your Bid Increment (₹)</label>
                                         <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 small fw-bold">
-                                            Min: ${{ number_format($auction->min_increment ?? 0.01, 2) }}
+                                            Min: ₹{{ number_format($auction->min_increment ?? 0.01, 2) }}
                                         </span>
                                     </div>
                                     <div class="input-group input-group-lg shadow-sm rounded-4 overflow-hidden mb-3">
-                                        <span class="input-group-text bg-white border-end-0 text-primary fw-bold">$</span>
+                                        <span class="input-group-text bg-white border-end-0 text-primary fw-bold">₹</span>
                                         <input type="number" name="increment" class="form-control bg-white border-start-0 ps-0 fw-bold border-0 shadow-none" id="bid-increment" 
                                             placeholder="{{ number_format($auction->min_increment ?? 0.01, 2, '.', '') }}" 
                                             value="{{ old('increment') }}"
@@ -168,7 +168,7 @@
                                     <div class="d-flex flex-wrap gap-2 mb-3">
                                         @foreach([100, 300, 500, 700, 1000] as $amount)
                                             <button type="button" class="btn btn-sm btn-outline-primary flex-fill py-2 rounded-3 fw-bold bid-shortcut" data-amount="{{ $amount }}">
-                                                +${{ $amount }}
+                                                +₹{{ $amount }}
                                             </button>
                                         @endforeach
                                     </div>
@@ -184,7 +184,7 @@
                                     <div class="bid-feedback-total"></div>
                                     
                                     <small class="text-muted mt-2 d-block text-center opacity-75">
-                                        Max jump: ${{ number_format(\App\Models\Auction::MAX_INCREMENT_ALLOWED, 2) }}
+                                        Max jump: ₹{{ number_format(\App\Models\Auction::MAX_INCREMENT_ALLOWED, 2) }}
                                     </small>
                                 </div>
                                 <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-sm hover-up">
@@ -327,7 +327,7 @@
                                     <small class="text-muted" style="font-size: 0.7rem;">{{ $bid->created_at->diffForHumans() }}</small>
                                 </div>
                             </div>
-                            <span class="text-primary fw-bold">${{ number_format($bid->amount, 2) }}</span>
+                            <span class="text-primary fw-bold">₹{{ number_format($bid->amount, 2) }}</span>
                         </li>
                         @empty
                         <li class="text-center py-4 text-secondary">
@@ -408,13 +408,13 @@
                     if (val < minIncrement) {
                         inputGroup.classList.add('border', 'border-danger');
                         errorFeedback.innerHTML = `<div class="alert alert-danger py-2 px-3 mt-2 rounded-3 small border-0 shadow-sm">
-                            <i class="fas fa-exclamation-circle me-2"></i>Min increment is $${minIncrement.toFixed(2)}
+                            <i class="fas fa-exclamation-circle me-2"></i>Min increment is ₹${minIncrement.toFixed(2)}
                         </div>`;
                         totalFeedback.innerHTML = '';
                     } else if (val > maxIncrement) {
                         inputGroup.classList.add('border', 'border-danger');
                         errorFeedback.innerHTML = `<div class="alert alert-danger py-2 px-3 mt-2 rounded-3 small border-0 shadow-sm">
-                            <i class="fas fa-exclamation-circle me-2"></i>Max jump is $${maxIncrement.toFixed(2)}
+                            <i class="fas fa-exclamation-circle me-2"></i>Max jump is ₹${maxIncrement.toFixed(2)}
                         </div>`;
                         totalFeedback.innerHTML = '';
                     } else {
@@ -422,7 +422,7 @@
                         inputGroup.classList.add('border', 'border-success');
                         errorFeedback.innerHTML = '';
                         totalFeedback.innerHTML = `<div class="alert alert-info py-2 px-3 mt-2 rounded-3 small border-0 shadow-sm animate__animated animate__fadeIn">
-                            <i class="fas fa-calculator me-2 text-primary"></i><strong>New Total Bid:</strong> $${newTotal}
+                            <i class="fas fa-calculator me-2 text-primary"></i><strong>New Total Bid:</strong> ₹${newTotal}
                         </div>`;
                     }
                 } else {
@@ -457,7 +457,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'Invalid Bid',
-                        text: `Please enter an increment between $${minIncrement.toFixed(2)} and $${maxIncrement.toFixed(2)}.`,
+                        text: `Please enter an increment between ₹${minIncrement.toFixed(2)} and ₹${maxIncrement.toFixed(2)}.`,
                         confirmButtonColor: '#4e73df'
                     });
                     return;
@@ -467,7 +467,7 @@
                 
                 Swal.fire({
                     title: 'Confirm Your Bid',
-                    html: `You are adding <strong>$${val.toFixed(2)}</strong> to the current price.<br>Your total bid will be <strong>$${newTotal}</strong>.`,
+                    html: `You are adding <strong>₹${val.toFixed(2)}</strong> to the current price.<br>Your total bid will be <strong>₹${newTotal}</strong>.`,
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonColor: '#4e73df',

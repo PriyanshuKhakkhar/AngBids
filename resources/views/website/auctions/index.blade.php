@@ -57,7 +57,7 @@
                     <div class="d-flex align-items-center gap-3">
                         <span class="text-dark small fw-bold text-nowrap">Price:</span>
                         <div class="input-group input-group-sm">
-                            <span class="input-group-text bg-light border-light text-primary fw-bold">$</span>
+                            <span class="input-group-text bg-light border-light text-primary fw-bold">₹</span>
                             <input type="number" name="min_price" class="form-control bg-light border-light" 
                                 placeholder="Min" value="{{ request('min_price') }}">
                             <input type="number" name="max_price" class="form-control bg-light border-light" 
@@ -170,7 +170,7 @@
                         <div class="mt-auto">
                             <div class="d-flex justify-content-between align-items-center mb-3 pt-3 border-top">
                                 <span class="small text-secondary fw-bold text-uppercase">Current Bid</span>
-                                <span class="h5 mb-0 text-primary fw-bold">${{ number_format($auction->current_price, 2) }}</span>
+                                <span class="h5 mb-0 text-primary fw-bold">₹{{ number_format($auction->current_price, 2) }}</span>
                             </div>
                             <a href="{{ route('auctions.show', $auction->id) }}" class="btn btn-primary w-100 py-3 rounded-pill fw-bold stretched-link shadow-sm transition-all">
                                 View Details <i class="fas fa-arrow-right ms-2"></i>
