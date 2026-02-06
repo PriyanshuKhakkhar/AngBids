@@ -137,6 +137,8 @@
                         <div class="col-md-6">
                             <p><strong>Start Time:</strong> {{ $auction->start_time->format('M d, Y H:i') }}</p>
                             <p><strong>End Time:</strong> {{ $auction->end_time->format('M d, Y H:i') }}</p>
+                            <p><strong>Min Increment:</strong> ${{ number_format($auction->min_increment, 2) }}</p>
+                            <p><strong>Max Increment:</strong> ${{ number_format(\App\Models\Auction::MAX_INCREMENT_ALLOWED, 2) }}</p>
                         </div>
                     </div>
                 </div>

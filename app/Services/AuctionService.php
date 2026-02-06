@@ -123,6 +123,7 @@ class AuctionService
         $auction->current_price  = $data['starting_price'];
         $auction->status         = 'pending';
         $auction->specifications = $data['specifications'] ?? null;
+        $auction->min_increment  = $data['min_increment'] ?? 0.01;
 
         // Start time (snap to now if past)
         $startTime = Carbon::parse($data['start_time']);

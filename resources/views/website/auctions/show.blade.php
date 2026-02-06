@@ -91,6 +91,14 @@
                                 <span class="text-secondary small">Starting Price</span>
                                 <span class="text-dark small fw-bold">${{ number_format($auction->starting_price, 2) }}</span>
                             </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <span class="text-secondary small">Min Increment</span>
+                                <span class="text-dark small fw-bold">${{ number_format($auction->min_increment, 2) }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2 border-top pt-2">
+                                <span class="text-secondary small fw-bold">Max Bid Increment</span>
+                                <span class="text-danger small fw-bold">${{ number_format(\App\Models\Auction::MAX_INCREMENT_ALLOWED, 2) }}</span>
+                            </div>
                         </div>
 
                         @if(!$isClosed)
@@ -109,22 +117,38 @@
                                 </div>
                             @endif
 
-                            <form action="{{ route('auctions.bid', $auction->id) }}" method="POST" class="mb-4">
+                            <form action="{{ route('auctions.bid', $auction->id) }}" method="POST" class="mb-4" id="place-bid-form">
                                 @csrf
                                 <div class="mb-3">
-                                    <div class="input-group input-group-lg">
-                                        <span class="input-group-text bg-white border-end-0 text-primary fw-bold">$</span>
-                                        <input type="number" name="amount" class="form-control bg-white border-start-0 ps-0 fw-bold @error('amount') is-invalid @enderror" id="bid-amount" 
-                                            placeholder="{{ number_format($auction->current_price + 10, 2, '.', '') }}" 
-                                            value="{{ old('amount') }}"
-                                            min="{{ $auction->current_price + 0.01 }}" step="0.01">
-                                            @error('amount')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <label class="form-label fw-bold text-dark small text-uppercase mb-0">Your Bid Increment ($)</label>
+                                        <span class="badge bg-gold-soft text-gold border border-gold-subtle rounded-pill px-3 py-1 small fw-bold">
+                                            Min: ${{ number_format($auction->min_increment ?? 0.01, 2) }}
+                                        </span>
                                     </div>
-                                    <small class="text-muted mt-2 d-block text-center">Enter more than ${{ number_format($auction->current_price, 2) }}</small>
+                                    <div class="input-group input-group-lg shadow-sm rounded-4 overflow-hidden">
+                                        <span class="input-group-text bg-white border-end-0 text-primary fw-bold">$</span>
+                                        <input type="number" name="increment" class="form-control bg-white border-start-0 ps-0 fw-bold border-0 shadow-none" id="bid-increment" 
+                                            placeholder="{{ number_format($auction->min_increment ?? 0.01, 2, '.', '') }}" 
+                                            value="{{ old('increment') }}"
+                                            min="{{ $auction->min_increment ?? 0.01 }}" step="0.01" max="{{ \App\Models\Auction::MAX_INCREMENT_ALLOWED }}" required>
+                                    </div>
+                                    
+                                    <div id="bid-feedback-area" class="mt-2">
+                                        @error('increment')
+                                            <div class="alert alert-danger py-2 px-3 rounded-3 small border-0 shadow-sm animate__animated animate__shakeX">
+                                                <i class="fas fa-exclamation-circle me-2"></i>{{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="bid-feedback-total"></div>
+                                    
+                                    <small class="text-muted mt-2 d-block text-center opacity-75">
+                                        Max jump: ${{ number_format(\App\Models\Auction::MAX_INCREMENT_ALLOWED, 2) }}
+                                    </small>
                                 </div>
-                                <button type="submit" class="btn btn-gold w-100 py-3 rounded-pill fw-bold shadow">
+                                <button type="submit" class="btn btn-gold w-100 py-3 rounded-pill fw-bold shadow-sm hover-up">
                                     Place Bid Now <i class="fas fa-gavel ms-2"></i>
                                 </button>
                             </form>
@@ -251,9 +275,10 @@
 
                 <!-- Bid History Card -->
                 <div class="card card-elite p-4 border-0 shadow-sm">
-                    <h4 class="h5 text-dark mb-4 fw-bold border-bottom pb-3">Recent Bids</h4>
-                    <ul class="list-unstyled mb-0">
-                        @forelse($auction->bids->take(5) as $bid)
+                    <h4 class="h5 text-dark mb-4 fw-bold border-bottom pb-3">Bid History</h4>
+                    <div class="bid-history-scroll pe-2">
+                        <ul class="list-unstyled mb-0">
+                            @forelse($auction->bids->sortByDesc('created_at') as $bid)
                         <li class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-light last-child-border-0">
                             <div class="d-flex align-items-center gap-3">
                                 <img src="{{ $bid->user->avatar_url }}" 
@@ -271,7 +296,8 @@
                             <span class="small">No bids placed in the last 24 hours.</span>
                         </li>
                         @endforelse
-                    </ul>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -320,6 +346,84 @@
             @endforeach
         ];
         initGallery(images, "{{ str_replace('"', '\"', $auction->title) }}");
+
+        // Bid Increment Real-time Feedback
+        const bidInput = document.getElementById('bid-increment');
+        const totalFeedback = document.querySelector('.bid-feedback-total');
+        const errorFeedback = document.getElementById('bid-feedback-area');
+        const placeBidForm = document.getElementById('place-bid-form');
+        const currentPrice = {{ $auction->current_price }};
+        const minIncrement = {{ $auction->min_increment ?? 0.01 }};
+        const maxIncrement = {{ \App\Models\Auction::MAX_INCREMENT_ALLOWED }};
+
+        if (bidInput) {
+            bidInput.addEventListener('input', function() {
+                const val = parseFloat(this.value);
+                const inputGroup = this.closest('.input-group');
+                
+                if (!isNaN(val) && val > 0) {
+                    const newTotal = (currentPrice + val).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    
+                    // Client-side validation checks
+                    if (val < minIncrement) {
+                        inputGroup.classList.add('border', 'border-danger');
+                        errorFeedback.innerHTML = `<div class="alert alert-danger py-2 px-3 mt-2 rounded-3 small border-0 shadow-sm">
+                            <i class="fas fa-exclamation-circle me-2"></i>Min increment is $${minIncrement.toFixed(2)}
+                        </div>`;
+                        totalFeedback.innerHTML = '';
+                    } else if (val > maxIncrement) {
+                        inputGroup.classList.add('border', 'border-danger');
+                        errorFeedback.innerHTML = `<div class="alert alert-danger py-2 px-3 mt-2 rounded-3 small border-0 shadow-sm">
+                            <i class="fas fa-exclamation-circle me-2"></i>Max jump is $${maxIncrement.toFixed(2)}
+                        </div>`;
+                        totalFeedback.innerHTML = '';
+                    } else {
+                        inputGroup.classList.remove('border', 'border-danger');
+                        inputGroup.classList.add('border', 'border-success');
+                        errorFeedback.innerHTML = '';
+                        totalFeedback.innerHTML = `<div class="alert alert-info py-2 px-3 mt-2 rounded-3 small border-0 shadow-sm animate__animated animate__fadeIn">
+                            <i class="fas fa-calculator me-2 text-primary"></i><strong>New Total Bid:</strong> $${newTotal}
+                        </div>`;
+                    }
+                } else {
+                    totalFeedback.innerHTML = '';
+                    errorFeedback.innerHTML = '';
+                    inputGroup.classList.remove('border', 'border-danger', 'border-success');
+                }
+            });
+
+            placeBidForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const val = parseFloat(bidInput.value);
+
+                if (isNaN(val) || val < minIncrement || val > maxIncrement) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Bid',
+                        text: `Please enter an increment between $${minIncrement.toFixed(2)} and $${maxIncrement.toFixed(2)}.`,
+                        confirmButtonColor: '#d4af37'
+                    });
+                    return;
+                }
+
+                const newTotal = (currentPrice + val).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                Swal.fire({
+                    title: 'Confirm Your Bid',
+                    html: `You are adding <strong>$${val.toFixed(2)}</strong> to the current price.<br>Your total bid will be <strong>$${newTotal}</strong>.`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d4af37',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Place Bid!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit();
+                    }
+                });
+            });
+        }
     });
 </script>
 @endpush
