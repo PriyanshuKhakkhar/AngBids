@@ -167,7 +167,11 @@ class AuctionService
             }
         }
 
-        return $auction;
+        return $auction->load([
+            'user',
+            'category',
+            'images',
+        ]);
     }
 
     // Update status

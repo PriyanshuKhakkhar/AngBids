@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreAuctionRequest;
 use App\Models\Auction;
+use App\Models\User;
 use App\Services\AuctionService;
 use App\Http\Resources\AuctionResource;
 use App\Models\Category;
@@ -20,32 +22,32 @@ class AuctionController extends Controller
     public function index(Request $request)
     {
         $auctions = $this->auctionService
-        ->getFilteredAuctions($request)
-        ->with(['user', 'category']) // Eager load relationships
-        ->paginate(10);
+            ->getFilteredAuctions($request)
+            ->with(['user', 'category']) // Eager load relationships
+            ->paginate(10);
 
         $categories = Category::topLevel()->active()->get();
 
         $subcategories = collect();
         $parentCategory = null;
 
-        if($request->has('category')) {
+        if ($request->has('category')) {
             $currentCategory = category::where('slug', $request->category)->first();
 
-            if($currentCategory->parent_id) {
+            if ($currentCategory->parent_id) {
                 $parentCategory = $currentCategory->parent;
 
                 $subcategories = $currentCategory
-                ->children()
-                ->active()
-                ->get();
+                    ->children()
+                    ->active()
+                    ->get();
             } else {
                 $parentCategory = $currentCategory;
 
                 $subcategories = $currentCategory
-                ->children()
-                ->active()
-                ->get();
+                    ->children()
+                    ->active()
+                    ->get();
             }
         }
         return AuctionResource::collection($auctions)->additional([
@@ -60,6 +62,16 @@ class AuctionController extends Controller
     public function show($id)
     {
         $auction = $this->auctionService->getAuctionById($id);
+
+        return new AuctionResource($auction);
+    }
+
+    public function store(StoreAuctionRequest $request)
+    {
+        $auction = $this->auctionService->createAuction(
+            $request->validated(),
+            auth()->user()
+        );
 
         return new AuctionResource($auction);
     }
