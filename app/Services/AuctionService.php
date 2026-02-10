@@ -219,4 +219,10 @@ class AuctionService
         $auction = Auction::withTrashed()->findOrFail($id);
         return $auction->forceDelete();
     }
+
+    // Get single auction by ID
+    public function getAuctionById($id)
+    {
+        return Auction::with(['user', 'category'])->findOrFail($id);
+    }
 }
