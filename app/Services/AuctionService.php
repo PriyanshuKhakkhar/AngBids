@@ -223,6 +223,11 @@ class AuctionService
     // Get single auction by ID
     public function getAuctionById($id)
     {
-        return Auction::with(['user', 'category'])->findOrFail($id);
+        return Auction::with([
+        'user',
+        'category',
+        'images',
+        'bids.user'
+        ])->findOrFail($id);
     }
 }
