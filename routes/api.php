@@ -5,8 +5,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuctionController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Api\WebsiteController;
 
 Route::post('/login', [AuthController::class, 'login']);
+
+// Public Website Routes
+Route::get('/home', [WebsiteController::class, 'index']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -16,9 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('auctions', AuctionController::class);
 
     // Admin API Routes
-    Route::middleware(['role:admin|super admin'])
-        ->prefix('admin')
-        ->group(function () {
+    Route::middleware(['role:admin|super admin'])->prefix('admin')->group(function () {
 
             // Category Management
             Route::apiResource('_categories', AdminCategoryController::class);
