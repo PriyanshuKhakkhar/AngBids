@@ -68,9 +68,22 @@ class AuctionController extends Controller
 
     public function store(StoreAuctionRequest $request)
     {
+        if (auth()->check()) {
+            $user = auth()->user();
+        } else {
+            if (!$request->has('user_id')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Authentication required. Please provide user_id or use API token authentication.'
+                ], 401);
+            }
+            
+            $user = User::findOrFail($request->user_id);
+        }
+
         $auction = $this->auctionService->createAuction(
             $request->validated(),
-            auth()->user()
+            $user
         );
 
         return new AuctionResource($auction);
