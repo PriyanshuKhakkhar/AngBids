@@ -45,7 +45,7 @@ class BidService
             $bid = Bid::create([
                 'auction_id' => $auction->id,
                 'user_id' => $user->id,
-                'amount' => $totalAmount,
+                'amount' => $totalAmount, 
             ]);
 
             // Update auction price

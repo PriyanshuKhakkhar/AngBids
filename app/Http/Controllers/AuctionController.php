@@ -96,8 +96,12 @@ class AuctionController extends Controller
     {
         $auction = $this->auctionService->createAuction($request->validated(), auth()->user());
 
+        $message = $auction->status === 'active' 
+            ? 'Auction created successfully and is now live!' 
+            : 'Auction created successfully! It will be live after admin approval.';
+
         return redirect()->route('auctions.show', $auction->id)
-            ->with('success', 'Auction created successfully! It will be live after admin approval.');
+            ->with('success', $message);
     }
 
     // Search auctions
