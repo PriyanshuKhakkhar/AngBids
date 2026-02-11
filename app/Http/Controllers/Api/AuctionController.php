@@ -88,4 +88,26 @@ class AuctionController extends Controller
 
         return new AuctionResource($auction);
     }
+
+    /**
+     * Get all bids for a specific auction
+     */
+    public function bids($id)
+    {
+        $auction = Auction::findOrFail($id);
+
+        $bids = $auction->bids()
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'auction_id' => $auction->id,
+                'auction_title' => $auction->title,
+                'bids' => \App\Http\Resources\BidResource::collection($bids)
+            ]
+        ]);
+    }
 }

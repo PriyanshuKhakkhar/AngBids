@@ -18,6 +18,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
 
+    // Auction Bids
+    Route::get('auctions/{id}/bids', [AuctionController::class, 'bids']);
+
     Route::apiResource('auctions', AuctionController::class);
 
     // Admin API Routes
