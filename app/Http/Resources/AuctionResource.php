@@ -33,6 +33,24 @@ class AuctionResource extends JsonResource
                 'slug' => $this->category?->slug,
             ],
 
+            'images' => $this->images->map(function ($image) {
+            return [
+                'id' => $image->id,
+                'url' => $image->url
+                ];
+            }),
+
+            'bids' => $this->bids->map(function ($bid) {
+            return [
+                'id' => $bid->id,
+                'amount' => $bid->amount,
+                'user' => [
+                    'id' => $bid->user->id,
+                    'name' => $bid->user->name
+                ]
+            ];
+        }),
+
             'created_at' => $this->created_at,
         ];
     }
