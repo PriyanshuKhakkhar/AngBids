@@ -21,7 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Auction Bids
     Route::get('auctions/{id}/bids', [AuctionController::class, 'bids']);
 
-    Route::apiResource('auctions', AuctionController::class);
+    Route::apiResource('auctions', AuctionController::class, ['as' => 'api']);
 
     // Admin API Routes
     Route::middleware(['role:admin|super admin'])->prefix('admin')->group(function () {
