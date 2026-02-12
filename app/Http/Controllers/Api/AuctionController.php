@@ -110,4 +110,56 @@ class AuctionController extends Controller
             ]
         ]);
     }
+
+    /**
+     * Place a bid on an auction
+     */
+    public function placeBid($id, \App\Http\Requests\PlaceBidRequest $request)
+    {
+        $auction = Auction::findOrFail($id);
+        
+        try {
+            $bidService = app(\App\Services\BidService::class);
+            $bid = $bidService->placeBid($auction, $request->validated(), auth()->user());
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Bid placed successfully!',
+                'data' => [
+                    'bid' => new \App\Http\Resources\BidResource($bid),
+                    'auction' => [
+                        'id' => $auction->id,
+                        'current_price' => $auction->fresh()->current_price
+                    ]
+                ]
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    /**
+     * Search auctions with filters
+     */
+    public function search(Request $request)
+    {
+        $auctions = $this->auctionService
+            ->getFilteredAuctions($request)
+            ->with(['user', 'category', 'images'])
+            ->paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'data' => AuctionResource::collection($auctions),
+            'meta' => [
+                'current_page' => $auctions->currentPage(),
+                'last_page' => $auctions->lastPage(),
+                'per_page' => $auctions->perPage(),
+                'total' => $auctions->total()
+            ]
+        ]);
+    }
 }

@@ -20,6 +20,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Auction Bids
     Route::get('auctions/{id}/bids', [AuctionController::class, 'bids']);
+    Route::post('auctions/{id}/bid', [AuctionController::class, 'placeBid']);
+
+    // Auction Search
+    Route::get('auctions/search', [AuctionController::class, 'search']);
 
     Route::apiResource('auctions', AuctionController::class, ['as' => 'api']);
 
