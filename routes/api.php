@@ -1,12 +1,17 @@
-<?php
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Api\AuctionController;
-use App\Http\Controllers\Api\AuthController;
+// Website Controllers
+use App\Http\Controllers\Api\Website\AuthController;
+use App\Http\Controllers\Api\Website\WebsiteController;
+
+// User Controllers
+use App\Http\Controllers\Api\User\AuctionController;
+use App\Http\Controllers\Api\User\WatchlistController;
+
+// Admin Controllers
 use App\Http\Controllers\Api\Admin\CategoryController as AdminCategoryController;
-use App\Http\Controllers\Api\WebsiteController;
-use App\Http\Controllers\Api\WatchlistController;
+
 
 Route::post('/login', [AuthController::class, 'login']);
 

@@ -3,14 +3,16 @@
 use Illuminate\Support\Facades\Route;
 
 // Website / Public Controllers
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\WebsiteController;
-use App\Http\Controllers\AuctionController;
-use App\Http\Controllers\UserDashboardController;
-use App\Http\Controllers\WatchlistController;
-use App\Http\Controllers\BidController;
-use App\Http\Controllers\PublicProfileController;
-use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Website\WebsiteController;
+use App\Http\Controllers\Website\AuctionController;
+use App\Http\Controllers\Website\PublicProfileController;
+
+// User Controllers
+use App\Http\Controllers\User\ProfileController;
+use App\Http\Controllers\User\UserDashboardController;
+use App\Http\Controllers\User\WatchlistController;
+use App\Http\Controllers\User\BidController;
+use App\Http\Controllers\User\NotificationController;
 
 // Admin Controllers
 use App\Http\Controllers\Admin\DashboardController;
