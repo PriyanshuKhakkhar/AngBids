@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAuctionRequest;
@@ -109,5 +109,35 @@ class AuctionController extends Controller
                 'bids' => \App\Http\Resources\BidResource::collection($bids)
             ]
         ]);
+    }
+
+    /**
+     * Place a bid on an auction
+     */
+    public function placeBid($id, \App\Http\Requests\PlaceBidRequest $request)
+    {
+        $auction = Auction::findOrFail($id);
+        
+        try {
+            $bidService = app(\App\Services\BidService::class);
+            $bid = $bidService->placeBid($auction, $request->validated(), auth()->user());
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Bid placed successfully!',
+                'data' => [
+                    'bid' => new \App\Http\Resources\BidResource($bid),
+                    'auction' => [
+                        'id' => $auction->id,
+                        'current_price' => $auction->fresh()->current_price
+                    ]
+                ]
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
     }
 }

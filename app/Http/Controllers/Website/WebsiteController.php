@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Website;
 
+use App\Http\Controllers\Controller;
 use App\Models\Auction;
 use App\Models\Category;
 use App\Http\Requests\ContactRequest;

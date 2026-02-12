@@ -2,11 +2,18 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Api\AuctionController;
-use App\Http\Controllers\Api\AuthController;
+// Website Controllers
+use App\Http\Controllers\Api\Website\AuthController;
+use App\Http\Controllers\Api\Website\WebsiteController;
+
+// User Controllers
+use App\Http\Controllers\Api\User\AuctionController;
+use App\Http\Controllers\Api\User\WatchlistController;
+
+// Admin Controllers
 use App\Http\Controllers\Api\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Api\Admin\AuctionController as AdminAuctionController;
-use App\Http\Controllers\Api\WebsiteController;
+
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -21,8 +28,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Auction Bids
     Route::get('auctions/{id}/bids', [AuctionController::class, 'bids']);
+    Route::post('auctions/{id}/bid', [AuctionController::class, 'placeBid']);
 
     Route::apiResource('auctions', AuctionController::class, ['as' => 'api']);
+
+    // Watchlist
+    Route::get('watchlist', [WatchlistController::class, 'index']);
+    Route::post('watchlist/{auction_id}', [WatchlistController::class, 'store']);
+    Route::delete('watchlist/{auction_id}', [WatchlistController::class, 'destroy']);
 
     // Admin API Routes
     Route::middleware(['role:admin|super admin'])->prefix('admin')->group(function () {
@@ -36,7 +49,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('_categories/{id}/restore', [AdminCategoryController::class, 'restore']);
             Route::delete('_categories/{id}/force-delete', [AdminCategoryController::class, 'forceDelete']);
 
-            // Custom Auction Actions 
+            // Custom Auction Actions
             Route::post('_auctions/{id}/restore', [AdminAuctionController::class, 'restore']);
             Route::delete('_auctions/{id}/force-delete', [AdminAuctionController::class, 'forceDelete']);
             Route::post('_auctions/{id}/approve', [AdminAuctionController::class, 'approve']);
