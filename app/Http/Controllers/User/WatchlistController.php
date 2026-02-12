@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Http\Controllers\Controller;
 use App\Models\Auction;
 use App\Models\Watchlist;
 use Illuminate\Http\Request;
