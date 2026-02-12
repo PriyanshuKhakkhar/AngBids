@@ -140,26 +140,4 @@ class AuctionController extends Controller
             ], 422);
         }
     }
-
-    /**
-     * Search auctions with filters
-     */
-    public function search(Request $request)
-    {
-        $auctions = $this->auctionService
-            ->getFilteredAuctions($request)
-            ->with(['user', 'category', 'images'])
-            ->paginate(10);
-
-        return response()->json([
-            'success' => true,
-            'data' => AuctionResource::collection($auctions),
-            'meta' => [
-                'current_page' => $auctions->currentPage(),
-                'last_page' => $auctions->lastPage(),
-                'per_page' => $auctions->perPage(),
-                'total' => $auctions->total()
-            ]
-        ]);
-    }
 }
