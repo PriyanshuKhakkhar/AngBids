@@ -17,7 +17,6 @@ class CategoryController extends Controller
             ->with(['parent'])
             ->withCount('auctions')
             ->latest();
-
         if ($request->has('search')) {
             $search = trim($request->search);
             if (!empty($search)) {
