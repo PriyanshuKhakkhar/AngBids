@@ -66,6 +66,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Bidding History
     Route::get('/user/bids', [BidController::class, 'index'])->name('api.user.bids.index');
+    Route::get('/user/bids/active', [BidController::class, 'active'])->name('api.user.bids.active');
+
 
     // Admin API Routes
     Route::middleware(['role:admin|super admin'])->prefix('admin')->group(function () {

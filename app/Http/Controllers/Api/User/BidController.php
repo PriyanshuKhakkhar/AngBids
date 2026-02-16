@@ -25,4 +25,42 @@ class BidController extends Controller
             'success' => true,
         ]);
     }
+
+    /**
+     * List active bids (on ongoing auctions)
+     */
+    public function active(Request $request)
+    {
+        $perPage = $request->input('per_page', 10);
+
+        $bids = Bid::where('user_id', auth()->id())
+            ->whereHas('auction', function($q) {
+                $q->where('status', 'active')
+                  ->where('end_time', '>', now());
+            })
+            ->with(['auction.category', 'auction.images', 'user'])
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
+
+        // Calculate winning/losing counts
+        $winningCount = 0;
+        $losingCount = 0;
+        
+        foreach ($bids as $bid) {
+            if ($bid->isWinning()) {
+                $winningCount++;
+            } else {
+                $losingCount++;
+            }
+        }
+
+        return BidResource::collection($bids)->additional([
+            'success' => true,
+            'meta' => [
+                'total' => $bids->total(),
+                'winning_count' => $winningCount,
+                'losing_count' => $losingCount,
+            ],
+        ]);
+    }
 }
