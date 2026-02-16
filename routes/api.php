@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\User\AuctionController;
 use App\Http\Controllers\Api\User\WatchlistController;
 use App\Http\Controllers\Api\User\ProfileController;
 use App\Http\Controllers\Api\User\NotificationController;
+use App\Http\Controllers\Api\User\BidController;
 
 // Admin Controllers
 use App\Http\Controllers\Api\Admin\CategoryController as AdminCategoryController;
@@ -62,6 +63,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{id}/read', [NotificationController::class, 'markAsRead']);
         Route::delete('/{id}', [NotificationController::class, 'destroy']);
     });
+
+    // Bidding History
+    Route::get('/user/bids', [BidController::class, 'index'])->name('api.user.bids.index');
 
     // Admin API Routes
     Route::middleware(['role:admin|super admin'])->prefix('admin')->group(function () {
