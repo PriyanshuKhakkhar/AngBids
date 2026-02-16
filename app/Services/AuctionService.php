@@ -30,10 +30,10 @@ class AuctionService
         } elseif ($status === 'past' || $status === 'closed') {
             $query->where(function ($q) {
                 $q->where('status', 'closed')
-                  ->orWhere(function ($sq) {
-                      $sq->where('status', 'active')
-                         ->where('end_time', '<=', now());
-                  });
+                    ->orWhere(function ($sq) {
+                        $sq->where('status', 'active')
+                            ->where('end_time', '<=', now());
+                    });
             });
         } elseif ($status !== 'all' && !empty($status)) {
             $query->where('status', $status);
@@ -45,10 +45,10 @@ class AuctionService
 
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%")
-                  ->orWhereHas('category', function ($catQ) use ($search) {
-                      $catQ->where('name', 'like', "%{$search}%");
-                  });
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhereHas('category', function ($catQ) use ($search) {
+                        $catQ->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -227,71 +227,19 @@ class AuctionService
     // Get search statistics for metadata
     public function getSearchStatistics(Request $request)
     {
-        $query = Auction::query();
+        // Reuse the existing filter logic instead of duplicating it
+        $query = $this->getFilteredAuctions($request, false);
 
-        // Apply same filters as getFilteredAuctions but without pagination
-        $status = $request->input('status', 'all');
-
-        if ($status === 'active') {
-            $query->active();
-        } elseif ($status === 'past' || $status === 'closed') {
-            $query->where(function ($q) {
-                $q->where('status', 'closed')
-                  ->orWhere(function ($sq) {
-                      $sq->where('status', 'active')
-                         ->where('end_time', '<=', now());
-                  });
-            });
-        } elseif ($status !== 'all' && !empty($status)) {
-            $query->where('status', $status);
-        }
-
-        // Search filter
-        if ($request->has('q')) {
-            $search = $request->input('q');
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%")
-                  ->orWhereHas('category', function ($catQ) use ($search) {
-                      $catQ->where('name', 'like', "%{$search}%");
-                  });
-            });
-        }
-
-        // Category filter
-        if ($request->has('category')) {
-            $categorySlug = $request->input('category');
-            $category = \App\Models\Category::where('slug', $categorySlug)->first();
-
-            if ($category) {
-                if ($category->parent_id === null) {
-                    $categoryIds = $category->children()->pluck('id')->push($category->id);
-                    $query->whereIn('category_id', $categoryIds);
-                } else {
-                    $query->where('category_id', $category->id);
-                }
-            }
-        }
-
-        // Price range filter
-        $minPrice = $request->input('min_price');
-        $maxPrice = $request->input('max_price');
-
-        if ($request->filled('min_price') && $request->filled('max_price') && $minPrice > $maxPrice) {
-            [$minPrice, $maxPrice] = [$maxPrice, $minPrice];
-        }
-
-        if ($minPrice !== null && $minPrice !== '') {
-            $query->where('current_price', '>=', $minPrice);
-        }
-
-        if ($maxPrice !== null && $maxPrice !== '') {
-            $query->where('current_price', '<=', $maxPrice);
-        }
-
-        // Get statistics
+        // Get total count
         $totalResults = $query->count();
-        $priceStats = $query->selectRaw('MIN(current_price) as min_price, MAX(current_price) as max_price')->first();
+
+        // Get price range (need fresh query)
+        $priceQuery = $this->getFilteredAuctions($request, false);
+        
+        // Remove existing select and only select aggregates
+        $priceStats = $priceQuery
+            ->select(\DB::raw('MIN(current_price) as min_price, MAX(current_price) as max_price'))
+            ->first();
 
         return [
             'total_results' => $totalResults,
@@ -306,10 +254,10 @@ class AuctionService
     public function getAuctionById($id)
     {
         return Auction::with([
-        'user',
-        'category',
-        'images',
-        'bids.user'
+            'user',
+            'category',
+            'images',
+            'bids.user'
         ])->findOrFail($id);
     }
 }
