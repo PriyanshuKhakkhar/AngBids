@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Website\WebsiteController;
 // User Controllers
 use App\Http\Controllers\Api\User\AuctionController;
 use App\Http\Controllers\Api\User\WatchlistController;
+use App\Http\Controllers\Api\User\ProfileController;
 
 // Admin Controllers
 use App\Http\Controllers\Api\Admin\CategoryController as AdminCategoryController;
@@ -41,6 +42,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('watchlist', [WatchlistController::class, 'index']);
     Route::post('watchlist/{auction_id}', [WatchlistController::class, 'store']);
     Route::delete('watchlist/{auction_id}', [WatchlistController::class, 'destroy']);
+
+    // User Profile Routes
+    Route::prefix('user')->name('api.user.')->group(function () {
+        Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+        Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::post('/avatar', [ProfileController::class, 'uploadAvatar'])->name('avatar.upload');
+        Route::delete('/avatar', [ProfileController::class, 'deleteAvatar'])->name('avatar.delete');
+        Route::put('/password', [ProfileController::class, 'changePassword'])->name('password.change');
+        Route::get('/stats', [ProfileController::class, 'stats'])->name('stats');
+    });
 
     // Admin API Routes
     Route::middleware(['role:admin|super admin'])->prefix('admin')->group(function () {

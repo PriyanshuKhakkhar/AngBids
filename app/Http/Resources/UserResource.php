@@ -7,22 +7,22 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'email_verified_at' => $this->email_verified_at,
+            'phone' => $this->phone,
+            'location' => $this->location,
+            'bio' => $this->bio,
+            'avatar_url' => $this->avatar_url,
+            'email_verified_at' => $this->email_verified_at?->toIso8601String(),
+            'created_at' => $this->created_at?->toIso8601String(),
             'roles' => $this->roles->pluck('name'),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-            'deleted_at' => $this->deleted_at,
+            'statistics' => $this->when($request->route()->getName() === 'api.user.profile.show', function () {
+                return $this->getStatistics();
+            }),
         ];
     }
 }
