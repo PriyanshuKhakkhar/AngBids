@@ -17,6 +17,9 @@ use App\Http\Controllers\Api\Admin\AuctionController as AdminAuctionController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
+// Public Search & Filter Endpoint
+Route::get('/auctions/search', [AuctionController::class, 'search']);
+
 // Public Website Routes
 Route::get('/home', [WebsiteController::class, 'index']);
 
