@@ -5,12 +5,9 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Auction;
-use App\Models\Category;
 use App\Services\AuctionService;
 use App\Http\Resources\AuctionResource;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Carbon;
 
 class AuctionController extends Controller
 {
@@ -21,18 +18,33 @@ class AuctionController extends Controller
         $this->auctionService = $auctionService;
     }
 
-    // All Auctions
+    // List auctions
     public function index(Request $request)
     {
-        // Use the filter logic from AuctionService but adapt for API response format
-        // The service returns a query builder, perfect.
         $query = $this->auctionService
-            ->getFilteredAuctions($request, false) // false = all status
-            ->select('auctions.*') // ensure select
+            ->getFilteredAuctions($request, false)
+            ->select('auctions.*')
             ->withTrashed()
             ->with(['user', 'category', 'images', 'bids.user']);
 
-        $auctions = $query->paginate(10); // Standard pagination
+        if ($request->has('search')) {
+            $search = trim($request->search);
+            if (!empty($search)) {
+                $query->where(function($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%")
+                      ->orWhereHas('category', function($cat) use ($search) {
+                          $cat->where('name', 'like', "%{$search}%");
+                      });
+                    
+                    if(is_numeric($search)) {
+                        $q->orWhere('id', $search);
+                    }
+                });
+            }
+        }
+
+        $auctions = $query->paginate(10);
 
         return AuctionResource::collection($auctions)->additional([
             'status' => true,
@@ -40,56 +52,48 @@ class AuctionController extends Controller
         ]);
     }
 
-    // Create Auction
+    // Create auction
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'user_id'       => 'required|exists:users,id',
-            'category_id'   => 'required|exists:categories,id',
-            'title'         => 'required|string|max:255',
-            'description'   => 'required|string',
-            'starting_price'=> 'required|numeric|min:0',
-            'start_time'    => 'required|date',
-            'end_time'      => 'required|date|after:start_time',
-            'status'        => 'nullable|in:active,pending,closed,cancelled',
-            // Add image validation if needed but usually handled inside service or separately
+            'user_id'        => 'required|exists:users,id',
+            'category_id'    => 'required|exists:categories,id',
+            'title'          => 'required|string|max:255',
+            'description'    => 'required|string',
+            'starting_price' => 'required|numeric|min:0',
+            'start_time'     => 'required|date',
+            'end_time'       => 'required|date|after:start_time',
+            'status'         => 'nullable|in:active,pending,closed,cancelled',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
-                'message' => 'Validation Error',
                 'errors' => $validator->errors()
             ], 422);
         }
 
-        // Prepare data array for service
         $data = $request->all();
-        
-        // Handle file uploads if any (though API usually sends as multipart/form-data)
-        // Handle file uploads
-        // The service expects 'images' to be an array of UploadedFile objects
+
         if ($request->hasFile('images')) {
-             $data['images'] = $request->file('images');
-             // Ensure it is an array if single file uploaded
-             if (!is_array($data['images'])) {
-                 $data['images'] = [$data['images']];
-             }
+            $data['images'] = $request->file('images');
+            if (!is_array($data['images'])) {
+                $data['images'] = [$data['images']];
+            }
         }
 
-        // We need a user object to pass to createAuction
         $user = \App\Models\User::find($request->user_id);
 
         $auction = $this->auctionService->createAuction($data, $user);
 
         return response()->json([
             'status'  => true,
-            'message' => 'Auction Created Successfully',
+            'message' => 'Auction created successfully',
             'data'    => new AuctionResource($auction)
         ], 201);
     }
 
-    // Show Single Auction
+    // Show single auction
     public function show($id)
     {
         $auction = Auction::withTrashed()
@@ -98,7 +102,7 @@ class AuctionController extends Controller
 
         if (!$auction) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Auction not found'
             ], 404);
         }
@@ -109,54 +113,51 @@ class AuctionController extends Controller
         ]);
     }
 
-    // Update Auction (General Update)
+    // Update auction
     public function update(Request $request, $id)
     {
         $auction = Auction::withTrashed()->find($id);
 
         if (!$auction) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Auction not found'
             ], 404);
         }
 
-        // Similar validation to store, but 'sometimes'
         $validator = Validator::make($request->all(), [
-            'category_id'   => 'sometimes|exists:categories,id',
-            'title'         => 'sometimes|string|max:255',
-            'description'   => 'sometimes|string',
-            'starting_price'=> 'sometimes|numeric|min:0',
-            'start_time'    => 'sometimes|date',
-            'end_time'      => 'sometimes|date|after:start_time',
-            // Status updates should use specific endpoints, but we allow admin to force update fields here
+            'category_id'    => 'sometimes|exists:categories,id',
+            'title'          => 'sometimes|string|max:255',
+            'description'    => 'sometimes|string',
+            'starting_price' => 'sometimes|numeric|min:0',
+            'start_time'     => 'sometimes|date',
+            'end_time'       => 'sometimes|date|after:start_time',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
-                'message' => 'Validation Error',
                 'errors' => $validator->errors()
             ], 422);
         }
 
-        $auction->update($request->except(['images'])); // Images handling complex update logic usually separate
+        $auction->update($request->except('images'));
 
         return response()->json([
             'status'  => true,
-            'message' => 'Auction Updated Successfully',
+            'message' => 'Auction updated successfully',
             'data'    => new AuctionResource($auction)
         ]);
     }
 
-    // Approve Auction
+    // Approve auction
     public function approve($id)
     {
         $auction = Auction::withTrashed()->find($id);
 
         if (!$auction) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Auction not found'
             ], 404);
         }
@@ -170,14 +171,14 @@ class AuctionController extends Controller
         ]);
     }
 
-    // Cancel Auction
+    // Cancel auction
     public function cancel(Request $request, $id)
     {
         $auction = Auction::withTrashed()->find($id);
 
         if (!$auction) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Auction not found'
             ], 404);
         }
@@ -189,7 +190,6 @@ class AuctionController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
-                'message' => 'Validation Error',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -203,38 +203,34 @@ class AuctionController extends Controller
         ]);
     }
 
-
-    // Soft Delete
+    // Soft delete
     public function destroy($id)
     {
-        // Use service logic if it does more than delete (it doesn't seem to currently, but good practice)
-        // Accessing service directly if it has delete method? Yes: deleteAuction($id)
-        
         $auction = Auction::find($id);
-        
+
         if (!$auction) {
-             return response()->json([
-                'status'  => false,
+            return response()->json([
+                'status' => false,
                 'message' => 'Auction not found'
             ], 404);
         }
-        
+
         $this->auctionService->deleteAuction($id);
 
         return response()->json([
-            'status'  => true,
+            'status' => true,
             'message' => 'Auction moved to trash'
         ]);
     }
 
-    // Restore
+    // Restore auction
     public function restore($id)
     {
         $auction = Auction::withTrashed()->find($id);
 
         if (!$auction) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Auction not found'
             ], 404);
         }
@@ -242,27 +238,27 @@ class AuctionController extends Controller
         $this->auctionService->restoreAuction($id);
 
         return response()->json([
-            'status'  => true,
+            'status' => true,
             'message' => 'Auction restored successfully'
         ]);
     }
 
-    // Force Delete
+    // Force delete
     public function forceDelete($id)
     {
         $auction = Auction::withTrashed()->find($id);
 
         if (!$auction) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Auction not found'
             ], 404);
         }
-        
+
         $this->auctionService->forceDeleteAuction($id);
 
         return response()->json([
-            'status'  => true,
+            'status' => true,
             'message' => 'Auction permanently deleted'
         ]);
     }

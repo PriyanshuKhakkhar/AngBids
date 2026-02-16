@@ -18,6 +18,19 @@ class CategoryController extends Controller
             ->withCount('auctions')
             ->latest();
 
+        if ($request->has('search')) {
+            $search = trim($request->search);
+            if (!empty($search)) {
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                    
+                    if (is_numeric($search)) {
+                        $q->orWhere('id', $search);
+                    }
+                });
+            }
+        }
+
         $categories = $query->get();
 
         return response()->json([

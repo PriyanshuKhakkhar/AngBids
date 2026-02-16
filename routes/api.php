@@ -13,6 +13,8 @@ use App\Http\Controllers\Api\User\WatchlistController;
 // Admin Controllers
 use App\Http\Controllers\Api\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Api\Admin\AuctionController as AdminAuctionController;
+use App\Http\Controllers\Api\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Api\Admin\ContactController as AdminContactController;
 
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -47,6 +49,10 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::apiResource('_categories', AdminCategoryController::class);
             // Auction Management
             Route::apiResource('_auctions', AdminAuctionController::class);
+            // User Management
+            Route::apiResource('_users', AdminUserController::class);
+            // Contact Management
+            Route::apiResource('_contacts', AdminContactController::class);
 
             // Custom Category Actions
             Route::post('_categories/{id}/restore', [AdminCategoryController::class, 'restore']);
@@ -57,5 +63,13 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::delete('_auctions/{id}/force-delete', [AdminAuctionController::class, 'forceDelete']);
             Route::post('_auctions/{id}/approve', [AdminAuctionController::class, 'approve']);
             Route::post('_auctions/{id}/cancel', [AdminAuctionController::class, 'cancel']);
+
+            // Custom User Actions
+            Route::post('_users/{id}/restore', [AdminUserController::class, 'restore']);
+            Route::delete('_users/{id}/force-delete', [AdminUserController::class, 'forceDelete']);
+
+            // Custom Contact Actions
+            Route::post('_contacts/{id}/restore', [AdminContactController::class, 'restore']);
+            Route::delete('_contacts/{id}/force-delete', [AdminContactController::class, 'forceDelete']);
         });
 });
