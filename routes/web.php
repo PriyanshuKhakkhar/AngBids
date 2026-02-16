@@ -19,7 +19,6 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AuctionController as AdminAuctionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\NotificationController as AdminNotificationController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingController;
@@ -108,9 +107,6 @@ Route::middleware(['auth', 'role:admin|super admin'])
 
         // Payments
         Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
-
-        // Notifications
-        Route::get('/notifications', [AdminNotificationController::class, 'index'])->name('notifications');
 
         // Reports
         Route::get('/reports', [ReportController::class, 'index'])->name('reports');

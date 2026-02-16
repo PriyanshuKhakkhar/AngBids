@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Website\WebsiteController;
 use App\Http\Controllers\Api\User\AuctionController;
 use App\Http\Controllers\Api\User\WatchlistController;
 use App\Http\Controllers\Api\User\ProfileController;
+use App\Http\Controllers\Api\User\NotificationController;
 
 // Admin Controllers
 use App\Http\Controllers\Api\Admin\CategoryController as AdminCategoryController;
@@ -51,6 +52,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/avatar', [ProfileController::class, 'deleteAvatar'])->name('avatar.delete');
         Route::put('/password', [ProfileController::class, 'changePassword'])->name('password.change');
         Route::get('/stats', [ProfileController::class, 'stats'])->name('stats');
+    });
+
+    // Notifications
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', [NotificationController::class, 'index']);
+        Route::post('/read-all', [NotificationController::class, 'markAllAsRead']);
+        Route::delete('/clear-all', [NotificationController::class, 'clearAll']);
+        Route::post('/{id}/read', [NotificationController::class, 'markAsRead']);
+        Route::delete('/{id}', [NotificationController::class, 'destroy']);
     });
 
     // Admin API Routes
