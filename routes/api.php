@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\Admin\CategoryController as AdminCategoryController
 use App\Http\Controllers\Api\Admin\AuctionController as AdminAuctionController;
 use App\Http\Controllers\Api\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Api\Admin\ContactController as AdminContactController;
+use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardController;
 
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -75,6 +76,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Admin API Routes
     Route::middleware(['role:admin|super admin'])->prefix('admin')->group(function () {
+
+            // Dashboard
+            Route::get('/dashboard', [AdminDashboardController::class, 'index']);
 
             // Category Management
             Route::apiResource('_categories', AdminCategoryController::class);
