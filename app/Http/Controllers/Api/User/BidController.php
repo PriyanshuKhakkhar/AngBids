@@ -63,4 +63,22 @@ class BidController extends Controller
             ],
         ]);
     }
+
+    //list won bids
+    public function won(Request $request){
+        $perPage = $request->input('per_page', 10);
+
+        $bids = Bid::where('user_id', auth()->id())
+        ->whereHas('auction', function($q){
+            $q->where('end_time', '<=', now())
+              ->whereColumn('current_price', 'bids.amount');
+        })
+        ->with(['auction.category', 'auction.images', 'user'])
+        ->orderBy('created_at', 'desc')
+        ->paginate($perPage);
+
+        return BidResource::collection($bids)->additional([
+            'success' => true,
+        ]);
+    }
 }

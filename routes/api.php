@@ -67,6 +67,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Bidding History
     Route::get('/user/bids', [BidController::class, 'index'])->name('api.user.bids.index');
     Route::get('/user/bids/active', [BidController::class, 'active'])->name('api.user.bids.active');
+    Route::get('user/bids/won', [BidController::class, 'won'])->name('api.user.bids.won');
 
 
     // Admin API Routes
