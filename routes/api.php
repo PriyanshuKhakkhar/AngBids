@@ -28,6 +28,7 @@ Route::get('/auctions/search', [AuctionController::class, 'search']);
 
 // Public Website Routes
 Route::get('/home', [WebsiteController::class, 'index']);
+Route::post('/contact', [WebsiteController::class, 'contactStore']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
