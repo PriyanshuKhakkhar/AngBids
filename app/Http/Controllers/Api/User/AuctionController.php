@@ -200,4 +200,32 @@ class AuctionController extends Controller
             ],
         ]);
     }
+
+    //list auctions created by the authenticated user
+    public function managedAuctions(Request $request){
+        $perPage = $request->input('per_page', 10);
+
+        $status = $request->input('status');
+
+        $query = Auction::where('user_id', auth()->id())
+            ->with(['category', 'images'])
+            ->withCount('bids');
+
+            if($status && $status !== 'all'){
+                if($status === 'active'){
+                    $query->active();
+                } else {
+                    $query->where('status', $status);
+                }
+            }
+
+            $auctions = $query->latest()->paginate($perPage);
+
+            return AuctionResource::collection($auctions)->additional([
+                'success' => true,
+                'filters_applied' => [
+                    'status' => $status,
+                ],
+            ]);
+    }
 }

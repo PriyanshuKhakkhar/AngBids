@@ -81,4 +81,23 @@ class BidController extends Controller
             'success' => true,
         ]);
     }
+
+    //lost bids
+    public function lost(Request $request){
+        $perPage = $request->input('per_page', 10);
+
+        $bids = Bid::where('user_id', auth()->id())
+        ->whereHas('auction', function($q){
+            $q->where('end_time', '<=', now())
+              ->whereColumn('current_price', '!=', 'bids.amount');
+        })
+        ->whereRaw('amount = (SELECT MAX(amount) FROM bids as b2 WHERE b2.auction_id = bids.auction_id AND b2.user_id = bids.user_id)')
+        ->with(['auction.category', 'auction.images', 'user'])
+        ->orderBy('created_at', 'desc')
+        ->paginate($perPage);
+
+        return BidResource::collection($bids)->additional([
+            'success' => true,
+        ]);
+    }
 }
