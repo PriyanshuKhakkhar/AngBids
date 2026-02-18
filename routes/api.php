@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 
 // Website Controllers
 use App\Http\Controllers\Api\Website\AuthController;
+use App\Http\Controllers\Api\Website\RegisterController;
+use App\Http\Controllers\Api\Website\ForgotPasswordController;
+use App\Http\Controllers\Api\Website\ResetPasswordController;
 use App\Http\Controllers\Api\Website\WebsiteController;
 
 // User Controllers
@@ -21,7 +24,10 @@ use App\Http\Controllers\Api\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardController;
 
 
+Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
+Route::post('/reset-password', [ResetPasswordController::class, 'reset']);
 
 // Public Search & Filter Endpoint
 Route::get('/auctions/search', [AuctionController::class, 'search']);
