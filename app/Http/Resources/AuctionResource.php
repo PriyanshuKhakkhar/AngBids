@@ -27,6 +27,7 @@ class AuctionResource extends JsonResource
             'starting_price' => $this->starting_price,
             'current_price' => $this->current_price,
             'min_increment' => $this->min_increment ?? 0.01,
+            'specifications' => $this->specifications ?? [],
             'status' => $this->status,
             'start_time' => $this->start_time?->toIso8601String(),
             'end_time' => $this->end_time?->toIso8601String(),

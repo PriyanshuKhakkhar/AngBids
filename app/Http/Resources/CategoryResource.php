@@ -23,6 +23,7 @@ class CategoryResource extends JsonResource
             'parent_id' => $this->parent_id,
             'parent_name' => $this->parent ? $this->parent->name : null,
             'is_active' => (bool) $this->is_active,
+            'available_specifications' => app(\App\Services\CategorySpecificationService::class)->getSpecifications($this->slug),
             'auctions_count' => $this->whenCounted('auctions'),
             // 'created_at' => $this->created_at->toDateTimeString(),
             // 'updated_at' => $this->updated_at->toDateTimeString(),
