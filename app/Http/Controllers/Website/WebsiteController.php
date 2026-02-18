@@ -15,7 +15,7 @@ class WebsiteController extends Controller
     {
         $auctions = Auction::active()
             ->latestFirst()
-            ->take(3)
+            ->take(8)
             ->with(['user', 'category', 'watchlists' => function($q) {
                 if (auth()->check()) {
                     $q->where('user_id', auth()->id());

@@ -57,31 +57,31 @@
 
         <div class="row g-4">
             @foreach($auctions as $index => $auction)
-            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ ($index + 1) * 100 }}">
+            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ ($index + 1) * 100 }}">
                 <div class="card card-elite h-100 position-relative shadow-sm border-0 rounded-4 overflow-hidden bg-white hover-shadow-lg transition-all">
                     <!-- Image Section -->
-                    <div class="position-relative overflow-hidden" style="height: 240px;">
+                    <div class="position-relative overflow-hidden" style="height: 180px;">
                         @if($auction->image)
                             <img src="{{ str_starts_with($auction->image, 'http') ? $auction->image : asset('storage/' . $auction->image) }}" class="card-img-top h-100 object-fit-cover shadow-sm" alt="{{ $auction->title }}">
                         @else
                             <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=1200"
                                 class="card-img-top h-100 object-fit-cover shadow-sm" alt="{{ $auction->title }}">
                         @endif
-                        <div class="position-absolute top-0 start-0 m-3" style="z-index: 2;">
-                            <span class="badge bg-gold text-dark shadow-sm">{{ $auction->category->name ?? 'Uncategorized' }}</span>
+                        <div class="position-absolute top-0 start-0 m-2" style="z-index: 2;">
+                            <span class="badge bg-gold text-dark shadow-sm" style="font-size: 0.7rem;">{{ $auction->category->name ?? 'Uncategorized' }}</span>
                         </div>
-                        <div class="position-absolute top-0 end-0 m-3" style="z-index: 2;">
+                        <div class="position-absolute top-0 end-0 m-2" style="z-index: 2;">
                             <form action="{{ route('user.watchlist.toggle', $auction->id ?? 0) }}" method="POST" class="watchlist-toggle-form">
                                 @csrf
-                                <button type="submit" class="btn btn-white rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border: none; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px);">
-                                    <i class="{{ $auction->watchlists->isNotEmpty() ? 'fas' : 'far' }} fa-heart text-danger"></i>
+                                <button type="submit" class="btn btn-white rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px);">
+                                    <i class="{{ $auction->watchlists->isNotEmpty() ? 'fas' : 'far' }} fa-heart text-danger" style="font-size: 0.8rem;"></i>
                                 </button>
                             </form>
                         </div>
                     </div>
 
                     <!-- Content Section -->
-                    <div class="card-body p-4 d-flex flex-column flex-grow-1">
+                    <div class="card-body p-3 d-flex flex-column flex-grow-1">
                         @php
                             $now = \Carbon\Carbon::now();
                             $end = \Carbon\Carbon::parse($auction->end_time);
@@ -90,44 +90,48 @@
                         @endphp
                         
                         @if(!$isClosed)
-                        <div class="glass-timer text-center py-2 timer-val mb-3 shadow-none border" 
+                        <div class="glass-timer text-center py-1 timer-val mb-2 shadow-none border" 
                             data-days="{{ $diff->d }}" 
                             data-hours="{{ $diff->h }}" 
                             data-min="{{ $diff->i }}" 
                             data-sec="{{ $diff->s }}">
-                            <div class="row g-0 px-3">
+                            <div class="row g-0 px-2">
                                 <div class="col">
-                                    <div class="fw-bold fs-6" data-days>{{ sprintf('%02d', $diff->d) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.6rem;">Days</small>
+                                    <div class="fw-bold fs-7" data-days>{{ sprintf('%02d', $diff->d) }}</div>
+                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">D</small>
                                 </div>
                                 <div class="col">
-                                    <div class="fw-bold fs-6" data-hours>{{ sprintf('%02d', $diff->h) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.6rem;">Hrs</small>
+                                    <div class="fw-bold fs-7" data-hours>{{ sprintf('%02d', $diff->h) }}</div>
+                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">H</small>
                                 </div>
                                 <div class="col">
-                                    <div class="fw-bold fs-6" data-min>{{ sprintf('%02d', $diff->i) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.6rem;">Min</small>
+                                    <div class="fw-bold fs-7" data-min>{{ sprintf('%02d', $diff->i) }}</div>
+                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">M</small>
                                 </div>
                                 <div class="col">
-                                    <div class="fw-bold fs-6" data-sec>{{ sprintf('%02d', $diff->s) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.6rem;">Sec</small>
+                                    <div class="fw-bold fs-7" data-sec>{{ sprintf('%02d', $diff->s) }}</div>
+                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">S</small>
                                 </div>
                             </div>
                         </div>
                         @else
-                        <div class="alert alert-danger py-2 mb-3 text-center small border-0">Closed</div>
+                        <div class="alert alert-danger py-1 mb-2 text-center small border-0" style="font-size: 0.7rem;">Closed</div>
                         @endif
 
-                        <h3 class="h5 mb-2 fw-bold text-dark">{{ $auction->title }}</h3>
-                        <p class="text-secondary small mb-4 line-clamp-2" style="min-height: 3em;">{{ Str::limit($auction->description, 60) }}</p>
+                        <h3 class="h6 mb-2 fw-bold text-dark text-truncate" title="{{ $auction->title }}">{{ $auction->title }}</h3>
+                        
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="{{ $auction->user->avatar_url }}" class="rounded-circle me-1" width="18" height="18" style="object-fit: cover;" alt="Seller">
+                            <span class="text-xs text-muted text-truncate">{{ $auction->user->name }}</span>
+                        </div>
                         
                         <div class="mt-auto">
-                            <div class="d-flex justify-content-between align-items-center mb-3 pt-3 border-top">
-                                <span class="small text-secondary fw-bold text-uppercase">Current Bid</span>
-                                <span class="h5 mb-0 text-primary fw-bold">₹{{ number_format($auction->current_price, 2) }}</span>
+                            <div class="d-flex justify-content-between align-items-center mb-2 pt-2 border-top">
+                                <span class="text-xs text-secondary fw-bold text-uppercase">Bid</span>
+                                <span class="h6 mb-0 text-primary fw-bold">₹{{ number_format($auction->current_price, 2) }}</span>
                             </div>
-                            <a href="{{ route('auctions.show', $auction->id) }}" class="btn btn-primary w-100 py-3 rounded-pill fw-bold stretched-link shadow-sm transition-all">
-                                Submit Bid <i class="fas fa-gavel ms-2"></i>
+                            <a href="{{ route('auctions.show', $auction->id) }}" class="btn btn-primary w-100 py-2 rounded-pill fw-bold stretched-link shadow-sm transition-all" style="font-size: 0.8rem;">
+                                BID NOW <i class="fas fa-gavel ms-1"></i>
                             </a>
                         </div>
                     </div>
