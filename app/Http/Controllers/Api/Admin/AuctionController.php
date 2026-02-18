@@ -51,8 +51,6 @@ class AuctionController extends Controller
             'message' => 'Auctions retrieved successfully'
         ]);
     }
-
-    // Create auction
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
