@@ -32,6 +32,10 @@ Route::post('/reset-password', [ResetPasswordController::class, 'reset']);
 // Public Search & Filter Endpoint
 Route::get('/auctions/search', [AuctionController::class, 'search']);
 
+// Categories & Dynamic Specifications
+Route::get('/categories', [App\Http\Controllers\Api\Website\CategoryController::class, 'index']);
+Route::get('/categories/{slug}/specifications', [App\Http\Controllers\Api\Website\CategoryController::class, 'specifications']);
+
 // Public Website Routes
 Route::get('/home', [WebsiteController::class, 'index']);
 Route::post('/contact', [WebsiteController::class, 'contactStore']);

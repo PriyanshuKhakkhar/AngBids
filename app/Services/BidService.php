@@ -9,7 +9,7 @@ use Exception;
 
 class BidService
 {
-    public function placeBid(Auction $auction, array $bidData, $user): Bid
+    public function placeBid(Auction $auction, array $bidData, $user): array
     {
         // 1. Check if auction is active
         if ($auction->status !== 'active') {
@@ -41,6 +41,17 @@ class BidService
         }
 
         return DB::transaction(function () use ($auction, $totalAmount, $user) {
+            $isExtended = false;
+
+            // Anti-Sniping: Extend end_time if bidding in the last 2 minutes
+            $now = now();
+            $twoMinutesBeforeEnd = $auction->end_time->copy()->subMinutes(2);
+
+            if ($now->greaterThanOrEqualTo($twoMinutesBeforeEnd)) {
+                $auction->end_time = $auction->end_time->addMinutes(5);
+                $isExtended = true;
+            }
+
             // Create the bid
             $bid = Bid::create([
                 'auction_id' => $auction->id,
@@ -48,12 +59,24 @@ class BidService
                 'amount' => $totalAmount, 
             ]);
 
-            // Update auction price
+            // Update auction price and possibly end_time
             $auction->update([
-                'current_price' => $totalAmount
+                'current_price' => $totalAmount,
+                'end_time' => $auction->end_time
             ]);
 
-            return $bid;
+            // Notify about extension if it happened
+            if ($isExtended) {
+                // Notify seller
+                if ($auction->user) {
+                    $auction->user->notify(new \App\Notifications\AuctionExtendedNotification($auction));
+                }
+            }
+
+            return [
+                'bid' => $bid,
+                'is_extended' => $isExtended
+            ];
         });
     }
 }

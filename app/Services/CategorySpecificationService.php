@@ -12,68 +12,13 @@ class CategorySpecificationService
      */
     public function getSpecifications($categoryIdentifier)
     {
-        // If it's an ID, we'd ideally look up the slug, but for now let's use a mapping logic
-        // In a real app, this might be stored in the database or a config file.
+        $allSpecs = config('auction_specs', []);
         
-        $specifications = [
-            'vintage-cars' => [
-                [
-                    'name' => 'year',
-                    'label' => 'Year',
-                    'type' => 'number',
-                    'placeholder' => 'e.g. 1965',
-                    'required' => true,
-                ],
-                [
-                    'name' => 'mileage',
-                    'label' => 'Mileage (km)',
-                    'type' => 'number',
-                    'placeholder' => 'e.g. 50000',
-                    'required' => false,
-                ],
-                [
-                    'name' => 'fuel_type',
-                    'label' => 'Fuel Type',
-                    'type' => 'select',
-                    'options' => ['Petrol', 'Diesel', 'Electric'],
-                    'required' => false,
-                ],
-            ],
-            'jewelry' => [
-                [
-                    'name' => 'metal',
-                    'label' => 'Metal Type',
-                    'type' => 'text',
-                    'placeholder' => 'e.g. 24K Gold',
-                    'required' => true,
-                ],
-                [
-                    'name' => 'stone',
-                    'label' => 'Stone Type',
-                    'type' => 'text',
-                    'placeholder' => 'e.g. Diamond',
-                    'required' => false,
-                ],
-            ],
-            'art' => [
-                [
-                    'name' => 'artist',
-                    'label' => 'Artist Name',
-                    'type' => 'text',
-                    'placeholder' => 'e.g. Vincent van Gogh',
-                    'required' => true,
-                ],
-                [
-                    'name' => 'medium',
-                    'label' => 'Medium',
-                    'type' => 'text',
-                    'placeholder' => 'e.g. Oil on Canvas',
-                    'required' => false,
-                ],
-            ],
-        ];
+        if (isset($allSpecs[$categoryIdentifier])) {
+            return $allSpecs[$categoryIdentifier]['fields'] ?? [];
+        }
 
-        return $specifications[$categoryIdentifier] ?? [];
+        return [];
     }
 
     /**
@@ -83,6 +28,6 @@ class CategorySpecificationService
      */
     public function getCategoriesWithSpecifications()
     {
-        return ['vintage-cars', 'jewelry', 'art'];
+        return array_keys(config('auction_specs', []));
     }
 }
