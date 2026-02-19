@@ -22,27 +22,17 @@ class AuctionController extends Controller
     public function index(Request $request)
     {
         $auctions = $this->auctionService->getFilteredAuctions($request)
-            ->paginate(9)
+            ->paginate(12)
             ->withQueryString();
 
-        $categories = Category::topLevel()->active()->get();
-        $subCategories = collect();
-        $parentCategory = null;
+        $categories = Category::topLevel()->active()->with('children')->get();
+        $currentCategory = null;
 
-        if ($request->has('category')) {
+        if ($request->filled('category')) {
             $currentCategory = Category::where('slug', $request->category)->first();
-            if ($currentCategory) {
-                if ($currentCategory->parent_id) {
-                    $parentCategory = $currentCategory->parent;
-                    $subCategories = $parentCategory->children()->active()->get();
-                } else {
-                    $parentCategory = $currentCategory;
-                    $subCategories = $currentCategory->children()->active()->get();
-                }
-            }
         }
 
-        return view('website.auctions.index', compact('auctions', 'categories', 'subCategories', 'parentCategory'));
+        return view('website.auctions.index', compact('auctions', 'categories', 'currentCategory'));
     }
 
     // Show auction
