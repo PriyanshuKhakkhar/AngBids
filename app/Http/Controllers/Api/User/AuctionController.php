@@ -121,16 +121,23 @@ class AuctionController extends Controller
         
         try {
             $bidService = app(\App\Services\BidService::class);
-            $bid = $bidService->placeBid($auction, $request->validated(), auth()->user());
+            $result = $bidService->placeBid($auction, $request->validated(), auth()->user());
+
+            $message = 'Bid placed successfully!';
+            if ($result['is_extended']) {
+                $message .= ' This auction has been extended by 5 minutes due to fair play rules.';
+            }
 
             return response()->json([
                 'success' => true,
-                'message' => 'Bid placed successfully!',
+                'message' => $message,
                 'data' => [
-                    'bid' => new \App\Http\Resources\BidResource($bid),
+                    'bid' => new \App\Http\Resources\BidResource($result['bid']),
+                    'is_extended' => $result['is_extended'],
                     'auction' => [
                         'id' => $auction->id,
-                        'current_price' => $auction->fresh()->current_price
+                        'current_price' => $auction->fresh()->current_price,
+                        'end_time' => $auction->fresh()->end_time->toDateTimeString()
                     ]
                 ]
             ], 201);

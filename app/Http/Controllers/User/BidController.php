@@ -24,9 +24,14 @@ class BidController extends Controller
     public function store(PlaceBidRequest $request, Auction $auction)
     {
         try {
-            $this->bidService->placeBid($auction, $request->validated(), auth()->user());
+            $result = $this->bidService->placeBid($auction, $request->validated(), auth()->user());
 
-            return redirect()->back()->with('success', 'Your bid has been placed successfully!');
+            $message = 'Your bid has been placed successfully!';
+            if ($result['is_extended']) {
+                $message .= ' This auction has been extended by 5 minutes due to fair play rules.';
+            }
+
+            return redirect()->back()->with('success', $message);
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
