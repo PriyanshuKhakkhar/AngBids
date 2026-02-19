@@ -18,6 +18,8 @@ class AuctionController extends Controller
     {
         $this->auctionService = $auctionService;
     }
+
+    // List auctions
     public function index(Request $request)
     {
         if ($request->ajax()) {
