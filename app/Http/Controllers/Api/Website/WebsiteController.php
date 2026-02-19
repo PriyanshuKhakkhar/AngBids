@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Auction;
 use App\Models\Contact;
 use App\Models\User;
+use App\Models\Category;
 use App\Models\Testimonial;
 use App\Http\Resources\AuctionResource;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\TestimonialResource;
+use App\Http\Resources\CategoryResource;
 use App\Http\Requests\ContactRequest;
 use Illuminate\Http\Request;
 
@@ -23,16 +25,18 @@ class WebsiteController extends Controller
     {
         $auctions = Auction::active()
             ->latestFirst()
-            ->take(3)
+            ->take(8)
             ->with(['user', 'category', 'images'])
             ->get();
 
+        $categories = Category::topLevel()->active()->take(6)->get();
         $testimonials = Testimonial::where('is_active', true)->take(5)->get();
 
         return response()->json([
             'success' => true,
             'data' => [
                 'auctions' => AuctionResource::collection($auctions),
+                'categories' => CategoryResource::collection($categories),
                 'testimonials' => TestimonialResource::collection($testimonials)
             ]
         ]);

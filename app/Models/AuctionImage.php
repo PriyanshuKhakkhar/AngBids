@@ -17,4 +17,12 @@ class AuctionImage extends Model
     {
         return $this->belongsTo(Auction::class);
     }
+
+    /**
+     * Get the full URL for the image
+     */
+    public function getUrlAttribute()
+    {
+        return $this->image_path ? asset('storage/' . $this->image_path) : null;
+    }
 }

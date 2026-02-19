@@ -13,10 +13,10 @@ class TestimonialResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->user_name ?? $this->user->name,
-            'avatar' => $this->user_avatar ?? ($this->user ? $this->user->avatar_url : null),
-            'rating' => $this->rating,
-            'message' => $this->message,
+            'name' => $this->name,
+            'role' => $this->role,
+            'avatar' => $this->avatar_url ? asset('storage/' . $this->avatar_url) : null,
+            'message' => $this->content,
             'created_at' => $this->created_at->format('Y-m-d'),
         ];
     }
