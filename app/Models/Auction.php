@@ -83,7 +83,35 @@ class Auction extends Model
             'closed' => 'secondary',
             'cancelled' => 'danger',
             default => 'warning'
-        };
+    };
+    }
+
+    /**
+     * Get unique bidders count
+     */
+    public function getUniqueBiddersCountAttribute(): int
+    {
+        return $this->bids()->distinct('user_id')->count('user_id');
+    }
+
+    /**
+     * Get human-readable status label
+     */
+    public function getStatusLabelAttribute(): string
+    {
+        if ($this->status !== 'active') {
+            return ucfirst($this->status);
+        }
+
+        if ($this->start_time->isFuture()) {
+            return 'Starting Soon';
+        }
+
+        if ($this->end_time->isPast()) {
+            return 'Ended';
+        }
+
+        return 'Live';
     }
 
     // Get owner
