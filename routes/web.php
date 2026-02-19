@@ -48,9 +48,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Auction Creation Routes
+    // Auction Creation & Management Routes
     Route::get('/auctions/create', [AuctionController::class, 'create'])->name('auctions.create');
     Route::post('/auctions', [AuctionController::class, 'store'])->name('auctions.store');
+    Route::get('/auctions/{auction}/edit', [AuctionController::class, 'edit'])->name('auctions.edit');
+    Route::put('/auctions/{auction}', [AuctionController::class, 'update'])->name('auctions.update');
 
     // User Dashboard Routes
     Route::prefix('user')->name('user.')->group(function () {

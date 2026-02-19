@@ -174,6 +174,80 @@ class AuctionService
         ]);
     }
 
+    /**
+     * Update existing auction
+     */
+    public function updateAuction(Auction $auction, array $data)
+    {
+        $hasBids = $auction->bids()->exists();
+
+        // 1. Update basic fields
+        if (isset($data['title'])) $auction->title = $data['title'];
+        if (isset($data['description'])) $auction->description = $data['description'];
+        
+        // Only allow price/category change if no bids exist
+        if (!$hasBids) {
+            if (isset($data['starting_price'])) {
+                $auction->starting_price = $data['starting_price'];
+                $auction->current_price  = $data['starting_price'];
+            }
+            if (isset($data['category_id'])) $auction->category_id = $data['category_id'];
+        }
+
+        if (isset($data['specifications'])) $auction->specifications = $data['specifications'];
+        if (isset($data['min_increment'])) $auction->min_increment = $data['min_increment'];
+
+        // Start time
+        if (isset($data['start_time'])) {
+            $startTime = Carbon::parse($data['start_time']);
+            $auction->start_time = ($startTime->isPast() && !$auction->start_time->isPast()) ? now() : $startTime;
+        }
+
+        // End time
+        if (isset($data['end_time'])) {
+            $endTime = Carbon::parse($data['end_time']);
+            $auction->end_time = $endTime->lessThanOrEqualTo($auction->start_time)
+                ? $auction->start_time->copy()->addHour()
+                : $endTime;
+        }
+
+        // Document upload
+        if (isset($data['document']) && $data['document'] instanceof UploadedFile) {
+            // Delete old document if exists
+            if ($auction->document) {
+                Storage::disk('public')->delete($auction->document);
+            }
+            $auction->document = $data['document']->store('auctions/documents', 'public');
+        }
+
+        $auction->save();
+
+        // New Images
+        if (isset($data['images']) && is_array($data['images'])) {
+            $primaryIndex = $data['primary_image_index'] ?? 0;
+
+            foreach ($data['images'] as $index => $imageFile) {
+                if ($imageFile instanceof UploadedFile) {
+                    $path = $imageFile->store('auctions', 'public');
+                    $isPrimary = ($index == $primaryIndex);
+
+                    $auction->images()->create([
+                        'image_path' => $path,
+                        'sort_order' => $index + ($auction->images()->max('sort_order') ?? 0) + 1,
+                        'is_primary' => $isPrimary,
+                    ]);
+
+                    if ($isPrimary) {
+                        $auction->image = $path;
+                        $auction->save();
+                    }
+                }
+            }
+        }
+
+        return $auction->load(['user', 'category', 'images']);
+    }
+
     // Update status
     public function updateStatus(Auction $auction, string $status, ?string $reason = null)
     {

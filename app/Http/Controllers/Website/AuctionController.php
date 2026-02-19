@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Auction;
 use App\Models\Category;
 use App\Http\Requests\StoreAuctionRequest;
+use App\Http\Requests\UpdateAuctionRequest;
 use App\Services\AuctionService;
 use Illuminate\Http\Request;
 
@@ -109,6 +110,48 @@ class AuctionController extends Controller
     public function search(Request $request)
     {
         return $this->index($request);
+    }
+
+    /**
+     * Show the form for editing the specified auction.
+     */
+    public function edit($id)
+    {
+        $auction = Auction::findOrFail($id);
+
+        // Ownership check
+        if ($auction->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $categories = Category::topLevel()->active()->with('children')->get();
+        $categoryTree = $categories->map(function($cat) {
+            return [
+                'id' => $cat->id,
+                'name' => $cat->name,
+                'slug' => $cat->slug,
+                'children' => $cat->children->map(function($child) {
+                    return ['id' => $child->id, 'name' => $child->name, 'slug' => $child->slug];
+                })
+            ];
+        });
+
+        return view('website.auctions.edit', compact('auction', 'categories', 'categoryTree'));
+    }
+
+    /**
+     * Update the specified auction in storage.
+     */
+    public function update(UpdateAuctionRequest $request, $id)
+    {
+        $auction = Auction::findOrFail($id);
+        
+        // Ownership check is handled in the Request (authorize method)
+        
+        $this->auctionService->updateAuction($auction, $request->validated());
+
+        return redirect()->route('auctions.show', $auction->id)
+            ->with('success', 'Auction updated successfully!');
     }
 }
 
