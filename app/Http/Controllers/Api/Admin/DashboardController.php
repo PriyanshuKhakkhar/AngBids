@@ -34,7 +34,7 @@ class DashboardController extends Controller
                 ->where('end_time', '<=', now())
                 ->count(),
 
-            'cancelled_auctions' => Auction::where('status', 'cancelled')->count(),
+            'cancelled_auctions' => Auction::where('status', 'cancelled')->count(),   
 
             'total_users' => User::role('user')->count(),
 

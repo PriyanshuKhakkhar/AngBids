@@ -25,8 +25,11 @@ class AuctionService
 
         $status = $request->input('status', $activeOnly ? 'active' : 'all');
 
-        if ($status === 'active') {
-            $query->active();
+        if ($status === 'active' || $status === 'live') {
+            $query->live();
+        } elseif ($status === 'upcoming') {
+            $query->where('status', 'active')
+                  ->where('start_time', '>', now());
         } elseif ($status === 'past' || $status === 'closed') {
             $query->where(function ($q) {
                 $q->where('status', 'closed')
