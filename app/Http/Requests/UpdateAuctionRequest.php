@@ -12,8 +12,14 @@ class UpdateAuctionRequest extends FormRequest
     public function authorize(): bool
     {
         $auction = $this->route('auction');
+        
         if (!$auction instanceof \App\Models\Auction) {
-            $auction = \App\Models\Auction::find($this->route('id') ?? $this->id);
+            $id = $this->route('auction') ?? $this->route('id') ?? $this->id;
+            $auction = \App\Models\Auction::find($id);
+        }
+
+        if (!$auction) {
+            return false;
         }
 
         // Only allow owner to update
@@ -27,10 +33,11 @@ class UpdateAuctionRequest extends FormRequest
     {
         $auction = $this->route('auction');
         if (!$auction instanceof \App\Models\Auction) {
-            $auction = \App\Models\Auction::find($this->route('id') ?? $this->id);
+            $id = $this->route('auction') ?? $this->route('id') ?? $this->id;
+            $auction = \App\Models\Auction::find($id);
         }
 
-        $hasBids = $auction->bids()->exists();
+        $hasBids = $auction ? $auction->bids()->exists() : false;
 
         $rules = [
             'title' => ['sometimes', 'string', 'min:3', 'max:100'],
