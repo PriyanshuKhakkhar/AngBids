@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAuctionRequest;
+use App\Http\Requests\UpdateAuctionRequest;
 use App\Http\Requests\SearchAuctionRequest;
 use App\Models\Auction;
 use App\Models\User;
@@ -234,5 +235,28 @@ class AuctionController extends Controller
                     'status' => $status,
                 ],
             ]);
+    }
+
+    /**
+     * Update an auction (User endpoint)
+     */
+    public function update(UpdateAuctionRequest $request, $id)
+    {
+        $auction = Auction::findOrFail($id);
+
+        try {
+            $updatedAuction = $this->auctionService->updateAuction($auction, $request->validated());
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Auction updated successfully',
+                'data' => new AuctionResource($updatedAuction)
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
     }
 }

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\Contact;
+use Yajra\DataTables\Facades\DataTables;
 
 class UserDashboardController extends Controller
 {

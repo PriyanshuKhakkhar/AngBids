@@ -54,6 +54,14 @@ class AuctionResource extends JsonResource
             }),
 
             'bid_count' => $this->bids->count(),
+            'unique_bidders_count' => $this->unique_bidders_count,
+            'status_label' => $this->status_label,
+            'user_bid_status' => $this->when($request->user(), function () use ($request) {
+                $userBid = $this->bids->where('user_id', $request->user()->id)->sortByDesc('amount')->first();
+                if (!$userBid) return null;
+                return $userBid->amount == $this->current_price ? 'winning' : 'outbid';
+            }),
+
             'bids' => $this->whenLoaded('bids', function () {
                 return $this->bids->map(function ($bid) {
                     return [
@@ -67,8 +75,10 @@ class AuctionResource extends JsonResource
                 });
             }),
 
-            'is_watchlisted' => $this->whenLoaded('watchlists', function () {
-                return $this->watchlists->isNotEmpty();
+            'is_watchlisted' => $this->when($request->user(), function () use ($request) {
+                return \App\Models\Watchlist::where('user_id', $request->user()->id)
+                    ->where('auction_id', $this->id)
+                    ->exists();
             }, false),
 
             'created_at' => $this->created_at?->toIso8601String(),

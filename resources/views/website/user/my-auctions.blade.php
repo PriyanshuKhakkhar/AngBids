@@ -92,9 +92,16 @@
                         </span>
                     </td>
                     <td class="py-3 pe-4 text-end">
-                        <a href="{{ route('auctions.show', $auction->id) }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                            <i class="fas fa-eye me-1"></i> View
-                        </a>
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ route('auctions.show', $auction->id) }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                <i class="fas fa-eye me-1"></i> View
+                            </a>
+                            @if(!$isExpired)
+                                <a href="{{ route('auctions.edit', $auction->id) }}" class="btn btn-outline-warning btn-sm rounded-pill px-3">
+                                    <i class="fas fa-edit me-1"></i> Edit
+                                </a>
+                            @endif
+                        </div>
                     </td>
                 </tr>
                 @empty
