@@ -55,24 +55,15 @@ class AuctionService
             });
         }
 
-        // Category filter
+        // Category filter (Includes children products)
         if ($request->has('category')) {
             $categorySlug = $request->input('category');
-
-            $query->whereHas('category', function ($q) use ($categorySlug) {
-                $q->where('slug', $categorySlug);
-            });
             $category = \App\Models\Category::where('slug', $categorySlug)->first();
 
             if ($category) {
-                if ($category->parent_id === null) {
-                    // Top level category: get this category and all its children
-                    $categoryIds = $category->children()->pluck('id')->push($category->id);
-                    $query->whereIn('category_id', $categoryIds);
-                } else {
-                    // Sub-category: get only this category
-                    $query->where('category_id', $category->id);
-                }
+                // Get this category and all its nested children IDs using recursive helper
+                $categoryIds = $category->getAllChildIds();
+                $query->whereIn('category_id', $categoryIds);
             }
         }
 

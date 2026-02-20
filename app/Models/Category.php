@@ -54,9 +54,29 @@ class Category extends Model
         return $this->hasMany(Category::class, 'parent_id');
     }
 
-    // Check if it's a sub-category
-    public function isSubCategory(): bool
+    // Get all descendant IDs recursively
+    public function getAllChildIds()
     {
-        return !is_null($this->parent_id);
+        $ids = collect([$this->id]);
+
+        foreach ($this->children as $child) {
+            $ids = $ids->merge($child->getAllChildIds());
+        }
+
+        return $ids;
+    }
+
+    // Check if this category is an ancestor of a given category slug
+    public function isAncestorOf($slug)
+    {
+        if (empty($slug)) return false;
+        
+        foreach ($this->children as $child) {
+            if ($child->slug === $slug || $child->isAncestorOf($slug)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }

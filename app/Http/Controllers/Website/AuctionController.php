@@ -60,7 +60,26 @@ class AuctionController extends Controller
             }
         }
 
-        return view('website.auctions.show', compact('auction'));
+        // Fetch related active auctions (only where end_time has not passed)
+        $relatedAuctions = Auction::where('status', 'active')
+            ->where('id', '!=', $id)
+            ->where('category_id', $auction->category_id)
+            ->where('end_time', '>', now())
+            ->take(4)
+            ->get();
+
+        if ($relatedAuctions->count() < 4) {
+            $filler = Auction::where('status', 'active')
+                ->where('id', '!=', $id)
+                ->where('end_time', '>', now())
+                ->whereNotIn('id', $relatedAuctions->pluck('id'))
+                ->inRandomOrder()
+                ->take(4 - $relatedAuctions->count())
+                ->get();
+            $relatedAuctions = $relatedAuctions->merge($filler);
+        }
+
+        return view('website.auctions.show', compact('auction', 'relatedAuctions'));
     }
 
     // Create form

@@ -68,8 +68,9 @@
                                         @foreach($categories as $category)
                                             @php 
                                                 $hasChildren = $category->children->count() > 0;
-                                                $isActiveParent = ($currentCategory && ($currentCategory->id == $category->id || $currentCategory->parent_id == $category->id));
-                                                $isCurrentCat = request('category') == $category->slug;
+                                                $requestCat = request('category');
+                                                $isActiveParent = ($requestCat === $category->slug || $category->isAncestorOf($requestCat));
+                                                $isCurrentCat = $requestCat === $category->slug;
                                             @endphp
                                             <li class="category-item mb-1 {{ $hasChildren ? 'has-sub' : '' }} {{ $isActiveParent ? 'open' : '' }}">
                                                 <div class="d-flex align-items-center justify-content-between">
@@ -173,16 +174,17 @@
                     @forelse($auctions as $auction)
                     <div class="col-md-6 col-xl-4 animate-item" data-aos="fade-up">
                         <div class="card card-elite h-100 position-relative shadow-sm border-0 rounded-4 overflow-hidden bg-white hover-shadow-lg transition-all">
+                            <a href="{{ route('auctions.show', $auction->id) }}" class="stretched-link"></a>
                             <!-- Image Section -->
                             <div class="position-relative overflow-hidden" style="height: 180px;">
-                                <a href="{{ route('auctions.show', $auction->id) }}" class="d-block w-100 h-100">
+                                <div class="d-block w-100 h-100">
                                     @if($auction->image)
                                         <img src="{{ str_starts_with($auction->image, 'http') ? $auction->image : asset('storage/' . $auction->image) }}" class="card-img-top h-100 object-fit-cover shadow-sm transition-all" alt="{{ $auction->title }}">
                                     @else
                                         <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=1200"
                                             class="card-img-top h-100 object-fit-cover shadow-sm transition-all" alt="{{ $auction->title }}">
                                     @endif
-                                </a>
+                                </div>
                                 <div class="position-absolute top-0 start-0 m-2" style="z-index: 2;">
                                     <span class="badge bg-gold text-dark shadow-sm fw-bold" style="font-size: 0.7rem;">{{ $auction->category->name ?? 'Uncategorized' }}</span>
                                 </div>
@@ -243,7 +245,7 @@
                                 @endif
 
                                 <h3 class="h6 mb-2 fw-bold text-dark text-truncate title-hover">
-                                    <a href="{{ route('auctions.show', $auction->id) }}" class="text-decoration-none text-dark">{{ $auction->title }}</a>
+                                    {{ $auction->title }}
                                 </h3>
                                 
                                 <div class="d-flex align-items-center justify-content-between mb-3">
@@ -267,9 +269,9 @@
                                         <span class="text-xs text-secondary fw-bold text-uppercase">Current Bid</span>
                                         <span class="h6 mb-0 text-primary fw-bold">₹{{ number_format($auction->current_price, 2) }}</span>
                                     </div>
-                                    <a href="{{ route('auctions.show', $auction->id) }}" class="btn btn-primary w-100 py-2 rounded-pill fw-bold stretched-link shadow-sm transition-all btn-hover-effect" style="font-size: 0.8rem;">
+                                    <div class="btn btn-primary w-100 py-2 rounded-pill fw-bold shadow-sm transition-all btn-hover-effect" style="font-size: 0.8rem;">
                                         @if($isUpcoming) VIEW @else BID NOW @endif <i class="fas fa-gavel ms-1"></i>
-                                    </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>

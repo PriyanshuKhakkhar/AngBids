@@ -343,6 +343,106 @@
 
 
 
+        <!-- Related Products Section -->
+        <!-- Related Products Section -->
+        @if(isset($relatedAuctions) && $relatedAuctions->count() > 0)
+        <div class="row mt-5 pt-4">
+            <div class="col-12 mb-4 border-bottom pb-3 d-flex align-items-center justify-content-between">
+                <h3 class="h4 fw-bold mb-0 text-dark">
+                    <i class="fas fa-layer-group me-2 text-primary"></i>Related Products
+                </h3>
+                <a href="{{ route('auctions.index', ['category' => $auction->category->slug ?? '']) }}" class="btn btn-sm btn-link text-primary text-decoration-none fw-bold">View All</a>
+            </div>
+            <div class="row g-4">
+                @foreach($relatedAuctions as $related)
+                <div class="col-lg-3 col-md-6">
+                    <div class="card card-elite h-100 position-relative shadow-sm border-0 rounded-4 overflow-hidden bg-white hover-shadow-lg transition-all">
+                        <a href="{{ route('auctions.show', $related->id) }}" class="stretched-link"></a>
+                        <!-- Image Section -->
+                        <div class="position-relative overflow-hidden" style="height: 160px;">
+                            <div class="d-block w-100 h-100">
+                                @if($related->image)
+                                    <img src="{{ str_starts_with($related->image, 'http') ? $related->image : asset('storage/' . $related->image) }}" class="card-img-top h-100 object-fit-cover shadow-sm transition-all" alt="{{ $related->title }}">
+                                @else
+                                    <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=1200"
+                                        class="card-img-top h-100 object-fit-cover shadow-sm transition-all" alt="{{ $related->title }}">
+                                @endif
+                            </div>
+                            <div class="position-absolute top-0 start-0 m-2" style="z-index: 2;">
+                                <span class="badge bg-gold text-dark shadow-sm fw-bold" style="font-size: 0.65rem;">{{ $related->category->name ?? 'Uncategorized' }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Content Section -->
+                        <div class="card-body p-3 d-flex flex-column flex-grow-1">
+                            @php
+                                $rNow = \Carbon\Carbon::now();
+                                $rEnd = \Carbon\Carbon::parse($related->end_time);
+                                $rDiff = $rNow->diff($rEnd);
+                                $rIsClosed = $rNow->greaterThan($rEnd);
+                            @endphp
+                            
+                            @if($rIsClosed)
+                                <div class="alert alert-light border py-1 mb-2 text-center small text-secondary fw-bold" style="font-size: 0.65rem;">
+                                    <i class="fas fa-lock me-1"></i> Auction Closed
+                                </div>
+                            @else
+                            <div class="glass-timer text-center py-1 timer-val mb-2 shadow-none border {{ ($rDiff->d == 0 && $rDiff->h == 0) ? 'urgent-timer' : '' }}" 
+                                data-days="{{ $rDiff->d }}" 
+                                data-hours="{{ $rDiff->h }}" 
+                                data-min="{{ $rDiff->i }}" 
+                                data-sec="{{ $rDiff->s }}">
+                                <div class="row g-0 px-2">
+                                    <div class="col border-end border-light">
+                                        <div class="fw-bold" style="font-size: 0.8rem;" data-days>{{ sprintf('%02d', $rDiff->d) }}</div>
+                                        <small class="opacity-50 text-uppercase d-block" style="font-size: 0.45rem;">D</small>
+                                    </div>
+                                    <div class="col border-end border-light">
+                                        <div class="fw-bold" style="font-size: 0.8rem;" data-hours>{{ sprintf('%02d', $rDiff->h) }}</div>
+                                        <small class="opacity-50 text-uppercase d-block" style="font-size: 0.45rem;">H</small>
+                                    </div>
+                                    <div class="col border-end border-light">
+                                        <div class="fw-bold" style="font-size: 0.8rem;" data-min>{{ sprintf('%02d', $rDiff->i) }}</div>
+                                        <small class="opacity-50 text-uppercase d-block" style="font-size: 0.45rem;">M</small>
+                                    </div>
+                                    <div class="col">
+                                        <div class="fw-bold text-primary" style="font-size: 0.8rem;" data-sec>{{ sprintf('%02d', $rDiff->s) }}</div>
+                                        <small class="opacity-50 text-uppercase d-block" style="font-size: 0.45rem;">S</small>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+
+                            <h3 class="h6 mb-2 fw-bold text-dark text-truncate title-hover">
+                                {{ $related->title }}
+                            </h3>
+                            
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ $related->user->avatar_url }}" class="rounded-circle me-1 border" width="18" height="18" style="object-fit: cover;" alt="p">
+                                    <span class="text-xs text-muted text-truncate" style="max-width: 60px;">{{ $related->user->name ?? 'Seller' }}</span>
+                                </div>
+                                <span class="badge bg-light text-secondary border fw-normal text-xs px-2 py-1">
+                                    {{ $related->bids->count() }} Bids
+                                </span>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-2 pt-2 border-top">
+                                    <span class="text-xs text-secondary fw-bold text-uppercase">Current Bid</span>
+                                    <span class="h6 mb-0 text-primary fw-bold">₹{{ number_format($related->current_price, 2) }}</span>
+                                </div>
+                                <div class="btn btn-primary w-100 py-2 rounded-pill fw-bold shadow-sm transition-all btn-hover-effect" style="font-size: 0.75rem;">
+                                    BID NOW <i class="fas fa-gavel ms-1"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
     </div>
 </section>
 
@@ -372,6 +472,18 @@
 </div>
 
 @push('styles')
+<style>
+    /* Home Page Replica Styles */
+    .card-elite { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(0,0,0,0.03) !important; }
+    .card-elite:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+    .bg-gold { background-color: #d4af37; }
+    .text-xs { font-size: 0.75rem; }
+    .glass-timer { background: rgba(248, 249, 250, 0.8); backdrop-filter: blur(4px); border-radius: 8px; }
+    .urgent-timer { background: rgba(220, 53, 69, 0.08) !important; border-color: rgba(220, 53, 69, 0.3) !important; }
+    .urgent-timer * { color: #dc3545 !important; }
+    .title-hover:hover { color: var(--bs-primary) !important; }
+    .btn-hover-effect:active { transform: scale(0.98); }
+</style>
 <link rel="stylesheet" href="{{ asset('assets/css/auction-gallery.css') }}">
 @endpush
 
@@ -480,6 +592,44 @@
                     }
                 });
             });
+        }
+        // Universal Countdown functionality
+        const timerBoxes = document.querySelectorAll('.timer-val');
+        if (timerBoxes.length > 0) {
+            setInterval(() => {
+                timerBoxes.forEach(box => {
+                    let d = parseInt(box.dataset.days);
+                    let h = parseInt(box.dataset.hours);
+                    let m = parseInt(box.dataset.min);
+                    let s = parseInt(box.dataset.sec);
+
+                    if (d === 0 && h === 0 && m === 0 && s === 0) return;
+
+                    s--;
+                    if (s < 0) { s = 59; m--; }
+                    if (m < 0) { m = 59; h--; }
+                    if (h < 0) { h = 23; d--; }
+
+                    box.dataset.days = d;
+                    box.dataset.hours = h;
+                    box.dataset.min = m;
+                    box.dataset.sec = s;
+
+                    const dElem = box.querySelector('[data-days]');
+                    const hElem = box.querySelector('[data-hours]');
+                    const mElem = box.querySelector('[data-min]');
+                    const sElem = box.querySelector('[data-sec]');
+
+                    if(dElem) dElem.innerText = d.toString().padStart(2, '0');
+                    if(hElem) hElem.innerText = h.toString().padStart(2, '0');
+                    if(mElem) mElem.innerText = m.toString().padStart(2, '0');
+                    if(sElem) sElem.innerText = s.toString().padStart(2, '0');
+
+                    if (d === 0 && h === 0) {
+                        box.classList.add('urgent-timer');
+                    }
+                });
+            }, 1000);
         }
     });
 </script>
