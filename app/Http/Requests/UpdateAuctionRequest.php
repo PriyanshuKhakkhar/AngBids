@@ -47,7 +47,29 @@ class UpdateAuctionRequest extends FormRequest
             'end_time' => ['sometimes', 'date', 'after:start_time'],
             'min_increment' => ['sometimes', 'numeric', 'min:0.01', 'max:1000.00'],
             'specifications' => ['nullable', 'array'],
+            'images' => ['nullable', 'array', 'max:5'],
+            'images.*' => ['image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'deleted_images' => ['nullable', 'array'],
+            'deleted_images.*' => ['exists:auction_images,id'],
         ];
+
+        // Custom validation for total image count (existing - deleted + new <= 5)
+        if ($this->has('images') || $this->has('deleted_images')) {
+            $existingCount = $auction ? $auction->images()->count() : 0;
+            $deletedCount = is_array($this->deleted_images) ? count($this->deleted_images) : 0;
+            $newCount = is_array($this->images) ? count($this->images) : 0;
+            
+            if (($existingCount - $deletedCount + $newCount) > 5) {
+                // We'll add a custom validator error after the rules return if possible, 
+                // but for now, let's use a simpler rule or just rely on the service.
+                // Actually, let's add a Closure rule for 'images'
+                $rules['images'][] = function ($attribute, $value, $fail) use ($existingCount, $deletedCount, $newCount) {
+                    if (($existingCount - $deletedCount + $newCount) > 5) {
+                        $fail('The total number of images cannot exceed 5.');
+                    }
+                };
+            }
+        }
 
         // Only allow price/category change if no bids exist
         if (!$hasBids) {
@@ -65,6 +87,9 @@ class UpdateAuctionRequest extends FormRequest
         return [
             'end_time.after' => 'The auction end time must be after the start time.',
             'starting_price.min' => 'Starting price must be at least $0.01.',
+            'images.max' => 'You can only upload up to 5 images.',
+            'images.*.image' => 'Each file must be an image.',
+            'images.*.max' => 'Each image must not exceed 2MB.',
         ];
     }
 }

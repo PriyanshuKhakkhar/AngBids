@@ -214,7 +214,26 @@ class AuctionService
                 : $endTime;
         }
 
-        // Document upload
+        // 2. Handle Image Deletions
+        if (isset($data['deleted_images']) && is_array($data['deleted_images'])) {
+            foreach ($data['deleted_images'] as $imageId) {
+                $image = $auction->images()->find($imageId);
+                if ($image) {
+                    // Delete file from storage
+                    Storage::disk('public')->delete($image->image_path);
+                    
+                    // If this was the primary image, we need to clear it from the auction
+                    if ($image->is_primary) {
+                        $auction->image = null;
+                        $auction->save();
+                    }
+                    
+                    $image->delete();
+                }
+            }
+        }
+
+        // 3. Document upload
         if (isset($data['document']) && $data['document'] instanceof UploadedFile) {
             // Delete old document if exists
             if ($auction->document) {
@@ -225,27 +244,40 @@ class AuctionService
 
         $auction->save();
 
-        // New Images
+        // 4. New Images (Enforce 5-image limit)
         if (isset($data['images']) && is_array($data['images'])) {
-            $primaryIndex = $data['primary_image_index'] ?? 0;
+            $existingCount = $auction->images()->count();
+            $maxAllowed = 5 - $existingCount;
+            
+            if ($maxAllowed > 0) {
+                $primaryIndex = $data['primary_image_index'] ?? 0;
+                $newImages = array_slice($data['images'], 0, $maxAllowed);
 
-            foreach ($data['images'] as $index => $imageFile) {
-                if ($imageFile instanceof UploadedFile) {
-                    $path = $imageFile->store('auctions', 'public');
-                    $isPrimary = ($index == $primaryIndex);
+                foreach ($newImages as $index => $imageFile) {
+                    if ($imageFile instanceof UploadedFile) {
+                        $path = $imageFile->store('auctions', 'public');
+                        $isPrimary = ($index == $primaryIndex);
 
-                    $auction->images()->create([
-                        'image_path' => $path,
-                        'sort_order' => $index + ($auction->images()->max('sort_order') ?? 0) + 1,
-                        'is_primary' => $isPrimary,
-                    ]);
+                        $auction->images()->create([
+                            'image_path' => $path,
+                            'sort_order' => $index + ($auction->images()->max('sort_order') ?? 0) + 1,
+                            'is_primary' => $isPrimary,
+                        ]);
 
-                    if ($isPrimary) {
-                        $auction->image = $path;
-                        $auction->save();
+                        if ($isPrimary || !$auction->image) {
+                            $auction->image = $path;
+                            $auction->save();
+                        }
                     }
                 }
             }
+        }
+
+        // 5. Ensure we have a primary image if some were deleted
+        if (!$auction->image && $auction->images()->exists()) {
+            $firstImage = $auction->images()->orderBy('sort_order')->first();
+            $firstImage->update(['is_primary' => true]);
+            $auction->update(['image' => $firstImage->image_path]);
         }
 
         return $auction->load(['user', 'category', 'images']);

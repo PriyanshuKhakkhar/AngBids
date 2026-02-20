@@ -165,16 +165,21 @@
                                 <!-- Existing Images -->
                                 <div class="row g-3 mb-3">
                                     @foreach($auction->images as $img)
-                                        <div class="col-md-3">
+                                        <div class="col-md-3 existing-image-container" id="existing-img-{{ $img->id }}">
                                             <div class="position-relative rounded-3 overflow-hidden border">
                                                 <img src="{{ asset('storage/' . $img->image_path) }}" class="w-100 h-100 object-fit-cover" style="aspect-ratio: 1/1;">
                                                 @if($img->is_primary)
                                                     <span class="badge bg-primary position-absolute top-0 start-0 m-2">Primary</span>
                                                 @endif
+                                                <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 shadow-sm delete-existing-img" 
+                                                    data-id="{{ $img->id }}" onclick="removeExistingImage({{ $img->id }})">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
                                             </div>
                                         </div>
                                     @endforeach
                                 </div>
+                                <div id="deletedImagesContainer"></div>
 
                                 <div class="image-upload-wrapper mt-3" onclick="document.getElementById('imageInput').click()">
                                     <div class="upload-content text-center">
@@ -184,6 +189,9 @@
                                     </div>
                                     <input type="file" name="images[]" multiple accept="image/jpeg,image/png,image/jpg,image/gif" class="d-none" id="imageInput">
                                 </div>
+                                <small class="text-muted d-block mt-2" id="imageLimitInfo">
+                                    You have {{ $auction->images->count() }} images. You can add {{ max(0, 5 - $auction->images->count()) }} more.
+                                </small>
                                 <input type="hidden" name="primary_image_index" id="primaryImageIndex" value="0">
                                 
                                 <div id="imagePreviewGrid" class="image-preview-grid">
@@ -246,16 +254,13 @@
 <script src="{{ asset('assets/js/image-upload-manager.js') }}"></script>
 <script src="{{ asset('assets/js/auction-form-validation.js') }}"></script>
 <script src="{{ asset('assets/js/category-selection.js') }}"></script>
+<script src="{{ asset('assets/js/auction-edit.js') }}"></script>
 <script>
-    // Minimal JS to handle edit specifics
     document.addEventListener('DOMContentLoaded', function() {
-        // Pre-handle subcategory loading if needed
-        const mainCat = document.getElementById('mainCategorySelect');
-        if (mainCat && mainCat.value && !{{ $hasBids ? 'true' : 'false' }}) {
-            // Trigger category selection logic
-            const event = new Event('change');
-            mainCat.dispatchEvent(event);
-        }
+        // Initialize modular auction edit logic
+        initAuctionEdit({
+            existingImageCount: {{ $auction->images->count() }}
+        });
     });
 </script>
 @endpush

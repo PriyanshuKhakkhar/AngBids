@@ -1,3 +1,7 @@
+/**
+ * Category and Sub-category Dynamic Selection
+ */
+
 document.addEventListener('DOMContentLoaded', function () {
     const mainCategorySelect = document.getElementById('mainCategorySelect');
     const subCategorySelect = document.getElementById('subCategorySelect');
@@ -7,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!mainCategorySelect) return;
 
+    // 1. Handle Main Category Change
     mainCategorySelect.addEventListener('change', function () {
         const parentId = this.value;
         const parent = categoryTree.find(c => c.id == parentId);
@@ -14,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (parent && parent.children && parent.children.length > 0) {
             populateSubCategories(parent.children);
             subCategoryWrapper.style.display = 'block';
+
             // Reset hidden input until sub-category is selected
             selectedCategoryIdInput.value = '';
             triggerChange(selectedCategoryIdInput);
@@ -24,13 +30,18 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    subCategorySelect.addEventListener('change', function () {
-        selectedCategoryIdInput.value = this.value;
-        triggerChange(selectedCategoryIdInput);
-    });
+    // 2. Handle Sub Category Change
+    if (subCategorySelect) {
+        subCategorySelect.addEventListener('change', function () {
+            selectedCategoryIdInput.value = this.value;
+            triggerChange(selectedCategoryIdInput);
+        });
+    }
 
+    /**
+     * Helper to populate sub-category dropdown
+     */
     function populateSubCategories(children) {
-        // Clear existing options except the first one
         subCategorySelect.innerHTML = '<option value="" disabled selected>Choose Sub-Category</option>';
 
         children.forEach(child => {
@@ -44,17 +55,19 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    /**
+     * Cross-browser change trigger
+     */
     function triggerChange(element) {
-        const event = new Event('change', { bubbles: true });
-        element.dispatchEvent(event);
-
-        // Custom event for legacy scripts (jQuery)
+        element.dispatchEvent(new Event('change', { bubbles: true }));
         if (typeof jQuery !== 'undefined') {
             jQuery(element).trigger('change');
         }
     }
 
-    // Handle initial state (e.g. after validation error)
+    /**
+     * Initialize state on page load (for edit pages or validation errors)
+     */
     const initialId = selectedCategoryIdInput.value;
     if (initialId) {
         let activeParent = null;
@@ -63,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
         categoryTree.forEach(parent => {
             if (parent.id == initialId) {
                 activeParent = parent;
-            } else {
+            } else if (parent.children) {
                 const child = parent.children.find(c => c.id == initialId);
                 if (child) {
                     activeParent = parent;
@@ -80,6 +93,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (activeChild) {
                     subCategorySelect.value = activeChild.id;
                 }
+                // Ensure the hidden input maintains its initial value during setup
+                selectedCategoryIdInput.value = initialId;
+            } else {
+                subCategoryWrapper.style.display = 'none';
+                selectedCategoryIdInput.value = activeParent.id;
             }
         }
     }

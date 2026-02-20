@@ -1,12 +1,21 @@
+/**
+ * Universal Image Upload Manager with Preview and Reordering
+ */
+
 class ImageUploadManager {
     constructor(config) {
         this.input = document.querySelector(config.inputSelector);
         this.grid = document.querySelector(config.gridSelector);
         this.primaryInput = document.querySelector(config.primaryInputSelector);
         this.fileWrappers = []; // Array of { file: File, id: string, previewUrl: string }
-        this.maxFiles = config.maxFiles || 10;
+        this.maxFiles = config.maxFiles || 5;
+        this.existingCount = config.existingCount || 0;
 
         this.init();
+    }
+
+    setExistingCount(count) {
+        this.existingCount = count;
     }
 
     init() {
@@ -20,26 +29,28 @@ class ImageUploadManager {
 
     handleFileSelect(e) {
         const selectedFiles = Array.from(e.target.files);
+        let skipped = 0;
 
         selectedFiles.forEach(file => {
-            if (this.fileWrappers.length < this.maxFiles) {
-                // Validation
-                if (!file.type.startsWith('image/')) {
-                    console.warn(`${file.name} is not an image.`);
-                    return;
-                }
-                if (file.size > 2 * 1024 * 1024) {
-                    console.warn(`${file.name} exceeds 2MB limit.`);
-                    return;
-                }
+            if (this.existingCount + this.fileWrappers.length < this.maxFiles) {
+                // Validation (Frontend only)
+                if (!file.type.startsWith('image/')) return;
+
+                if (file.size > 2 * 1024 * 1024) return;
 
                 this.fileWrappers.push({
                     file: file,
                     id: Math.random().toString(36).substr(2, 9),
                     previewUrl: URL.createObjectURL(file)
                 });
+            } else {
+                skipped++;
             }
         });
+
+        if (skipped > 0) {
+            alert(`You reached the limit of ${this.maxFiles} images. ${skipped} files were not added.`);
+        }
 
         this.render();
         this.updateInput();
@@ -73,7 +84,7 @@ class ImageUploadManager {
         const primaryIndex = parseInt(this.primaryInput.value) || 0;
 
         if (this.fileWrappers.length === 0) {
-            this.grid.innerHTML = '<div class="col-12 text-center text-muted p-4">No images uploaded yet.</div>';
+            this.grid.innerHTML = '';
             return;
         }
 
@@ -105,7 +116,6 @@ class ImageUploadManager {
             </div>
         `;
 
-        // Event Listeners for buttons
         card.querySelector('.delete-btn').addEventListener('click', (e) => {
             e.stopPropagation();
             this.removeImage(index);
@@ -149,11 +159,9 @@ class ImageUploadManager {
     handleReorder(fromIndex, toIndex) {
         if (fromIndex === toIndex) return;
 
-        // Reorder array
         const item = this.fileWrappers.splice(fromIndex, 1)[0];
         this.fileWrappers.splice(toIndex, 0, item);
 
-        // Update primary index
         let currentPrimary = parseInt(this.primaryInput.value);
         if (currentPrimary === fromIndex) {
             this.primaryInput.value = toIndex;
@@ -173,7 +181,5 @@ class ImageUploadManager {
             dataTransfer.items.add(wrapper.file);
         });
         this.input.files = dataTransfer.files;
-        console.log(`Input synced: ${this.input.files.length} files. Indices:`,
-            Array.from(this.input.files).map(f => f.name));
     }
 }
