@@ -19,65 +19,95 @@
 @endphp
 
 <!-- Auction Details -->
-<section class="py-5 mt-5">
-    <div class="container py-lg-5">
-        <div class="row g-4">
-            <!-- Left: Image Gallery (Col-lg-7) -->
+<section class="hibid-auction-section pt-4 pb-3 mt-5">
+    <div class="container">
+        <div class="row g-4 align-items-start">
+            <!-- Left: Image Gallery -->
             <div class="col-lg-7" data-aos="fade-right">
-                <div class="position-relative overflow-hidden rounded-4 mb-3 auction-main-img-container shadow-sm border" style="height: 550px; cursor: zoom-in;">
+                <!-- Main Image -->
+                <div class="hibid-main-image-wrap mb-3">
                     @if($mainPath)
-                        <img src="{{ $mainPath }}" class="w-100 h-100 object-fit-cover main-auction-image" alt="{{ $auction->title }}" onclick="openLightbox()">
+                        <img src="{{ $mainPath }}" class="hibid-main-img main-auction-image" alt="{{ $auction->title }}" onclick="openLightbox()">
                     @else
                         <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=1200"
-                            class="w-100 h-100 object-fit-cover main-auction-image" alt="{{ $auction->title }}" onclick="openLightbox()">
+                            class="hibid-main-img main-auction-image" alt="{{ $auction->title }}" onclick="openLightbox()">
                     @endif
-                    <div class="zoom-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center opacity-0 transition-all" onclick="openLightbox()">
+                    <div class="hibid-zoom-hint">
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                    <div class="zoom-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center opacity-0 transition-all" onclick="openLightbox()" style="cursor:zoom-in;">
                         <i class="fas fa-search-plus fa-3x text-white"></i>
                     </div>
                 </div>
-                
-                <!-- Dedicated Gallery Box -->
-                <div class="card p-3 border-0 shadow-sm rounded-4 bg-white mb-2">
-                    <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
-                        <h5 class="h6 mb-0 fw-bold text-dark text-uppercase letter-spacing-1">
-                            <i class="fas fa-images me-2 text-primary"></i>Product Gallery
-                        </h5>
-                        <span class="badge bg-primary-subtle text-primary rounded-pill small px-3">
-                            {{ $galleryImages->count() }} Photos
+
+                <!-- Gallery Strip -->
+                <div class="hibid-gallery-box">
+                    <div class="hibid-gallery-header">
+                        <span class="hibid-gallery-label">
+                            <i class="fas fa-th me-2"></i>PRODUCT GALLERY
                         </span>
+                        <span class="hibid-photo-badge">{{ $galleryImages->count() }} Photos</span>
                     </div>
 
-                    @if($galleryImages->count() > 1)
-                        <div class="row g-2 overflow-auto flex-nowrap pb-2 custom-scrollbar">
+                    @if($galleryImages->count() > 0)
+                        <div class="hibid-thumb-row">
                             @foreach($galleryImages as $index => $imgUrl)
-                            <div class="col-3 col-md-2 flex-shrink-0">
-                                <div class="rounded-3 overflow-hidden border {{ $index === 0 ? 'border-primary border-2' : 'border-light' }} shadow-sm auction-thumb h-100" 
-                                    style="height: 80px !important; min-height: 80px; cursor: pointer;"
-                                    onclick="changeMainImage('{{ $imgUrl }}', this)">
-                                    <img src="{{ $imgUrl }}" class="w-100 h-100 object-fit-cover" alt="Gallery View">
-                                </div>
+                            <div class="hibid-thumb {{ $index === 0 ? 'active' : '' }}"
+                                onclick="changeMainImage('{{ $imgUrl }}', this)">
+                                <img src="{{ $imgUrl }}" alt="Photo {{ $index + 1 }}">
                             </div>
                             @endforeach
                         </div>
                     @else
-                        <div class="py-4 text-center bg-light rounded-3 animate__animated animate__fadeIn">
-                            <i class="fas fa-camera-retro fa-2x text-secondary opacity-25 mb-2"></i>
-                            <p class="small text-muted mb-0">No additional photos available for this item.</p>
+                        <div class="hibid-no-photos">
+                            <i class="fas fa-camera-retro"></i>
+                            <p>No additional photos available.</p>
                         </div>
+                    @endif
+                </div>
+
+                <!-- Seller Info Card (below gallery) -->
+                <div class="hibid-seller-card mt-3" data-aos="fade-up" data-aos-delay="100">
+                    <div class="hibid-seller-inner">
+                        <a href="{{ route('sellers.show', $auction->user->id) }}">
+                            <img src="{{ $auction->user->avatar_url }}"
+                                class="hibid-seller-avatar" alt="Seller">
+                        </a>
+                        <div class="hibid-seller-info">
+                            <a href="{{ route('sellers.show', $auction->user->id) }}" class="hibid-seller-name">{{ $auction->user->name }}</a>
+                            <div class="hibid-seller-meta">
+                                <span class="hibid-verified"><i class="fas fa-check-circle me-1"></i>VERIFIED</span>
+                                <span class="hibid-rating"><i class="fas fa-star me-1"></i>4.9</span>
+                            </div>
+                        </div>
+                        <a href="#" class="hibid-contact-btn">Contact</a>
+                    </div>
+                    @if($auction->user->location)
+                        <div class="hibid-seller-location">
+                            <i class="fas fa-map-marker-alt me-2"></i>{{ $auction->user->location }}
+                        </div>
+                    @endif
+                    @if($auction->user->bio)
+                        <p class="hibid-seller-bio">{{ Str::limit($auction->user->bio, 80) }}</p>
                     @endif
                 </div>
             </div>
 
-            <!-- Right: Action Sidebar (Col-lg-5) -->
+            <!-- Right: Action Sidebar -->
             <div class="col-lg-5">
                 <div class="sticky-lg-top" style="top: 120px; z-index: 1010;">
-                    <div class="card p-4 mb-4 border-0 shadow-sm" data-aos="fade-left">
-                        <h2 class="h3 text-dark mb-2 fw-bold">{{ $auction->title }}</h2>
-                        <div class="mb-4">
-                            <span class="badge bg-light text-primary px-3 py-2 rounded-pill">{{ $auction->category->name ?? 'Uncategorized' }}</span>
+
+                    <!-- Main Bid Card -->
+                    <div class="hibid-bid-card mb-3" data-aos="fade-left">
+
+                        <!-- Title & Category -->
+                        <h2 class="hibid-auction-title">{{ $auction->title }}</h2>
+                        <div class="mb-3">
+                            <a href="{{ route('auctions.index', ['category' => $auction->category->slug ?? '']) }}"
+                               class="hibid-category-link">{{ $auction->category->name ?? 'Uncategorized' }}</a>
                         </div>
 
-                        <!-- Timer Section -->
+                        <!-- Timer -->
                         @php
                             $now = \Carbon\Carbon::now();
                             $end = \Carbon\Carbon::parse($auction->end_time);
@@ -86,267 +116,355 @@
                         @endphp
 
                         @if(!$isClosed)
-                        <div class="glass-timer text-center py-3 timer-val mb-4 rounded-4" 
+                        <div class="hibid-timer timer-val mb-4"
                             data-days="{{ $diff->d }}" data-hours="{{ $diff->h }}" data-min="{{ $diff->i }}" data-sec="{{ $diff->s }}">
-                            <div class="row g-0">
-                                <div class="col text-center border-end">
-                                    <div class="fw-bold fs-4" data-days>{{ sprintf('%02d', $diff->d) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.65rem;">Days</small>
-                                </div>
-                                <div class="col text-center border-end">
-                                    <div class="fw-bold fs-4" data-hours>{{ sprintf('%02d', $diff->h) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.65rem;">Hrs</small>
-                                </div>
-                                <div class="col text-center border-end">
-                                    <div class="fw-bold fs-4" data-min>{{ sprintf('%02d', $diff->i) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.65rem;">Min</small>
-                                </div>
-                                <div class="col text-center">
-                                    <div class="fw-bold fs-4" data-sec>{{ sprintf('%02d', $diff->s) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.65rem;">Sec</small>
-                                </div>
+                            <div class="hibid-timer-unit">
+                                <span class="hibid-timer-num" data-days>{{ sprintf('%02d', $diff->d) }}</span>
+                                <span class="hibid-timer-label">DAYS</span>
+                            </div>
+                            <div class="hibid-timer-unit">
+                                <span class="hibid-timer-num" data-hours>{{ sprintf('%02d', $diff->h) }}</span>
+                                <span class="hibid-timer-label">HRS</span>
+                            </div>
+                            <div class="hibid-timer-unit">
+                                <span class="hibid-timer-num" data-min>{{ sprintf('%02d', $diff->i) }}</span>
+                                <span class="hibid-timer-label">MIN</span>
+                            </div>
+                            <div class="hibid-timer-unit">
+                                <span class="hibid-timer-num" data-sec>{{ sprintf('%02d', $diff->s) }}</span>
+                                <span class="hibid-timer-label">SEC</span>
                             </div>
                         </div>
                         @else
-                        <div class="alert alert-danger py-3 mb-4 text-center fw-bold rounded-4">Auction Closed</div>
+                        <div class="hibid-closed-badge mb-4">🔒 Auction Closed</div>
                         @endif
 
-                        <!-- Bidding Section -->
-                        <div class="mb-4 p-4 bg-light rounded-4">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="text-secondary small fw-bold">Current Bid</span>
-                                <span class="h2 mb-0 text-primary fw-bold">₹{{ number_format($auction->current_price, 2) }}</span>
+                        <!-- Bid Info Rows -->
+                        <div class="hibid-bid-info">
+                            <div class="hibid-bid-row hibid-bid-row--current">
+                                <span class="hibid-bid-label">Current Bid</span>
+                                <span class="hibid-bid-value hibid-bid-value--primary">₹{{ number_format($auction->current_price, 2) }}</span>
                             </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-secondary small">Starting Price</span>
-                                <span class="text-dark small fw-bold">₹{{ number_format($auction->starting_price, 2) }}</span>
+                            <div class="hibid-bid-row">
+                                <span class="hibid-bid-label">Starting Price</span>
+                                <span class="hibid-bid-value">₹{{ number_format($auction->starting_price, 2) }}</span>
                             </div>
-                            <div class="d-flex justify-content-between align-items-center mt-2">
-                                <span class="text-secondary small">Min Increment</span>
-                                <span class="text-dark small fw-bold">₹{{ number_format($auction->min_increment, 2) }}</span>
+                            <div class="hibid-bid-row">
+                                <span class="hibid-bid-label">Min Increment</span>
+                                <span class="hibid-bid-value">₹{{ number_format($auction->min_increment, 2) }}</span>
                             </div>
-                            <div class="d-flex justify-content-between align-items-center mt-2 border-top pt-2">
-                                <span class="text-secondary small fw-bold">Max Bid Increment</span>
-                                <span class="text-danger small fw-bold">₹{{ number_format(\App\Models\Auction::MAX_INCREMENT_ALLOWED, 2) }}</span>
+                            <div class="hibid-bid-row">
+                                <span class="hibid-bid-label">Max Bid Increment</span>
+                                <span class="hibid-bid-value hibid-bid-value--danger">₹{{ number_format(\App\Models\Auction::MAX_INCREMENT_ALLOWED, 2) }}</span>
                             </div>
                         </div>
 
+                        <!-- Bid Form / Login -->
                         @if(!$isClosed)
                         @auth
                             @if(session('success'))
-                                <div class="alert alert-success alert-dismissible fade show mb-4 rounded-4" role="alert">
+                                <div class="alert alert-success alert-dismissible fade show mb-3 rounded-3" role="alert">
                                     {{ session('success') }}
                                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
                             @endif
-
                             @if(session('error'))
-                                <div class="alert alert-danger alert-dismissible fade show mb-4 rounded-4" role="alert">
+                                <div class="alert alert-danger alert-dismissible fade show mb-3 rounded-3" role="alert">
                                     {{ session('error') }}
                                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
                             @endif
 
-                            <form action="{{ route('auctions.bid', $auction->id) }}" method="POST" class="mb-4" id="place-bid-form">
+                            <form action="{{ route('auctions.bid', $auction->id) }}" method="POST" class="mb-3" id="place-bid-form">
                                 @csrf
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <label class="form-label fw-bold text-dark small text-uppercase mb-0">Your Bid Increment (₹)</label>
-                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 small fw-bold">
-                                            Min: ₹{{ number_format($auction->min_increment ?? 0.01, 2) }}
-                                        </span>
-                                    </div>
-                                    <div class="input-group input-group-lg shadow-sm rounded-4 overflow-hidden mb-3">
-                                        <span class="input-group-text bg-white border-end-0 text-primary fw-bold">₹</span>
-                                        <input type="number" name="increment" class="form-control bg-white border-start-0 ps-0 fw-bold border-0 shadow-none" id="bid-increment" 
-                                            placeholder="{{ number_format($auction->min_increment ?? 0.01, 2, '.', '') }}" 
-                                            value="{{ old('increment') }}"
-                                            min="{{ $auction->min_increment ?? 0.01 }}" step="0.01" max="{{ \App\Models\Auction::MAX_INCREMENT_ALLOWED }}" required>
-                                    </div>
-
-                                    <!-- Increment Shortcuts -->
-                                    <div class="d-flex flex-wrap gap-2 mb-3">
-                                        @foreach([100, 300, 500, 700, 1000] as $amount)
-                                            <button type="button" class="btn btn-sm btn-outline-primary flex-fill py-2 rounded-3 fw-bold bid-shortcut" data-amount="{{ $amount }}">
-                                                +₹{{ $amount }}
-                                            </button>
-                                        @endforeach
-                                    </div>
-                                    
-                                    <div id="bid-feedback-area" class="mt-2">
-                                        @error('increment')
-                                            <div class="alert alert-danger py-2 px-3 rounded-3 small border-0 shadow-sm animate__animated animate__shakeX">
-                                                <i class="fas fa-exclamation-circle me-2"></i>{{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-                                    <div class="bid-feedback-total"></div>
-                                    
-                                    <small class="text-muted mt-2 d-block text-center opacity-75">
-                                        Max jump: ₹{{ number_format(\App\Models\Auction::MAX_INCREMENT_ALLOWED, 2) }}
-                                    </small>
+                                <div class="hibid-increment-header">
+                                    <label class="hibid-increment-label">YOUR BID INCREMENT (₹)</label>
+                                    <span class="hibid-min-badge">Min: ₹{{ number_format($auction->min_increment ?? 0.01, 2) }}</span>
                                 </div>
-                                <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-sm hover-up">
+
+                                <div class="hibid-input-wrap">
+                                    <span class="hibid-input-prefix">₹</span>
+                                    <input type="number" name="increment" id="bid-increment"
+                                        class="hibid-bid-input"
+                                        placeholder="{{ number_format($auction->min_increment ?? 0.01, 2, '.', '') }}"
+                                        value="{{ old('increment') }}"
+                                        min="{{ $auction->min_increment ?? 0.01 }}" step="0.01"
+                                        max="{{ \App\Models\Auction::MAX_INCREMENT_ALLOWED }}" required>
+                                </div>
+
+                                <!-- Shortcut Buttons -->
+                                <div class="hibid-shortcuts">
+                                    @foreach([100, 300, 500, 700, 1000] as $amount)
+                                        <button type="button" class="hibid-shortcut-btn bid-shortcut" data-amount="{{ $amount }}">+₹{{ $amount }}</button>
+                                    @endforeach
+                                </div>
+
+                                <div id="bid-feedback-area" class="mb-2">
+                                    @error('increment')
+                                        <div class="alert alert-danger py-2 px-3 rounded-3 small border-0 shadow-sm">
+                                            <i class="fas fa-exclamation-circle me-2"></i>{{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                                <div class="bid-feedback-total"></div>
+
+                                <small class="hibid-max-jump">Max jump: ₹{{ number_format(\App\Models\Auction::MAX_INCREMENT_ALLOWED, 2) }}</small>
+
+                                <button type="submit" class="hibid-place-bid-btn">
                                     Place Bid Now <i class="fas fa-gavel ms-2"></i>
                                 </button>
                             </form>
                         @else
-                            <div class="alert alert-soft-primary border-0 mb-4 p-3 rounded-4 bg-light">
-                                <p class="small mb-0 text-center">
-                                    <i class="fas fa-info-circle me-2 text-primary"></i>
-                                    Please <a href="{{ route('login') }}" class="text-primary fw-bold">login</a> to participate.
-                                </p>
+                            <div class="hibid-login-prompt">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Please <a href="{{ route('login') }}">login</a> to place a bid.
                             </div>
                         @endauth
                         @endif
 
-                        <div class="d-flex gap-3 mt-2">
+                        <!-- Watchlist & Share -->
+                        <div class="hibid-action-row">
                             @auth
                             <form action="{{ route('user.watchlist.toggle', $auction->id) }}" method="POST" class="flex-fill watchlist-toggle-form">
                                 @csrf
-                                <button type="submit" class="btn btn-outline-primary w-100 rounded-pill py-2">
+                                <button type="submit" class="hibid-watchlist-btn">
                                     <i class="{{ $auction->watchlists->isNotEmpty() ? 'fas' : 'far' }} fa-heart me-2"></i>Watchlist
                                 </button>
                             </form>
                             @else
-                            <a href="{{ route('login') }}" class="btn btn-outline-primary flex-fill rounded-pill py-2">
+                            <a href="{{ route('login') }}" class="hibid-watchlist-btn">
                                 <i class="far fa-heart me-2"></i>Watchlist
                             </a>
                             @endauth
-                            <button class="btn btn-outline-secondary rounded-pill px-4">
+                            <button class="hibid-share-btn" onclick="navigator.share ? navigator.share({title:'{{ $auction->title }}', url: window.location.href}) : null">
                                 <i class="fas fa-share-alt"></i>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Compact Seller Info -->
-                    <div class="card p-4 border-0 shadow-sm" data-aos="fade-left" data-aos-delay="100">
-                        <div class="d-flex align-items-center gap-3 mb-3">
-                            <a href="{{ route('sellers.show', $auction->user->id) }}">
-                                <img src="{{ $auction->user->avatar_url }}"
-                                    class="rounded-circle border border-light shadow-sm" height="50" width="50" style="object-fit: cover;" alt="Seller">
-                            </a>
-                            <div class="flex-grow-1">
-                                <a href="{{ route('sellers.show', $auction->user->id) }}" class="text-decoration-none">
-                                    <h6 class="text-dark fw-bold mb-0 transition-all hover-primary">{{ $auction->user->name }}</h6>
-                                </a>
-                                <div class="d-flex align-items-center gap-2">
-                                    <small class="text-success fw-bold" style="font-size: 0.7rem;"><i class="fas fa-check-circle me-1"></i>VERIFIED</small>
-                                    <div class="text-warning small" style="font-size: 0.7rem;">
-                                        <i class="fas fa-star"></i> 4.9
-                                    </div>
-                                </div>
-                            </div>
-                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill px-3">Contact</a>
-                        </div>
-                        @if($auction->user->location || $auction->user->bio)
-                            <div class="border-top pt-3">
-                                @if($auction->user->location)
-                                    <div class="small text-secondary mb-2">
-                                        <i class="fas fa-map-marker-alt text-primary me-2"></i>{{ $auction->user->location }}
-                                    </div>
-                                @endif
-                                @if($auction->user->bio)
-                                    <p class="small text-muted mb-0 text-truncate-2">
-                                        {{ Str::limit($auction->user->bio, 80) }}
-                                    </p>
-                                @endif
-                            </div>
-                        @endif
-                    </div>
+
                 </div>
             </div>
         </div>
 
-        <!-- Details Row -->
-        <div class="row g-4 mt-2">
-            <!-- Left: Description & Specs (Col-lg-8) -->
-            <div class="col-lg-8" data-aos="fade-up">
-                <!-- Description Card -->
-                <div class="card p-4 border-0 shadow-sm mb-4">
-                    <h4 class="h5 text-dark mb-4 fw-bold border-bottom pb-3">Product Description</h4>
-                    <div class="text-secondary lh-lg">
-                        {!! nl2br(e($auction->description)) !!}
-                    </div>
-                </div>
-
-                <!-- Specifications Card -->
-                @if($auction->specifications && count(array_filter($auction->specifications)) > 0)
-                <div class="card p-4 border-0 shadow-sm mb-4">
-                    <h4 class="h5 text-dark mb-4 fw-bold border-bottom pb-3">Technical Specifications</h4>
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <tbody>
-                                @foreach($auction->specifications as $key => $value)
-                                    @if($value)
-                                    <tr>
-                                        <td class="text-secondary small text-uppercase fw-bold py-3" style="width: 35%;">{{ str_replace('_', ' ', $key) }}</td>
-                                        <td class="text-dark fw-bold py-3">{{ $value }}</td>
-                                    </tr>
-                                    @endif
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                @endif
-            </div>
-
-            <!-- Right: History & Files (Col-lg-4) -->
-            <div class="col-lg-4" data-aos="fade-up">
-                <!-- Document Card -->
-                @if($auction->document)
-                <div class="card p-4 border-0 shadow-sm mb-4">
-                    <h4 class="h5 text-dark mb-4 fw-bold">Verification</h4>
-                    <div class="d-flex align-items-center p-3 bg-light rounded-3">
-                        <i class="far fa-file-pdf fa-2x text-danger me-3"></i>
-                        <div class="flex-grow-1">
-                            <span class="d-block text-dark fw-bold small">Audit Report.pdf</span>
-                            <small class="text-secondary">Verified Document</small>
+        <!-- Accordion Details Section -->
+        <div class="row mt-4">
+            <div class="col-12" data-aos="fade-up">
+                <div class="accordion premium-accordion" id="auctionAccordion">
+                    
+                    <!-- 1. Information -->
+                    <div class="accordion-item border-0 mb-3 shadow-sm rounded-4 overflow-hidden">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button fw-bold text-primary bg-white px-4 py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfo">
+                                Information
+                            </button>
+                        </h2>
+                        <div id="collapseInfo" class="accordion-collapse collapse show" data-bs-parent="#auctionAccordion">
+                            <div class="accordion-body px-4 py-4 text-secondary lh-lg">
+                                {!! nl2br(e($auction->description)) !!}
+                            </div>
                         </div>
-                        <a href="{{ asset('storage/' . $auction->document) }}" target="_blank" class="text-primary">
-                            <i class="fas fa-download"></i>
-                        </a>
                     </div>
-                </div>
-                @endif
 
-                <!-- Bid History Card -->
-                <div class="card p-4 border-0 shadow-sm">
-                    <h4 class="h5 text-dark mb-4 fw-bold border-bottom pb-3">Bid History</h4>
-                    <div class="bid-history-scroll pe-2">
-                        <ul class="list-unstyled mb-0">
-                            @forelse($auction->bids->sortByDesc('created_at') as $bid)
-                        <li class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-light last-child-border-0">
-                            <div class="d-flex align-items-center gap-3">
-                                <img src="{{ $bid->user->avatar_url }}" 
-                                    class="rounded-circle border" height="35" width="35" style="object-fit: cover;" alt="{{ $bid->user->name }}">
-                                <div>
-                                    <span class="d-block text-dark fw-bold small">{{ $bid->user->name }}</span>
-                                    <small class="text-muted" style="font-size: 0.7rem;">{{ $bid->created_at->diffForHumans() }}</small>
+                    <!-- 2. Auction Information -->
+                    <div class="accordion-item border-0 mb-3 shadow-sm rounded-4 overflow-hidden">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold text-primary bg-white px-4 py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAuction">
+                                Auction Information
+                            </button>
+                        </h2>
+                        <div id="collapseAuction" class="accordion-collapse collapse" data-bs-parent="#auctionAccordion">
+                            <div class="accordion-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover mb-0 info-table">
+                                        <tbody>
+                                            <tr>
+                                                <th class="bg-light ps-4 py-3" style="width: 200px;">Name</th>
+                                                <td class="ps-4 py-3 fw-medium">{{ $auction->title }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="bg-light ps-4 py-3">Auctioneer</th>
+                                                <td class="ps-4 py-3 fw-medium">{{ $auction->user->name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="bg-light ps-4 py-3">Type</th>
+                                                <td class="ps-4 py-3 fw-medium">Live Webcast Auction</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="bg-light ps-4 py-3">Date(s)</th>
+                                                <td class="ps-4 py-3 fw-medium">
+                                                    {{ \Carbon\Carbon::parse($auction->start_time)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($auction->end_time)->format('d/m/Y') }}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="bg-light ps-4 py-3">Auction Date/Time Info</th>
+                                                <td class="ps-4 py-3 fw-medium">Ends {{ \Carbon\Carbon::parse($auction->end_time)->format('F d, Y \a\t g:i A') }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="bg-light ps-4 py-3">Preview Date/Time</th>
+                                                <td class="ps-4 py-3 fw-medium">Available online 24/7. Contact seller for physical inspection requests.</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="bg-light ps-4 py-3">Checkout Date/Time</th>
+                                                <td class="ps-4 py-3 fw-medium">Immediately following receipt of invoice through 48 hours post-auction.</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="bg-light ps-4 py-3">Location</th>
+                                                <td class="ps-4 py-3 fw-medium">
+                                                    @if($auction->user->location)
+                                                        {{ $auction->user->location }}
+                                                    @else
+                                                        Online Auction - Ships Worldwide
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="bg-light ps-4 py-3">Buyer Premium</th>
+                                                <td class="ps-4 py-3 fw-medium">10% Buyer's Premium (Plus applicable taxes)</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="bg-light ps-4 py-3">Description</th>
+                                                <td class="ps-4 py-3 fw-medium text-truncate-2">{{ Str::limit($auction->description, 150) }}</td>
+                                            </tr>
+                                            @if($auction->specifications)
+                                                @foreach($auction->specifications as $key => $value)
+                                                    @if($value)
+                                                    <tr>
+                                                        <th class="bg-light ps-4 py-3">{{ ucfirst(str_replace('_', ' ', $key)) }}</th>
+                                                        <td class="ps-4 py-3 fw-medium">{{ $value }}</td>
+                                                    </tr>
+                                                    @endif
+                                                @endforeach
+                                            @endif
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                            <span class="text-primary fw-bold">₹{{ number_format($bid->amount, 2) }}</span>
-                        </li>
-                        @empty
-                        <li class="text-center py-4 text-secondary">
-                            <i class="fas fa-history d-block mb-3 opacity-25 fs-2"></i>
-                            <span class="small">No bids placed in the last 24 hours.</span>
-                        </li>
-                        @endforelse
-                        </ul>
+                        </div>
                     </div>
+
+                    <!-- 3. Terms and Conditions -->
+                    <div class="accordion-item border-0 mb-3 shadow-sm rounded-4 overflow-hidden">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold text-primary bg-white px-4 py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTerms">
+                                Terms and Conditions
+                            </button>
+                        </h2>
+                        <div id="collapseTerms" class="accordion-collapse collapse" data-bs-parent="#auctionAccordion">
+                            <div class="accordion-body px-4 py-4 text-secondary">
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> All bids are final and cannot be retracted.</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Items are sold "as is, where is" without warranties.</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Successful bidders will receive an invoice via email after the auction closes.</li>
+                                    <li><i class="fas fa-check-circle text-primary me-2"></i> Full payment is required within 48 hours of auction closing.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Bid Increments -->
+                    <div class="accordion-item border-0 mb-3 shadow-sm rounded-4 overflow-hidden">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold text-primary bg-white px-4 py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBid">
+                                Bid Increments
+                            </button>
+                        </h2>
+                        <div id="collapseBid" class="accordion-collapse collapse" data-bs-parent="#auctionAccordion">
+                            <div class="accordion-body px-4 py-4 text-secondary">
+                                <p class="mb-3">Our bidding system follows strict increment rules to ensure fair play:</p>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered mb-0 text-center">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th>Minimum Increment</th>
+                                                <th>Maximum Allowable Jump</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="fw-bold text-primary">₹{{ number_format($auction->min_increment, 2) }}</td>
+                                                <td class="fw-bold text-danger">₹{{ number_format(\App\Models\Auction::MAX_INCREMENT_ALLOWED, 2) }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. Payment Information -->
+                    <div class="accordion-item border-0 mb-3 shadow-sm rounded-4 overflow-hidden">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold text-primary bg-white px-4 py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePayment">
+                                Payment Information
+                            </button>
+                        </h2>
+                        <div id="collapsePayment" class="accordion-collapse collapse" data-bs-parent="#auctionAccordion">
+                            <div class="accordion-body px-4 py-4 text-secondary">
+                                <div class="d-flex align-items-center gap-4 flex-wrap">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fab fa-cc-visa fa-2x text-muted"></i>
+                                        <i class="fab fa-cc-mastercard fa-2x text-muted"></i>
+                                        <i class="fas fa-university fa-2x text-muted"></i>
+                                    </div>
+                                    <p class="mb-0">We accept Credit Cards, Debit Cards, and Direct Bank Transfers. Invoices include detailed payment instructions.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6. Shipping / Pick Up -->
+                    <div class="accordion-item border-0 mb-3 shadow-sm rounded-4 overflow-hidden">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold text-primary bg-white px-4 py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseShipping">
+                                Shipping / Pick Up
+                            </button>
+                        </h2>
+                        <div id="collapseShipping" class="accordion-collapse collapse" data-bs-parent="#auctionAccordion">
+                            <div class="accordion-body px-4 py-4 text-secondary">
+                                <p class="mb-2"><strong>Pick Up:</strong> Monday through Friday, 9:00 AM - 5:00 PM at our warehouse location.</p>
+                                <p class="mb-0"><strong>Shipping:</strong> We offer nationwide shipping via premium carriers. Shipping costs are calculated based on weight and destination after the auction ends.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7. Bid History (Extra Section) -->
+                    <div class="accordion-item border-0 shadow-sm rounded-4 overflow-hidden">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold text-primary bg-white px-4 py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHistory">
+                                Bid History ({{ $auction->bids->count() }})
+                            </button>
+                        </h2>
+                        <div id="collapseHistory" class="accordion-collapse collapse" data-bs-parent="#auctionAccordion">
+                            <div class="accordion-body px-4 py-4">
+                                @forelse($auction->bids->sortByDesc('created_at') as $bid)
+                                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom last-child-border-0">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img src="{{ $bid->user->avatar_url }}" class="rounded-circle border" height="35" width="35" style="object-fit: cover;">
+                                            <div>
+                                                <span class="d-block text-dark fw-bold small">{{ $bid->user->name }}</span>
+                                                <small class="text-muted" style="font-size: 0.7rem;">{{ $bid->created_at->diffForHumans() }}</small>
+                                            </div>
+                                        </div>
+                                        <span class="text-primary fw-bold">₹{{ number_format($bid->amount, 2) }}</span>
+                                    </div>
+                                @empty
+                                    <div class="text-center py-4 text-secondary">
+                                        <i class="fas fa-history d-block mb-3 opacity-25 fs-2"></i>
+                                        <span class="small">No bids placed yet.</span>
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
 
-
-
-        <!-- Related Products Section -->
         <!-- Related Products Section -->
         @if(isset($relatedAuctions) && $relatedAuctions->count() > 0)
-        <div class="row mt-5 pt-4">
+        <div class="row mt-4 pt-2">
             <div class="col-12 mb-4 border-bottom pb-3 d-flex align-items-center justify-content-between">
                 <h3 class="h4 fw-bold mb-0 text-dark">
                     <i class="fas fa-layer-group me-2 text-primary"></i>Related Products
@@ -472,19 +590,451 @@
 </div>
 
 @push('styles')
+<link rel="stylesheet" href="{{ asset('assets/css/auction-gallery.css') }}">
 <style>
-    /* Home Page Replica Styles */
+    /* ===== HIBID-STYLE AUCTION PAGE ===== */
+    .hibid-auction-section { background: transparent; }
+
+    /* --- LEFT: Image Gallery --- */
+    .hibid-main-image-wrap {
+        position: relative;
+        background: #fff;
+        border: 1px solid #e0e4ea;
+        border-radius: 8px;
+        overflow: hidden;
+        cursor: zoom-in;
+    }
+    .hibid-main-img {
+        width: 100%;
+        height: 420px;
+        object-fit: contain;
+        background: #fafafa;
+        display: block;
+        transition: transform 0.3s ease;
+    }
+    .hibid-main-image-wrap:hover .hibid-main-img { transform: scale(1.02); }
+    .hibid-zoom-hint {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: rgba(0,0,0,0.45);
+        color: #fff;
+        font-size: 0.75rem;
+        padding: 4px 10px;
+        border-radius: 4px;
+        pointer-events: none;
+    }
+
+    /* Gallery Strip */
+    .hibid-gallery-box {
+        background: #fff;
+        border: 1px solid #e0e4ea;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .hibid-gallery-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        background: #f8f9fc;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .hibid-gallery-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #495057;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .hibid-photo-badge {
+        font-size: 0.7rem;
+        background: #e8f0fe;
+        color: #4e73df;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    .hibid-thumb-row {
+        display: flex;
+        gap: 8px;
+        padding: 12px 14px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+    }
+    .hibid-thumb-row::-webkit-scrollbar { height: 4px; }
+    .hibid-thumb-row::-webkit-scrollbar-track { background: #f1f1f1; }
+    .hibid-thumb-row::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 999px; }
+    .hibid-thumb {
+        flex-shrink: 0;
+        width: 68px;
+        height: 68px;
+        border-radius: 6px;
+        overflow: hidden;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: border-color 0.2s, transform 0.2s;
+    }
+    .hibid-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .hibid-thumb:hover { border-color: #4e73df; transform: translateY(-2px); }
+    .hibid-thumb.active { border-color: #4e73df; box-shadow: 0 2px 8px rgba(78,115,223,0.3); }
+    .hibid-no-photos {
+        text-align: center;
+        padding: 24px;
+        color: #adb5bd;
+        font-size: 0.85rem;
+    }
+    .hibid-no-photos i { font-size: 2rem; display: block; margin-bottom: 8px; }
+
+    /* --- RIGHT: Bid Card --- */
+    .hibid-bid-card {
+        background: #fff;
+        border: 1px solid #e0e4ea;
+        border-radius: 10px;
+        padding: 22px 20px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .hibid-auction-title {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #1a1d23;
+        margin-bottom: 8px;
+        line-height: 1.3;
+    }
+    .hibid-category-link {
+        display: inline-block;
+        background: #eef2ff;
+        color: #4e73df;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 3px 14px;
+        border-radius: 20px;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+    .hibid-category-link:hover { background: #dde6fc; color: #3a5bbf; }
+
+    /* Timer */
+    .hibid-timer {
+        display: flex;
+        gap: 6px;
+        padding: 12px;
+        background: #f8f9fc;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+    }
+    .hibid-timer-unit {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        padding: 8px 4px;
+    }
+    .hibid-timer-num {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #1a1d23;
+        line-height: 1;
+    }
+    .hibid-timer-label {
+        font-size: 0.6rem;
+        font-weight: 600;
+        color: #9ea5b0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 3px;
+    }
+    .urgent-timer .hibid-timer-num { color: #dc3545 !important; }
+    .hibid-closed-badge {
+        background: #fdecea;
+        color: #c0392b;
+        text-align: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #f5c6cb;
+    }
+
+    /* Bid Info Rows */
+    .hibid-bid-info {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 18px;
+    }
+    .hibid-bid-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 9px 14px;
+        border-bottom: 1px solid #f0f2f5;
+        background: #fff;
+    }
+    .hibid-bid-row:last-child { border-bottom: none; }
+    .hibid-bid-row--current { background: #f8f9ff; }
+    .hibid-bid-label {
+        font-size: 0.8rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    .hibid-bid-value {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #343a40;
+    }
+    .hibid-bid-value--primary { font-size: 1.35rem; color: #1557f0; }
+    .hibid-bid-value--danger { color: #dc3545; }
+
+    /* Increment Section */
+    .hibid-increment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    .hibid-increment-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #343a40;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+    }
+    .hibid-min-badge {
+        font-size: 0.7rem;
+        background: #e8f0fe;
+        color: #4e73df;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    .hibid-input-wrap {
+        display: flex;
+        align-items: center;
+        border: 1.5px solid #ced4da;
+        border-radius: 6px;
+        overflow: hidden;
+        background: #fff;
+        margin-bottom: 10px;
+        transition: border-color 0.2s;
+    }
+    .hibid-input-wrap:focus-within { border-color: #4e73df; }
+    .hibid-input-prefix {
+        padding: 0 12px;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #4e73df;
+        background: #f8f9ff;
+        border-right: 1px solid #dee2e6;
+        height: 42px;
+        display: flex;
+        align-items: center;
+    }
+    .hibid-bid-input {
+        border: none;
+        outline: none;
+        flex: 1;
+        padding: 0 12px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        height: 42px;
+        background: transparent;
+    }
+    .hibid-bid-input::-webkit-inner-spin-button,
+    .hibid-bid-input::-webkit-outer-spin-button { opacity: 1; }
+
+    /* Shortcut Buttons */
+    .hibid-shortcuts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+    .hibid-shortcut-btn {
+        flex: 1;
+        min-width: calc(20% - 6px);
+        border: 1.5px solid #4e73df;
+        color: #4e73df;
+        background: #fff;
+        border-radius: 5px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 6px 2px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .hibid-shortcut-btn:hover, .hibid-shortcut-btn.active {
+        background: #4e73df;
+        color: #fff;
+    }
+    .hibid-max-jump {
+        display: block;
+        font-size: 0.72rem;
+        color: #adb5bd;
+        text-align: center;
+        margin-bottom: 12px;
+    }
+
+    /* Place Bid Button */
+    .hibid-place-bid-btn {
+        width: 100%;
+        background: #1557f0;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 13px;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.1s;
+        margin-bottom: 12px;
+    }
+    .hibid-place-bid-btn:hover { background: #0f43c2; }
+    .hibid-place-bid-btn:active { transform: scale(0.99); }
+
+    /* Login Prompt */
+    .hibid-login-prompt {
+        background: #f0f4ff;
+        border: 1px solid #d0dcff;
+        border-radius: 6px;
+        padding: 12px 16px;
+        font-size: 0.85rem;
+        color: #4a5568;
+        margin-bottom: 12px;
+        text-align: center;
+    }
+    .hibid-login-prompt a { color: #1557f0; font-weight: 700; text-decoration: none; }
+
+    /* Watchlist & Share Row */
+    .hibid-action-row {
+        display: flex;
+        gap: 10px;
+    }
+    .hibid-watchlist-btn {
+        flex: 1;
+        border: 1.5px solid #ced4da;
+        background: #fff;
+        color: #495057;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 6px;
+        padding: 9px 16px;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: border-color 0.2s, color 0.2s;
+    }
+    .hibid-watchlist-btn:hover { border-color: #4e73df; color: #4e73df; }
+    .hibid-share-btn {
+        border: 1.5px solid #ced4da;
+        background: #fff;
+        color: #495057;
+        border-radius: 6px;
+        padding: 9px 16px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: border-color 0.2s, color 0.2s;
+    }
+    .hibid-share-btn:hover { border-color: #4e73df; color: #4e73df; }
+
+    /* Seller Card */
+    .hibid-seller-card {
+        background: #fff;
+        border: 1px solid #e0e4ea;
+        border-radius: 10px;
+        padding: 16px 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .hibid-seller-inner {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+    }
+    .hibid-seller-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #e9ecef;
+    }
+    .hibid-seller-info { flex: 1; }
+    .hibid-seller-name {
+        display: block;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #1a1d23;
+        text-decoration: none;
+        margin-bottom: 3px;
+    }
+    .hibid-seller-name:hover { color: #4e73df; }
+    .hibid-seller-meta { display: flex; gap: 10px; align-items: center; }
+    .hibid-verified { font-size: 0.68rem; color: #27ae60; font-weight: 700; }
+    .hibid-rating { font-size: 0.68rem; color: #f39c12; font-weight: 700; }
+    .hibid-contact-btn {
+        border: 1.5px solid #ced4da;
+        background: #fff;
+        color: #495057;
+        border-radius: 20px;
+        padding: 5px 16px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+    .hibid-contact-btn:hover { border-color: #4e73df; color: #4e73df; }
+    .hibid-seller-location {
+        font-size: 0.8rem;
+        color: #6c757d;
+        border-top: 1px solid #f0f2f5;
+        padding-top: 10px;
+    }
+    .hibid-seller-bio {
+        font-size: 0.8rem;
+        color: #888;
+        margin: 6px 0 0;
+    }
+
+    /* === Keep old related/accordion styles === */
+    .premium-accordion .accordion-item {
+        border-radius: 1rem !important;
+        margin-bottom: 1rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
+    }
+    .premium-accordion .accordion-header { border: 1px solid rgba(0,0,0,0.05); }
+    .premium-accordion .accordion-button {
+        color: #4e73df !important;
+        border-radius: 1rem !important;
+        box-shadow: none !important;
+    }
+    .premium-accordion .accordion-button:not(.collapsed) {
+        background: #f8f9fc !important;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        border-bottom-left-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+    }
+    .info-table th {
+        font-weight: 600; color: #4e73df;
+        font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .last-child-border-0:last-child { border-bottom: none !important; }
     .card-elite { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(0,0,0,0.03) !important; }
     .card-elite:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
     .bg-gold { background-color: #d4af37; }
     .text-xs { font-size: 0.75rem; }
     .glass-timer { background: rgba(248, 249, 250, 0.8); backdrop-filter: blur(4px); border-radius: 8px; }
     .urgent-timer { background: rgba(220, 53, 69, 0.08) !important; border-color: rgba(220, 53, 69, 0.3) !important; }
-    .urgent-timer * { color: #dc3545 !important; }
     .title-hover:hover { color: var(--bs-primary) !important; }
     .btn-hover-effect:active { transform: scale(0.98); }
 </style>
-<link rel="stylesheet" href="{{ asset('assets/css/auction-gallery.css') }}">
 @endpush
 
 @push('scripts')

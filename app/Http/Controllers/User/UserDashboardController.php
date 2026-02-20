@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Contact;
 
 class UserDashboardController extends Controller
@@ -27,7 +26,7 @@ class UserDashboardController extends Controller
     public function myBids()
     {
         $bids = auth()->user()
-            ->bids()
+            ->bids() 
             ->with('auction')
             ->latest()
             ->get()

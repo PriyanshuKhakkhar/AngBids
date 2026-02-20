@@ -21,14 +21,14 @@ function changeMainImage(src, thumbElement) {
         mainImg.style.opacity = '1';
     }, 150);
 
-    // Update active thumbnail styling
-    document.querySelectorAll('.auction-thumb').forEach(el => {
-        el.classList.remove('border-primary', 'border-2');
+    // Update active thumbnail styling — support both old and new class names
+    document.querySelectorAll('.hibid-thumb, .auction-thumb').forEach(el => {
+        el.classList.remove('active', 'border-primary', 'border-2');
         el.classList.add('border-light');
     });
 
     thumbElement.classList.remove('border-light');
-    thumbElement.classList.add('border-primary', 'border-2');
+    thumbElement.classList.add('active', 'border-primary');
 }
 
 function openLightbox() {
