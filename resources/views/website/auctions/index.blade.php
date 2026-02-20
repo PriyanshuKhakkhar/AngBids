@@ -11,7 +11,7 @@
             
             <!-- Sidebar Filters -->
             <div class="col-lg-3">
-                <div class="sticky-lg-top" style="top: 85px; z-index: 10;">
+                <div class="sidebar-sticky-area">
                     <div class="card border-0 shadow-sm rounded-4 mb-3 p-4 filter-sidebar">
                         <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
                             <h5 class="fw-bold mb-0"><i class="fas fa-filter text-primary me-2"></i>Filters</h5>
@@ -216,7 +216,7 @@
                                         <i class="fas fa-clock me-1"></i> Starts {{ $start->format('M d, H:i') }}
                                     </div>
                                 @else
-                                <div class="glass-timer text-center py-1 timer-val mb-2 shadow-none border" 
+                                <div class="glass-timer text-center py-1 timer-val mb-2 shadow-none border {{ ($diff->d == 0 && $diff->h == 0) ? 'urgent-timer' : '' }}" 
                                     data-days="{{ $diff->d }}" 
                                     data-hours="{{ $diff->h }}" 
                                     data-min="{{ $diff->i }}" 
@@ -313,14 +313,45 @@
         background-color: #f8f9fc;
     }
 
-    /* Sidebar Styles */
+    /* Ultimate Sticky Sidebar */
+    @media (min-width: 992px) {
+        .sidebar-sticky-area {
+            position: sticky;
+            top: 90px; /* Space for Navbar */
+            height: calc(100vh - 110px); /* Fill screen height */
+            overflow-y: auto; /* Scroll inside this area */
+            z-index: 20;
+            padding-bottom: 20px;
+            /* Prevent parent scroll chaining */
+            overscroll-behavior-y: contain; 
+        }
+
+        /* Refined Scrollbar Styling */
+        .sidebar-sticky-area::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar-sticky-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .sidebar-sticky-area::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        .sidebar-sticky-area:hover::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+    }
+
+    /* Reset inner card to fit wrapper */
     .filter-sidebar {
         backdrop-filter: blur(10px);
         background: var(--glass-bg);
         border: 1px solid rgba(0,0,0,0.05) !important;
-        max-height: calc(100vh - 120px);
-        overflow-y: auto;
-        padding-right: 5px; /* Prevent scrollbar from overlapping content */
+        /* Height handled by wrapper now */
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        padding-right: 5px;
     }
 
     /* Custom Scrollbar for Sidebar */
@@ -596,12 +627,74 @@
     .fs-7 {
         font-size: 0.9rem;
     }
-    .btn-hover-effect {
-        transition: all 0.2s ease;
+    /* Premium Scrollbar for Sidebar */
+    .sidebar-sticky-area {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0,0,0,0.1) transparent;
     }
-    .btn-hover-effect:hover {
-        box-shadow: 0 5px 15px rgba(78, 115, 223, 0.3) !important;
-        /* Removed transform to stop shaking */
+    
+    .sidebar-sticky-area::-webkit-scrollbar {
+        width: 4px;
+    }
+    .sidebar-sticky-area::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .sidebar-sticky-area::-webkit-scrollbar-thumb {
+        background-color: rgba(0,0,0,0.1);
+        border-radius: 20px;
+    }
+    .sidebar-sticky-area:hover::-webkit-scrollbar-thumb {
+        background-color: rgba(0,0,0,0.2);
+    }
+
+    /* Enhanced Category Links */
+    .category-link {
+        display: block;
+        padding: 10px 14px;
+        border-radius: 12px;
+        color: #5a5c69;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.2s ease-in-out;
+        border: 1px solid transparent;
+    }
+
+    .category-link:hover {
+        background-color: rgba(78, 115, 223, 0.05);
+        color: var(--primary-color);
+        transform: translateX(3px);
+    }
+
+    .category-link.active {
+        background-color: rgba(78, 115, 223, 0.1);
+        color: var(--primary-color);
+        font-weight: 700;
+        border-color: rgba(78, 115, 223, 0.1);
+        box-shadow: 0 4px 12px rgba(78, 115, 223, 0.1);
+    }
+
+    /* Soften the Filter Sidebar */
+    .filter-sidebar {
+        background: rgba(255, 255, 255, 0.8);
+        box-shadow: none !important; /* Cleaner look inside the sticky wrapper */
+    }
+
+    /* Premium Button Hover */
+    .btn-hover-effect:active {
+        transform: scale(0.98);
+    }
+
+    /* Urgent Timer Style */
+    .urgent-timer {
+        background: rgba(220, 53, 69, 0.08) !important;
+        border-color: rgba(220, 53, 69, 0.3) !important;
+    }
+    .urgent-timer * {
+        color: #dc3545 !important;
+    }
+    .urgent-timer .border-light {
+        border-color: rgba(220, 53, 69, 0.2) !important;
     }
 </style>
 @endpush
@@ -641,6 +734,15 @@
                 if(hElem) hElem.innerText = h.toString().padStart(2, '0');
                 if(mElem) mElem.innerText = m.toString().padStart(2, '0');
                 if(sElem) sElem.innerText = s.toString().padStart(2, '0');
+
+                if(sElem) sElem.innerText = s.toString().padStart(2, '0');
+
+                // Color urgency logic: < 1 hour (0 days, 0 hours) -> Red Box
+                if (d === 0 && h === 0) {
+                    box.classList.add('urgent-timer');
+                } else {
+                    box.classList.remove('urgent-timer');
+                }
             });
         }, 1000);
 
