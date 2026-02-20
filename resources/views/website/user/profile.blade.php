@@ -18,6 +18,13 @@
                 </div>
             @endif
 
+            @if (session('status') === 'avatar-deleted')
+                <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                    Profile picture removed successfully.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
             <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data">
                 @csrf
                 @method('patch')
@@ -131,7 +138,17 @@
             </div>
             <h5 class="text-dark fw-bold mb-1">{{ auth()->user()->name }}</h5>
             <p class="text-secondary small mb-3">{{ auth()->user()->email }}</p>
-            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="document.getElementById('avatar-input').click()">Change Avatar</button>
+            <div class="d-flex flex-column gap-2 align-items-center">
+                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3 w-75" onclick="document.getElementById('avatar-input').click()">Change Avatar</button>
+                
+                @if(auth()->user()->avatar)
+                    <form action="{{ route('profile.avatar.destroy') }}" method="POST" onsubmit="return confirm('Are you sure you want to remove your profile picture?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-link text-danger text-decoration-none small p-0 fw-bold">Delete Avatar</button>
+                    </form>
+                @endif
+            </div>
             @error('avatar')
                 <div class="text-danger small mt-2">{{ $message }}</div>
             @enderror

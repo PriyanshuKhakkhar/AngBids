@@ -68,7 +68,30 @@
                                 </div>
                                 
                                 @error('category_id')
-                                    <div class="invalid-feedback d-block" data-server-error>{{ $message }}</div>
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const mainSelect = document.getElementById('mainCategorySelect');
+                                            const subSelect = document.getElementById('subCategorySelect');
+                                            const subWrapper = document.getElementById('subCategoryDropdownWrapper');
+                                            const errorMessage = "{{ $message }}";
+                                            
+                                            const errorDiv = document.createElement('div');
+                                            errorDiv.className = 'invalid-feedback d-block';
+                                            errorDiv.textContent = errorMessage;
+                                            errorDiv.setAttribute('data-server-error', '');
+
+                                            // Highlight main category if nothing selected
+                                            if (mainSelect && !mainSelect.value) {
+                                                mainSelect.classList.add('is-invalid');
+                                                mainSelect.parentElement.appendChild(errorDiv);
+                                            } 
+                                            // Highlight sub category if main is selected but sub is not (and allowed)
+                                            else if (subSelect && subWrapper && subWrapper.style.display !== 'none' && !subSelect.value) {
+                                                subSelect.classList.add('is-invalid');
+                                                subWrapper.appendChild(errorDiv);
+                                            }
+                                        });
+                                    </script>
                                 @enderror
                             </div>
 

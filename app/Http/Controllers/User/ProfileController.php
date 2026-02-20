@@ -50,6 +50,24 @@ class ProfileController extends Controller
     }
 
     /**
+     * Delete the user's avatar.
+     */
+    public function destroyAvatar(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        if ($user->avatar) {
+            if (file_exists(public_path('storage/' . $user->avatar))) {
+                unlink(public_path('storage/' . $user->avatar));
+            }
+            $user->avatar = null;
+            $user->save();
+        }
+
+        return back()->with('status', 'avatar-deleted');
+    }
+
+    /**
      * Delete the user's account.
      */
     public function destroy(Request $request): RedirectResponse

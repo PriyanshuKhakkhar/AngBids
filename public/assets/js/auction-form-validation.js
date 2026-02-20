@@ -147,8 +147,19 @@ class AuctionFormValidator {
     }
 
     validateCategory(value) {
+        const mainCategorySelect = this.form.querySelector('#mainCategorySelect');
+        const subCategorySelect = this.form.querySelector('#subCategorySelect');
+        const subCategoryWrapper = this.form.querySelector('#subCategoryDropdownWrapper');
+
         if (!value) {
-            return 'Please select a category.';
+            // Check if a main category is selected
+            if (mainCategorySelect && mainCategorySelect.value) {
+                // If sub-category dropdown is visible, it means a sub-category is expected
+                if (subCategoryWrapper && subCategoryWrapper.style.display !== 'none') {
+                    return 'Please select a specific sub-category for your item.';
+                }
+            }
+            return 'Please select a category for your item.';
         }
         return null;
     }
@@ -281,6 +292,23 @@ class AuctionFormValidator {
         // Target for displaying error
         let target = input;
 
+        // If it's the hidden category input, highlight the visible select(s)
+        if (input.id === 'selected_category_id') {
+            const mainCategorySelect = this.form.querySelector('#mainCategorySelect');
+            const subCategorySelect = this.form.querySelector('#subCategorySelect');
+            const subCategoryWrapper = this.form.querySelector('#subCategoryDropdownWrapper');
+
+            if (mainCategorySelect) {
+                if (!mainCategorySelect.value) {
+                    mainCategorySelect.classList.add('is-invalid');
+                    target = mainCategorySelect;
+                } else if (subCategorySelect && subCategoryWrapper && subCategoryWrapper.style.display !== 'none') {
+                    subCategorySelect.classList.add('is-invalid');
+                    target = subCategorySelect;
+                }
+            }
+        }
+
         // If it's an image input, we might want to target the wrapper or specialized grid
         if (input.id === 'imageInput') {
             const wrapper = input.closest('.image-upload-wrapper');
@@ -311,6 +339,15 @@ class AuctionFormValidator {
 
     clearFieldError(input) {
         input.classList.remove('is-invalid');
+
+        // If it's the hidden category input, clear visible select(s)
+        if (input.id === 'selected_category_id') {
+            const mainCategorySelect = this.form.querySelector('#mainCategorySelect');
+            const subCategorySelect = this.form.querySelector('#subCategorySelect');
+            if (mainCategorySelect) mainCategorySelect.classList.remove('is-invalid');
+            if (subCategorySelect) subCategorySelect.classList.remove('is-invalid');
+        }
+
         let target = input;
         if (input.id === 'imageInput') {
             const wrapper = input.closest('.image-upload-wrapper');
