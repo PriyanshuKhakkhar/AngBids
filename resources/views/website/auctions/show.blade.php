@@ -192,6 +192,7 @@
                                         max="{{ \App\Models\Auction::MAX_INCREMENT_ALLOWED }}" required>
                                 </div>
 
+
                                 <!-- Shortcut Buttons -->
                                 <div class="hibid-shortcuts">
                                     @foreach([100, 300, 500, 700, 1000] as $amount)
@@ -594,6 +595,7 @@
 <style>
     /* ===== HIBID-STYLE AUCTION PAGE ===== */
     .hibid-auction-section { background: transparent; }
+
 
     /* --- LEFT: Image Gallery --- */
     .hibid-main-image-wrap {
@@ -1057,31 +1059,32 @@
         const minIncrement = {{ $auction->min_increment ?? 0.01 }};
         const maxIncrement = {{ \App\Models\Auction::MAX_INCREMENT_ALLOWED }};
 
+
         if (bidInput) {
-            // Function to update bid feedback
             function updateBidFeedback() {
                 const val = parseFloat(bidInput.value);
-                const inputGroup = bidInput.closest('.input-group');
+                const inputGroup = bidInput.closest('.input-group') || bidInput.closest('.hibid-input-wrap');
                 
                 if (!isNaN(val) && val > 0) {
                     const newTotal = (currentPrice + val).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
                     
-                    // Client-side validation checks
                     if (val < minIncrement) {
-                        inputGroup.classList.add('border', 'border-danger');
+                        if (inputGroup) inputGroup.classList.add('border', 'border-danger');
                         errorFeedback.innerHTML = `<div class="alert alert-danger py-2 px-3 mt-2 rounded-3 small border-0 shadow-sm">
                             <i class="fas fa-exclamation-circle me-2"></i>Min increment is ₹${minIncrement.toFixed(2)}
                         </div>`;
                         totalFeedback.innerHTML = '';
                     } else if (val > maxIncrement) {
-                        inputGroup.classList.add('border', 'border-danger');
+                        if (inputGroup) inputGroup.classList.add('border', 'border-danger');
                         errorFeedback.innerHTML = `<div class="alert alert-danger py-2 px-3 mt-2 rounded-3 small border-0 shadow-sm">
                             <i class="fas fa-exclamation-circle me-2"></i>Max jump is ₹${maxIncrement.toFixed(2)}
                         </div>`;
                         totalFeedback.innerHTML = '';
                     } else {
-                        inputGroup.classList.remove('border', 'border-danger');
-                        inputGroup.classList.add('border', 'border-success');
+                        if (inputGroup) {
+                            inputGroup.classList.remove('border', 'border-danger');
+                            inputGroup.classList.add('border', 'border-success');
+                        }
                         errorFeedback.innerHTML = '';
                         totalFeedback.innerHTML = `<div class="alert alert-info py-2 px-3 mt-2 rounded-3 small border-0 shadow-sm animate__animated animate__fadeIn">
                             <i class="fas fa-calculator me-2 text-primary"></i><strong>New Total Bid:</strong> ₹${newTotal}
@@ -1098,14 +1101,11 @@
 
             bidInput.addEventListener('input', updateBidFeedback);
 
-            // Handle Shortcut Buttons
             document.querySelectorAll('.bid-shortcut').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const amount = this.getAttribute('data-amount');
                     bidInput.value = amount;
                     updateBidFeedback();
-                    
-                    // Add active class temporarily for visual feedback
                     this.classList.add('active');
                     setTimeout(() => this.classList.remove('active'), 200);
                 });
@@ -1126,7 +1126,7 @@
                 }
 
                 const newTotal = (currentPrice + val).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                
+
                 Swal.fire({
                     title: 'Confirm Your Bid',
                     html: `You are adding <strong>₹${val.toFixed(2)}</strong> to the current price.<br>Your total bid will be <strong>₹${newTotal}</strong>.`,

@@ -26,10 +26,15 @@ class PlaceBidRequest extends FormRequest
 
         return [
             'increment' => [
-                'required',
+                'nullable',
                 'numeric',
                 'min:' . $minIncrement,
                 'max:' . $maxIncrement,
+            ],
+            'max_bid_amount' => [
+                'nullable',
+                'numeric',
+                'min:' . ($auction->current_price + $minIncrement),
             ],
         ];
     }
