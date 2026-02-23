@@ -4,15 +4,15 @@ namespace App\Services;
 
 use Illuminate\Http\Request;
 
-// ✅ Models
+// Models
 use App\Models\Auction;
 
-// ✅ Helpers / Facades
+//Helpers / Facades
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\UploadedFile;
 
-// ✅ Notifications
+//Notifications
 use App\Notifications\AuctionCanceledNotification;
 use App\Notifications\AuctionApprovedNotification;
 
