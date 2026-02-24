@@ -126,6 +126,7 @@ class UserController extends Controller
 
         $validated = $request->validate([
             'name'     => 'required|string|min:2|max:255',
+            'username' => 'required|string|alpha_dash|max:255|unique:users,username',
             'email'    => 'required|email|max:255|unique:users,email',
             'password' => ['required', 'confirmed', 'min:8', Rules\Password::defaults()],
             'role'     => 'required|exists:roles,name',
@@ -134,6 +135,7 @@ class UserController extends Controller
         DB::transaction(function () use ($validated) {
             $user = User::create([
                 'name'     => trim($validated['name']),
+                'username' => strtolower(trim($validated['username'])),
                 'email'    => strtolower(trim($validated['email'])),
                 'password' => Hash::make($validated['password']),
             ]);
@@ -222,16 +224,18 @@ class UserController extends Controller
         // No restriction for super admin on role assignment
 
         $validated = $request->validate([
-            'name'  => 'required|string|min:2|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-            'role'  => 'required|exists:roles,name',
+            'name'     => 'required|string|min:2|max:255',
+            'username' => 'required|string|alpha_dash|max:255|unique:users,username,' . $user->id,
+            'email'    => 'required|email|max:255|unique:users,email,' . $user->id,
+            'role'     => 'required|exists:roles,name',
         ]);
 
         DB::transaction(function () use ($request, $validated, $user) {
 
             $user->update([
-                'name'  => trim($validated['name']),
-                'email' => strtolower(trim($validated['email'])),
+                'name'     => trim($validated['name']),
+                'username' => strtolower(trim($validated['username'])),
+                'email'    => strtolower(trim($validated['email'])),
             ]);
 
             if ($request->filled('password')) {

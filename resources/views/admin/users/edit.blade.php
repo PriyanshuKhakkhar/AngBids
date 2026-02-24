@@ -20,7 +20,7 @@
                 @method('PUT')
                 
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="name">Full Name <span class="text-danger">*</span></label>
                             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" id="name" value="{{ old('name', $user->name) }}">
@@ -33,7 +33,26 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="username">Username <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">@</span>
+                                </div>
+                                <input type="text" name="username" class="form-control @error('username') is-invalid @enderror" id="username" value="{{ old('username', $user->username) }}">
+                            </div>
+                            <small class="form-text text-muted">A-Z, 0-9, dashes and underscores only</small>
+                            <div class="invalid-feedback" id="username-error"></div>
+                            @error('username')
+                                <span class="invalid-feedback d-block" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="email">Email Address <span class="text-danger">*</span></label>
                             <input type="text" name="email" class="form-control @error('email') is-invalid @enderror" id="email" value="{{ old('email', $user->email) }}">
@@ -91,6 +110,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('userEditForm');
     const nameInput = document.getElementById('name');
+    const usernameInput = document.getElementById('username');
     const emailInput = document.getElementById('email');
     const roleSelect = document.getElementById('role');
 
@@ -117,6 +137,34 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             nameInput.classList.remove('is-invalid');
             nameInput.classList.add('is-valid');
+            errorDiv.textContent = '';
+            return true;
+        }
+    }
+
+    function validateUsername() {
+        const value = usernameInput.value.trim();
+        const errorDiv = document.getElementById('username-error');
+        const usernameRegex = /^[a-zA-Z0-9_-]+$/;
+        
+        if (value === '') {
+            usernameInput.classList.add('is-invalid');
+            usernameInput.classList.remove('is-valid');
+            errorDiv.textContent = 'Username is required.';
+            return false;
+        } else if (!usernameRegex.test(value)) {
+            usernameInput.classList.add('is-invalid');
+            usernameInput.classList.remove('is-valid');
+            errorDiv.textContent = 'Username can only contain letters, numbers, dashes, and underscores.';
+            return false;
+        } else if (value.length > 255) {
+            usernameInput.classList.add('is-invalid');
+            usernameInput.classList.remove('is-valid');
+            errorDiv.textContent = 'Username must not exceed 255 characters.';
+            return false;
+        } else {
+            usernameInput.classList.remove('is-invalid');
+            usernameInput.classList.add('is-valid');
             errorDiv.textContent = '';
             return true;
         }
@@ -180,6 +228,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    usernameInput.addEventListener('blur', validateUsername);
+    usernameInput.addEventListener('input', function() {
+        if (this.classList.contains('is-invalid')) {
+            validateUsername();
+        }
+    });
+
     emailInput.addEventListener('blur', validateEmail);
     emailInput.addEventListener('input', function() {
         if (this.classList.contains('is-invalid')) {
@@ -195,15 +250,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form submission validation
     form.addEventListener('submit', function(e) {
         const isNameValid = validateName();
+        const isUsernameValid = validateUsername();
         const isEmailValid = validateEmail();
         const isRoleValid = validateRole();
 
-        if (!isNameValid || !isEmailValid || !isRoleValid) {
+        if (!isNameValid || !isUsernameValid || !isEmailValid || !isRoleValid) {
             e.preventDefault();
             
             // Focus on first invalid field
             if (!isNameValid) {
                 nameInput.focus();
+            } else if (!isUsernameValid) {
+                usernameInput.focus();
             } else if (!isEmailValid) {
                 emailInput.focus();
             } else if (!isRoleValid) {
