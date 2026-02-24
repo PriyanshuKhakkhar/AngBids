@@ -78,8 +78,8 @@
                         @if($highestBid)
                             <div class="d-flex align-items-center gap-2">
                                 <img src="{{ $highestBid->user->avatar_url }}" class="rounded-circle border" width="24" height="24" alt="Winner Avatar">
-                                <span class="small text-dark fw-bold text-truncate" style="max-width: 100px;" title="{{ $highestBid->user->name }}">
-                                    {{ $highestBid->user->name }}
+                                <span class="small text-dark fw-bold text-truncate" style="max-width: 100px;" title="{{ $highestBid->user->username }}">
+                                    @_{{ $highestBid->user->username }}
                                 </span>
                             </div>
                         @else

@@ -74,7 +74,7 @@
                                 class="hibid-seller-avatar" alt="Seller">
                         </a>
                         <div class="hibid-seller-info">
-                            <a href="{{ route('sellers.show', $auction->user->id) }}" class="hibid-seller-name">{{ $auction->user->name }} (@_{{ $auction->user->username }})</a>
+                            <a href="{{ route('sellers.show', $auction->user->id) }}" class="hibid-seller-name">@_{{ $auction->user->username }}</a>
                             <div class="hibid-seller-meta">
                                 <span class="hibid-verified"><i class="fas fa-check-circle me-1"></i>VERIFIED</span>
                                 <span class="hibid-rating"><i class="fas fa-star me-1"></i>4.9</span>
@@ -285,7 +285,7 @@
                                             </tr>
                                             <tr>
                                                 <th class="bg-light ps-4 py-3">Auctioneer</th>
-                                                <td class="ps-4 py-3 fw-medium">{{ $auction->user->name }} (@_{{ $auction->user->username }})</td>
+                                                <td class="ps-4 py-3 fw-medium">@_{{ $auction->user->username }}</td>
                                             </tr>
                                             <tr>
                                                 <th class="bg-light ps-4 py-3">Type</th>
@@ -429,35 +429,6 @@
                         </div>
                     </div>
 
-                    <!-- 7. Bid History (Extra Section) -->
-                    <div class="accordion-item border-0 shadow-sm rounded-4 overflow-hidden">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed fw-bold text-primary bg-white px-4 py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHistory">
-                                Bid History ({{ $auction->bids->count() }})
-                            </button>
-                        </h2>
-                        <div id="collapseHistory" class="accordion-collapse collapse" data-bs-parent="#auctionAccordion">
-                            <div class="accordion-body px-4 py-4">
-                                @forelse($auction->bids->sortByDesc('created_at') as $bid)
-                                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom last-child-border-0">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <img src="{{ $bid->user->avatar_url }}" class="rounded-circle border" height="35" width="35" style="object-fit: cover;">
-                                            <div>
-                                                <span class="d-block text-dark fw-bold small">{{ $bid->user->name }} (@_{{ $bid->user->username }})</span>
-                                                <small class="text-muted" style="font-size: 0.7rem;">{{ $bid->created_at->diffForHumans() }}</small>
-                                            </div>
-                                        </div>
-                                        <span class="text-primary fw-bold">₹{{ number_format($bid->amount, 2) }}</span>
-                                    </div>
-                                @empty
-                                    <div class="text-center py-4 text-secondary">
-                                        <i class="fas fa-history d-block mb-3 opacity-25 fs-2"></i>
-                                        <span class="small">No bids placed yet.</span>
-                                    </div>
-                                @endforelse
-                            </div>
-                        </div>
-                    </div>
 
                 </div>
             </div>
