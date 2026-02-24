@@ -89,9 +89,9 @@ class ContactController extends Controller
         return view('admin.contacts.index');
     }
 
-    /**
-     * Display the specified contact
-     */
+    
+     //Display the specified contact
+     
     public function show($id)
     {
         $contact = Contact::withTrashed()->findOrFail($id);
@@ -104,9 +104,9 @@ class ContactController extends Controller
         return view('admin.contacts.show', compact('contact'));
     }
 
-    /**
-     * Update contact status and notes
-     */
+    
+     //Update contact status and notes
+     
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -139,9 +139,9 @@ class ContactController extends Controller
         return back()->with('success', 'Contact updated successfully!');
     }
 
-    /**
-     * Soft delete contact
-     */
+    
+    //Soft delete contact
+     
     public function destroy($id)
     {
         $contact = Contact::findOrFail($id);
@@ -157,9 +157,9 @@ class ContactController extends Controller
         ]);
     }
 
-    /**
-     * Restore soft deleted contact
-     */
+    
+      //Restore soft deleted contact
+     
     public function restore($id)
     {
         $contact = Contact::withTrashed()->findOrFail($id);

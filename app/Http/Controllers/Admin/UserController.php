@@ -266,13 +266,12 @@ class UserController extends Controller
                 : back()->with('error', 'You cannot delete yourself');
         }
 
-        // Check permissions... (Using simple logic here to match context)
+        // Check permissions
         if ($currentUser->isAdmin() && !$currentUser->isSuperAdmin() && ($user->isSuperAdmin() || $user->isAdmin())) {
              return request()->ajax()
                 ? response()->json(['error' => 'Unauthorized'], 403)
                 : back()->with('error', 'You can only delete User role accounts');
         }
-        // ... (simplified logic check)
 
         $user->update(['deleted_by' => Auth::id()]);
         $user->delete();
@@ -287,7 +286,6 @@ class UserController extends Controller
     public function restore($id)
     {
         $user = User::withTrashed()->findOrFail($id);
-        // ... permission checks omitted for brevity but should be here
 
         $user->restore();
         $user->update(['deleted_by' => null]);
@@ -302,7 +300,7 @@ class UserController extends Controller
     public function forceDelete($id)
     {
         $user = User::withTrashed()->findOrFail($id);
-        // ... permission checks
+        // permission checks
 
         $user->roles()->detach();
         $user->forceDelete();
