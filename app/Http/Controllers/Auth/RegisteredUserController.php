@@ -30,6 +30,7 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'min:2', 'max:255', 'regex:/^[a-zA-Z\s\'-]+$/'],
+            'username' => ['required', 'string', 'alpha_dash', 'max:255', 'unique:'.User::class],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', 'min:8', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'],
         ], [
@@ -37,6 +38,9 @@ class RegisteredUserController extends Controller
             'name.min' => 'Name must be at least 2 characters.',
             'name.max' => 'Name must not exceed 255 characters.',
             'name.regex' => 'Name can only contain letters, spaces, hyphens, and apostrophes.',
+            'username.required' => 'Username is required.',
+            'username.max' => 'Username must not exceed 255 characters.',
+            'username.unique' => 'This username is already taken.',
             'email.required' => 'Email address is required.',
             'email.email' => 'Please enter a valid email address.',
             'email.max' => 'Email must not exceed 255 characters.',
@@ -49,6 +53,7 @@ class RegisteredUserController extends Controller
 
         $user = User::create([
             'name' => $request->name,
+            'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);

@@ -19,6 +19,7 @@ test('profile information can be updated', function () {
         ->actingAs($user)
         ->patch('/profile', [
             'name' => 'Test User',
+            'username' => 'testuser_updated',
             'email' => 'test@example.com',
         ]);
 
@@ -29,6 +30,7 @@ test('profile information can be updated', function () {
     $user->refresh();
 
     $this->assertSame('Test User', $user->name);
+    $this->assertSame('testuser_updated', $user->username);
     $this->assertSame('test@example.com', $user->email);
     $this->assertNull($user->email_verified_at);
 });
@@ -82,4 +84,21 @@ test('correct password must be provided to delete account', function () {
         ->assertRedirect('/profile');
 
     $this->assertNotNull($user->fresh());
+});
+
+test('username must be alpha_dash', function () {
+    $user = User::factory()->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->from('/profile')
+        ->patch('/profile', [
+            'name' => 'Test User',
+            'username' => 'invalid username',
+            'email' => $user->email,
+        ]);
+
+    $response
+        ->assertSessionHasErrors('username')
+        ->assertRedirect('/profile');
 });
