@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Str;
 
 class SocialController extends Controller
 {
@@ -46,8 +47,19 @@ class SocialController extends Controller
                     $user->update(['google_id' => $socialUser->getId()]);
                 } else {
                     // Create a brand new user
+                    // Generate a unique username from name
+                    $baseUsername = Str::slug($socialUser->getName() ?: 'user', '');
+                    $username = $baseUsername;
+                    $counter = 1;
+                    
+                    while (User::where('username', $username)->exists()) {
+                        $username = $baseUsername . $counter;
+                        $counter++;
+                    }
+
                     $user = User::create([
                         'name'              => $socialUser->getName(),
+                        'username'          => $username,
                         'email'             => $socialUser->getEmail(),
                         'google_id'         => $socialUser->getId(),
                         'email_verified_at' => now(),
