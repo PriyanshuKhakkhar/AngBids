@@ -61,6 +61,9 @@ class FormValidator {
             case 'name':
                 error = this.validateName(value);
                 break;
+            case 'username':
+                error = this.validateUsername(value);
+                break;
             case 'email':
                 error = this.validateEmail(value);
                 break;
@@ -100,6 +103,19 @@ class FormValidator {
         }
         if (!/^[a-zA-Z\s'-]+$/.test(value)) {
             return 'Name can only contain letters, spaces, hyphens, and apostrophes.';
+        }
+        return null;
+    }
+
+    validateUsername(value) {
+        if (!value) {
+            return 'Username is required.';
+        }
+        if (value.length > 255) {
+            return 'Username must not exceed 255 characters.';
+        }
+        if (!/^[a-zA-Z0-9_-]+$/.test(value)) {
+            return 'Username can only contain letters, numbers, dashes, and underscores.';
         }
         return null;
     }

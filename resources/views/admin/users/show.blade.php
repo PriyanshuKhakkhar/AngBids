@@ -39,7 +39,8 @@
                                 </span>
                              </div>
                             <h5 class="font-weight-bold text-gray-800">{{ $user->name }}</h5>
-                            <p class="text-muted mb-1">{{ $user->email }}</p>
+                            <p class="text-primary font-weight-bold mb-1">@_{{ $user->username }}</p>
+                            <p class="text-muted mb-2 small">{{ $user->email }}</p>
                             <div class="mb-3">
                                 @foreach($user->roles as $role)
                                     <span class="badge badge-info px-2 py-1">{{ ucfirst($role->name) }}</span>
@@ -78,6 +79,10 @@
                                 <tr class="border-bottom">
                                     <th class="text-gray-600 pl-0">Full Name</th>
                                     <td class="text-gray-800">{{ $user->name }}</td>
+                                </tr>
+                                <tr class="border-bottom">
+                                    <th class="text-gray-600 pl-0">Username</th>
+                                    <td class="text-gray-800">@_{{ $user->username }}</td>
                                 </tr>
                                 <tr class="border-bottom">
                                     <th class="text-gray-600 pl-0">Email Address</th>

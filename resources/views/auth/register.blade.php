@@ -29,6 +29,21 @@
                             @enderror
                         </div>
 
+                        <!-- Username -->
+                        <div class="mb-3">
+                            <label for="username" class="form-label fw-bold">Username</label>
+                            <input type="text"
+                                      class="form-control @error('username') is-invalid @enderror" 
+                                      id="username" 
+                                      name="username" 
+                                      value="{{ old('username') }}" 
+                                      placeholder="Choose a username"
+                                      required>
+                            @error('username')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <!-- Email -->
                         <div class="mb-3">
                             <label for="email" class="form-label fw-bold">Email Address</label>

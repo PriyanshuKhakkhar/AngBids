@@ -105,7 +105,7 @@
             <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow-sm px-4 py-3">
                 <div class="container-fluid d-flex justify-content-between">
                     <div class="h5 mb-0 text-gray-800 d-none d-md-inline-block">
-                        Welcome back, <span class="fw-bold text-primary">{{ auth()->user()->name }}</span>
+                        Welcome back, <span class="fw-bold text-primary">{{ auth()->user()->name }}</span> <small class="text-muted fs-6">(@_{{ auth()->user()->username }})</small>
                     </div>
 
                     <ul class="navbar-nav ml-auto align-items-center">
@@ -113,7 +113,7 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small me-2">{{ auth()->user()->name }}</span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small me-2">{{ auth()->user()->name }} (@_{{ auth()->user()->username }})</span>
                                 <img class="img-profile rounded-circle" width="32" height="32" style="object-fit: cover;"
                                     src="{{ auth()->user()->avatar_url }}">
                             </a>

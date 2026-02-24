@@ -172,7 +172,7 @@
                                                         {{ strtoupper(substr($bid->user->name ?? 'U', 0, 1)) }}
                                                     </div>
                                                     <div class="text-truncate">
-                                                        <div class="font-weight-bold text-dark">{{ $bid->user->name ?? 'Unknown User' }}</div>
+                                                        <div class="font-weight-bold text-dark">@_{{ $bid->user->username ?? 'unknown' }}</div>
                                                         <div class="small text-muted">{{ $bid->user->email ?? '' }}</div>
                                                     </div>
                                                 </div>
@@ -216,7 +216,7 @@
                 </div>
                 <div class="card-body">
                     <p><strong>ID:</strong> #{{ $auction->id }}</p>
-                    <p><strong>Seller:</strong> {{ $auction->user->name }} ({{ $auction->user->email }})</p>
+                    <p><strong>Seller:</strong> @_{{ $auction->user->username }} ({{ $auction->user->email }})</p>
                     <p><strong>Category:</strong> 
                         @if($auction->category)
                             @if($auction->category->parent)
