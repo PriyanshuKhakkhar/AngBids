@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Website\WebsiteController;
 use App\Http\Controllers\Website\AuctionController;
 use App\Http\Controllers\Website\PublicProfileController;
+use App\Http\Controllers\Auth\SocialController;
 
 // User Controllers
 use App\Http\Controllers\User\ProfileController;
@@ -133,5 +134,10 @@ Route::middleware(['auth', 'role:admin|super admin'])
         // Blank Page
         Route::get('/blank', [DashboardController::class, 'blank'])->name('blank');
     });
+
+//  Google Social Login Routes
+
+Route::get('/auth/{provider}/redirect', [SocialController::class, 'redirect'])->name('social.redirect');
+Route::get('/auth/{provider}/callback', [SocialController::class, 'callback'])->name('social.callback');
 
 require __DIR__ . '/auth.php';

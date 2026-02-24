@@ -109,7 +109,7 @@ class ContactController extends Controller
         if ($request->status === 'replied') {
              // Find user by email if exists to notify
              $user = User::where('email', $contact->email)->first();
-             // Or send email directly if not a user (not implemented here, following logic to notify user model)
+            
              if ($user) {
                  // Assuming ContactReplyNotification exists
                  try {

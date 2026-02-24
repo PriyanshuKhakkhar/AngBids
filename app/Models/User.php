@@ -18,6 +18,8 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
+        'google_id',
+        'email_verified_at',
         'phone',
         'location',
         'avatar',
