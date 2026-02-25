@@ -37,6 +37,7 @@ class PlaceBidRequest extends FormRequest
                 'required_without:increment',
                 'numeric',
                 'min:' . ($auction->current_price + $minIncrement),
+                'max:999999999999.99', // 12 digits max
             ],
         ];
     }
