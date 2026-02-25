@@ -31,7 +31,7 @@ class BidService
             $auction = Auction::where('id', $auction->id)->lockForUpdate()->first();
             
             $isExtended = false;
-            $minIncrement = (float)($auction->min_increment ?? 0.01);
+            $minIncrement = (float)($auction->min_increment ?? 100.00);
 
             \Illuminate\Support\Facades\Log::debug("Bidding started for auction {$auction->id} by user {$user->id}", [
                 'bid_data' => $bidData,

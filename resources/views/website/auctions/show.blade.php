@@ -226,19 +226,19 @@
                                     <div class="tab-pane fade show active" id="quick-bid" role="tabpanel">
                                         <div class="hibid-increment-header">
                                             <label class="hibid-increment-label">YOUR BID INCREMENT (₹)</label>
-                                            <span class="hibid-min-badge">Min: ₹{{ number_format($auction->min_increment ?? 0.01, 2) }}</span>
+                                            <span class="hibid-min-badge">Min: ₹{{ number_format($auction->min_increment ?? 100.00, 2) }}</span>
                                         </div>
-
+ 
                                         <div class="hibid-input-wrap">
                                             <span class="hibid-input-prefix">₹</span>
                                             <input type="number" name="increment" id="bid-increment"
                                                 class="hibid-bid-input"
-                                                placeholder="{{ number_format($auction->min_increment ?? 0.01, 2, '.', '') }}"
+                                                placeholder="{{ number_format($auction->min_increment ?? 100.00, 2, '.', '') }}"
                                                 value="{{ old('increment') }}"
-                                                min="{{ $auction->min_increment ?? 0.01 }}" step="0.01"
+                                                min="{{ $auction->min_increment ?? 100.00 }}" step="0.01"
                                                 max="{{ \App\Models\Auction::MAX_INCREMENT_ALLOWED }}">
                                         </div>
-
+ 
                                         <!-- Shortcut Buttons -->
                                         <div class="hibid-shortcuts mb-2">
                                             @foreach([100, 300, 500, 700, 1000] as $amount)
@@ -246,21 +246,21 @@
                                             @endforeach
                                         </div>
                                     </div>
-
+ 
                                     <!-- Auto Bid Pane -->
                                     <div class="tab-pane fade" id="auto-bid" role="tabpanel">
                                         <div class="hibid-increment-header">
                                             <label class="hibid-increment-label">MAXIMUM BID AMOUNT (₹)</label>
-                                            <span class="hibid-min-badge">Min: ₹{{ number_format($auction->current_price + ($auction->min_increment ?? 0.01), 2) }}</span>
+                                            <span class="hibid-min-badge">Min: ₹{{ number_format($auction->current_price + ($auction->min_increment ?? 100.00), 2) }}</span>
                                         </div>
-
+ 
                                         <div class="hibid-input-wrap">
                                             <span class="hibid-input-prefix">₹</span>
                                             <input type="number" name="max_bid_amount" id="max-bid-amount"
                                                 class="hibid-bid-input"
                                                 placeholder="Enter your maximum limit"
                                                 value="{{ old('max_bid_amount') }}"
-                                                min="{{ $auction->current_price + ($auction->min_increment ?? 0.01) }}" step="0.01">
+                                                min="{{ $auction->current_price + ($auction->min_increment ?? 100.00) }}" step="0.01">
                                         </div>
                                         <p class="text-muted small mb-2"><i class="fas fa-robot me-1"></i> We'll bid for you up to this limit.</p>
                                     </div>

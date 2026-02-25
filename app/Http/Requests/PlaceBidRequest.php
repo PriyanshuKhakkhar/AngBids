@@ -21,7 +21,7 @@ class PlaceBidRequest extends FormRequest
     public function rules(): array
     {
         $auction = $this->route('auction');
-        $minIncrement = $auction->min_increment ?? 0.01;
+        $minIncrement = $auction->min_increment ?? 100.00;
         $maxIncrement = \App\Models\Auction::MAX_INCREMENT_ALLOWED;
 
         return [
@@ -50,10 +50,10 @@ class PlaceBidRequest extends FormRequest
             'increment.required_without' => 'Please enter either a bid increment or a maximum bid amount.',
             'max_bid_amount.required_without' => 'Please enter either a bid increment or a maximum bid amount.',
             'increment.numeric' => 'The bid increment must be a valid number.',
-            'increment.min' => 'Your increment is too small. The minimum allowed is ₹' . number_format($this->route('auction')->min_increment ?? 0.01, 2) . '.',
+            'increment.min' => 'Your increment is too small. The minimum allowed is ₹' . number_format($this->route('auction')->min_increment ?? 100.00, 2) . '.',
             'increment.max' => 'Your increment is too large. The maximum jump allowed in a single bid is ₹' . number_format(\App\Models\Auction::MAX_INCREMENT_ALLOWED, 2) . '.',
             'max_bid_amount.numeric' => 'The maximum bid amount must be a valid number.',
-            'max_bid_amount.min' => 'Your maximum bid must be at least ₹' . number_format(($this->route('auction')->current_price + ($this->route('auction')->min_increment ?? 0.01)), 2) . '.',
+            'max_bid_amount.min' => 'Your maximum bid must be at least ₹' . number_format(($this->route('auction')->current_price + ($this->route('auction')->min_increment ?? 100.00)), 2) . '.',
         ];
     }
 }
