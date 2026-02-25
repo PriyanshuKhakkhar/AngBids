@@ -43,8 +43,12 @@ class SocialController extends Controller
                 $user = User::where('email', $socialUser->getEmail())->first();
 
                 if ($user) {
-                    // Link google_id to existing account
-                    $user->update(['google_id' => $socialUser->getId()]);
+                    // Link google_id to existing account and verify email
+                    $updateData = ['google_id' => $socialUser->getId()];
+                    if (!$user->email_verified_at) {
+                        $updateData['email_verified_at'] = now();
+                    }
+                    $user->update($updateData);
                 } else {
                     // Create a brand new user
                     // Generate a unique username from name

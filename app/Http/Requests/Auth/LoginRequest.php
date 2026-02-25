@@ -72,6 +72,31 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        $user = Auth::user();
+
+        // Check if email is verified (Bypass OTP for admin and super admin roles)
+        if (!$user->email_verified_at && !$user->isSuperAdmin() && !$user->isAdmin()) {
+            // Generate a fresh OTP for them
+            $otp = rand(100000, 999999);
+            
+            session([
+                'otp_code' => $otp,
+                'otp_email' => $user->email,
+                'otp_time' => now(),
+            ]);
+
+            // Dispatch OTP Email
+            \App\Jobs\SendOtpEmailJob::dispatch($user->email, $otp);
+
+            // Log them out for now until they verify
+            Auth::logout();
+            
+            // Redirect to OTP page with a specific error message
+            throw ValidationException::withMessages([
+                'email' => 'Your email is not verified. A new OTP has been sent to your email. Please verify it here.',
+            ])->redirectTo(route('otp.show'));
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

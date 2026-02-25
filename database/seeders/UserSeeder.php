@@ -14,6 +14,7 @@ class UserSeeder extends Seeder
             'username' => 'superadmin',
             'email' => 'superadmin@larabids.com',
             'password' => Hash::make('password'),
+            'email_verified_at' => now(),
         ]);
         $superAdmin->assignRole('super admin');
 
@@ -22,6 +23,7 @@ class UserSeeder extends Seeder
             'username' => 'admin',
             'email' => 'admin@larabids.com',
             'password' => Hash::make('password'),
+            'email_verified_at' => now(),
         ]);
         $admin->assignRole('admin');
     }

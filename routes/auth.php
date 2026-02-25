@@ -33,6 +33,11 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+
+    // OTP Verification Routes
+    Route::get('verify-otp', [\App\Http\Controllers\Auth\OtpController::class, 'show'])->name('otp.show');
+    Route::post('verify-otp', [\App\Http\Controllers\Auth\OtpController::class, 'verify'])->name('otp.verify');
+    Route::post('resend-otp', [\App\Http\Controllers\Auth\OtpController::class, 'resend'])->name('otp.resend');
 });
 
 Route::middleware('auth')->group(function () {
