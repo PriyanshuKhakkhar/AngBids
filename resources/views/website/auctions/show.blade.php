@@ -162,6 +162,33 @@
                         <!-- Bid Form / Login -->
                         @if(!$isClosed)
                         @auth
+                            <!-- Winner Status Badge -->
+                            @php
+                                $highestBid = $auction->bids()->first();
+                                $isWinning = ($highestBid && (int)$highestBid->user_id === (int)auth()->id());
+                                $userProxy = $auction->autoBids()->where('user_id', auth()->id())->where('active', true)->first();
+                            @endphp
+
+                            <div class="mb-3">
+                                @if($isWinning)
+                                    <div class="badge bg-success py-2 px-3 rounded-pill w-100 hibid-pulse mb-2">
+                                        <i class="fas fa-check-circle me-1"></i> You are the highest bidder!
+                                    </div>
+                                @elseif($highestBid)
+                                    <div class="badge bg-danger py-2 px-3 rounded-pill w-100 mb-2">
+                                        <i class="fas fa-times-circle me-1"></i> Someone has outbid you!
+                                    </div>
+                                @endif
+
+                                @if($userProxy)
+                                    <div class="card border-primary-subtle bg-primary-subtle bg-opacity-10 border-dashed rounded-3 p-2 text-center">
+                                        <div class="small text-primary fw-bold">
+                                            <i class="fas fa-robot me-1"></i> Your Auto-Bid Limit: 
+                                            <span class="fs-6">₹{{ number_format($userProxy->max_bid_amount, 2) }}</span>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
                             @if(session('success'))
                                 <div class="alert alert-success alert-dismissible fade show mb-3 rounded-3" role="alert">
                                     {{ session('success') }}
@@ -174,30 +201,69 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
                             @endif
+                            @if(session('warning'))
+                                <div class="alert alert-warning alert-dismissible fade show mb-3 rounded-3" role="alert">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>{{ session('warning') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            @endif
 
                             <form action="{{ route('auctions.bid', $auction->id) }}" method="POST" class="mb-3" id="place-bid-form">
                                 @csrf
-                                <div class="hibid-increment-header">
-                                    <label class="hibid-increment-label">YOUR BID INCREMENT (₹)</label>
-                                    <span class="hibid-min-badge">Min: ₹{{ number_format($auction->min_increment ?? 0.01, 2) }}</span>
-                                </div>
+                                
+                                <!-- Bid Tabs -->
+                                <ul class="nav nav-pills nav-justified hibid-bid-tabs mb-3" id="bidTab" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="quick-bid-tab" data-bs-toggle="pill" data-bs-target="#quick-bid" type="button" role="tab">Quick Bid</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="auto-bid-tab" data-bs-toggle="pill" data-bs-target="#auto-bid" type="button" role="tab">Auto Bid (Proxy)</button>
+                                    </li>
+                                </ul>
 
-                                <div class="hibid-input-wrap">
-                                    <span class="hibid-input-prefix">₹</span>
-                                    <input type="number" name="increment" id="bid-increment"
-                                        class="hibid-bid-input"
-                                        placeholder="{{ number_format($auction->min_increment ?? 0.01, 2, '.', '') }}"
-                                        value="{{ old('increment') }}"
-                                        min="{{ $auction->min_increment ?? 0.01 }}" step="0.01"
-                                        max="{{ \App\Models\Auction::MAX_INCREMENT_ALLOWED }}" required>
-                                </div>
+                                <div class="tab-content" id="bidTabContent">
+                                    <!-- Quick Bid Pane -->
+                                    <div class="tab-pane fade show active" id="quick-bid" role="tabpanel">
+                                        <div class="hibid-increment-header">
+                                            <label class="hibid-increment-label">YOUR BID INCREMENT (₹)</label>
+                                            <span class="hibid-min-badge">Min: ₹{{ number_format($auction->min_increment ?? 0.01, 2) }}</span>
+                                        </div>
 
+                                        <div class="hibid-input-wrap">
+                                            <span class="hibid-input-prefix">₹</span>
+                                            <input type="number" name="increment" id="bid-increment"
+                                                class="hibid-bid-input"
+                                                placeholder="{{ number_format($auction->min_increment ?? 0.01, 2, '.', '') }}"
+                                                value="{{ old('increment') }}"
+                                                min="{{ $auction->min_increment ?? 0.01 }}" step="0.01"
+                                                max="{{ \App\Models\Auction::MAX_INCREMENT_ALLOWED }}">
+                                        </div>
 
-                                <!-- Shortcut Buttons -->
-                                <div class="hibid-shortcuts">
-                                    @foreach([100, 300, 500, 700, 1000] as $amount)
-                                        <button type="button" class="hibid-shortcut-btn bid-shortcut" data-amount="{{ $amount }}">+₹{{ $amount }}</button>
-                                    @endforeach
+                                        <!-- Shortcut Buttons -->
+                                        <div class="hibid-shortcuts mb-2">
+                                            @foreach([100, 300, 500, 700, 1000] as $amount)
+                                                <button type="button" class="hibid-shortcut-btn bid-shortcut" data-amount="{{ $amount }}">+₹{{ $amount }}</button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    <!-- Auto Bid Pane -->
+                                    <div class="tab-pane fade" id="auto-bid" role="tabpanel">
+                                        <div class="hibid-increment-header">
+                                            <label class="hibid-increment-label">MAXIMUM BID AMOUNT (₹)</label>
+                                            <span class="hibid-min-badge">Min: ₹{{ number_format($auction->current_price + ($auction->min_increment ?? 0.01), 2) }}</span>
+                                        </div>
+
+                                        <div class="hibid-input-wrap">
+                                            <span class="hibid-input-prefix">₹</span>
+                                            <input type="number" name="max_bid_amount" id="max-bid-amount"
+                                                class="hibid-bid-input"
+                                                placeholder="Enter your maximum limit"
+                                                value="{{ old('max_bid_amount') }}"
+                                                min="{{ $auction->current_price + ($auction->min_increment ?? 0.01) }}" step="0.01">
+                                        </div>
+                                        <p class="text-muted small mb-2"><i class="fas fa-robot me-1"></i> We'll bid for you up to this limit.</p>
+                                    </div>
                                 </div>
 
                                 <div id="bid-feedback-area" class="mb-2">
@@ -206,12 +272,15 @@
                                             <i class="fas fa-exclamation-circle me-2"></i>{{ $message }}
                                         </div>
                                     @enderror
+                                    @error('max_bid_amount')
+                                        <div class="alert alert-danger py-2 px-3 rounded-3 small border-0 shadow-sm">
+                                            <i class="fas fa-exclamation-circle me-2"></i>{{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                                 <div class="bid-feedback-total"></div>
 
-                                <small class="hibid-max-jump">Max jump: ₹{{ number_format(\App\Models\Auction::MAX_INCREMENT_ALLOWED, 2) }}</small>
-
-                                <button type="submit" class="hibid-place-bid-btn">
+                                <button type="submit" class="hibid-place-bid-btn mt-2">
                                     Place Bid Now <i class="fas fa-gavel ms-2"></i>
                                 </button>
                             </form>
@@ -916,6 +985,37 @@
         transition: border-color 0.2s, color 0.2s;
     }
     .hibid-share-btn:hover { border-color: #4e73df; color: #4e73df; }
+    
+    /* Bidding Tabs Styles */
+    .hibid-bid-tabs {
+        border-bottom: none;
+        background: #f8f9fc;
+        padding: 5px;
+        border-radius: 8px;
+    }
+    .hibid-bid-tabs .nav-link {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #6c757d;
+        padding: 8px 10px;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    .hibid-bid-tabs .nav-link.active {
+        background: #fff !important;
+        color: #4e73df !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    }
+
+    /* Winning Badge Pulse */
+    .hibid-pulse {
+        animation: hibid-pulse-glow 2s infinite;
+    }
+    @keyframes hibid-pulse-glow {
+        0% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.8; transform: scale(1.02); }
+        100% { opacity: 1; transform: scale(1); }
+    }
 
     /* Seller Card */
     .hibid-seller-card {
@@ -1023,6 +1123,7 @@
 
         // Bid Increment Real-time Feedback
         const bidInput = document.getElementById('bid-increment');
+        const maxBidInput = document.getElementById('max-bid-amount');
         const totalFeedback = document.querySelector('.bid-feedback-total');
         const errorFeedback = document.getElementById('bid-feedback-area');
         const placeBidForm = document.getElementById('place-bid-form');
@@ -1031,86 +1132,116 @@
         const maxIncrement = {{ \App\Models\Auction::MAX_INCREMENT_ALLOWED }};
 
 
-        if (bidInput) {
-            function updateBidFeedback() {
+        function updateBidFeedback() {
+            const activeTab = document.querySelector('#bidTab .nav-link.active') ? document.querySelector('#bidTab .nav-link.active').id : 'quick-bid-tab';
+            const currentInputField = (activeTab === 'quick-bid-tab' ? bidInput : maxBidInput);
+            if (!currentInputField) return;
+
+            const inputGroup = currentInputField.closest('.hibid-input-wrap');
+            
+            errorFeedback.innerHTML = '';
+            totalFeedback.innerHTML = '';
+            if (inputGroup) inputGroup.classList.remove('border', 'border-danger', 'border-success');
+
+            if (activeTab === 'quick-bid-tab') {
                 const val = parseFloat(bidInput.value);
-                const inputGroup = bidInput.closest('.input-group') || bidInput.closest('.hibid-input-wrap');
-                
                 if (!isNaN(val) && val > 0) {
                     const newTotal = (currentPrice + val).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                    
-                    if (val < minIncrement) {
-                        if (inputGroup) inputGroup.classList.add('border', 'border-danger');
-                        errorFeedback.innerHTML = `<div class="alert alert-danger py-2 px-3 mt-2 rounded-3 small border-0 shadow-sm">
-                            <i class="fas fa-exclamation-circle me-2"></i>Min increment is ₹${minIncrement.toFixed(2)}
-                        </div>`;
-                        totalFeedback.innerHTML = '';
-                    } else if (val > maxIncrement) {
-                        if (inputGroup) inputGroup.classList.add('border', 'border-danger');
-                        errorFeedback.innerHTML = `<div class="alert alert-danger py-2 px-3 mt-2 rounded-3 small border-0 shadow-sm">
-                            <i class="fas fa-exclamation-circle me-2"></i>Max jump is ₹${maxIncrement.toFixed(2)}
-                        </div>`;
-                        totalFeedback.innerHTML = '';
-                    } else {
-                        if (inputGroup) {
-                            inputGroup.classList.remove('border', 'border-danger');
+                    if (inputGroup) { // Check if inputGroup exists before adding classes
+                        if (val < minIncrement) {
+                            inputGroup.classList.add('border', 'border-danger');
+                            errorFeedback.innerHTML = `<div class="alert alert-danger py-2 px-3 mt-2 rounded-3 small border-0 shadow-sm"><i class="fas fa-exclamation-circle me-2"></i>Min increment is ₹${minIncrement.toFixed(2)}</div>`;
+                        } else if (val > maxIncrement) {
+                            inputGroup.classList.add('border', 'border-danger');
+                            errorFeedback.innerHTML = `<div class="alert alert-danger py-2 px-3 mt-2 rounded-3 small border-0 shadow-sm"><i class="fas fa-exclamation-circle me-2"></i>Max jump is ₹${maxIncrement.toFixed(2)}</div>`;
+                        } else {
                             inputGroup.classList.add('border', 'border-success');
+                            totalFeedback.innerHTML = `<div class="alert alert-info py-2 px-3 mt-2 rounded-3 small border-0 shadow-sm animate__animated animate__fadeIn"><i class="fas fa-calculator me-2 text-primary"></i><strong>New Total Bid:</strong> ₹${newTotal}</div>`;
                         }
-                        errorFeedback.innerHTML = '';
-                        totalFeedback.innerHTML = `<div class="alert alert-info py-2 px-3 mt-2 rounded-3 small border-0 shadow-sm animate__animated animate__fadeIn">
-                            <i class="fas fa-calculator me-2 text-primary"></i><strong>New Total Bid:</strong> ₹${newTotal}
-                        </div>`;
                     }
-                } else {
-                    totalFeedback.innerHTML = '';
-                    errorFeedback.innerHTML = '';
-                    if (inputGroup) {
-                        inputGroup.classList.remove('border', 'border-danger', 'border-success');
+                }
+            } else {
+                const val = parseFloat(maxBidInput.value);
+                if (!isNaN(val) && val > 0) {
+                    if (inputGroup) { // Check if inputGroup exists before adding classes
+                        if (val < (currentPrice + minIncrement)) {
+                            inputGroup.classList.add('border', 'border-danger');
+                            errorFeedback.innerHTML = `<div class="alert alert-danger py-2 px-3 mt-2 rounded-3 small border-0 shadow-sm"><i class="fas fa-exclamation-circle me-2"></i>Min auto-bid is ₹${(currentPrice + minIncrement).toFixed(2)}</div>`;
+                        } else {
+                            inputGroup.classList.add('border', 'border-success');
+                            totalFeedback.innerHTML = `<div class="alert alert-success py-2 px-3 mt-2 rounded-3 small border-0 shadow-sm animate__animated animate__fadeIn"><i class="fas fa-robot me-2"></i><strong>Max Limit:</strong> ₹${val.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>`;
+                        }
                     }
                 }
             }
+        }
 
-            bidInput.addEventListener('input', updateBidFeedback);
+        if (bidInput) bidInput.addEventListener('input', updateBidFeedback);
+        if (maxBidInput) maxBidInput.addEventListener('input', updateBidFeedback);
+        
+        // Tab switch listener
+        document.querySelectorAll('#bidTab .nav-link').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function() {
+                updateBidFeedback();
+            });
+        });
 
-            document.querySelectorAll('.bid-shortcut').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const amount = this.getAttribute('data-amount');
+        document.querySelectorAll('.bid-shortcut').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const amount = this.getAttribute('data-amount');
+                if (bidInput) {
                     bidInput.value = amount;
                     updateBidFeedback();
-                    this.classList.add('active');
-                    setTimeout(() => this.classList.remove('active'), 200);
-                });
+                }
+                this.classList.add('active');
+                setTimeout(() => this.classList.remove('active'), 200);
             });
+        });
 
+        if (placeBidForm) {
             placeBidForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                const val = parseFloat(bidInput.value);
+                const activeTab = document.querySelector('#bidTab .nav-link.active') ? document.querySelector('#bidTab .nav-link.active').id : 'quick-bid-tab';
+                let title = '', html = '';
 
-                if (isNaN(val) || val < minIncrement || val > maxIncrement) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Invalid Bid',
-                        text: `Please enter an increment between ₹${minIncrement.toFixed(2)} and ₹${maxIncrement.toFixed(2)}.`,
-                        confirmButtonColor: '#4e73df'
-                    });
-                    return;
+                if (activeTab === 'quick-bid-tab') {
+                    const val = parseFloat(bidInput.value);
+                    if (isNaN(val) || val < minIncrement || val > maxIncrement) {
+                        Swal.fire({ icon: 'error', title: 'Invalid Bid', text: `Enter increment between ₹${minIncrement.toFixed(2)} and ₹${maxIncrement.toFixed(2)}.` });
+                        return;
+                    }
+                    const newTotal = (currentPrice + val).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    title = 'Confirm Quick Bid';
+                    html = `Adding <strong>₹${val.toFixed(2)}</strong> to current price.<br>Total bid: <strong>₹${newTotal}</strong>.`;
+                } else {
+                    const val = parseFloat(maxBidInput.value);
+                    if (isNaN(val) || val < (currentPrice + minIncrement)) {
+                        Swal.fire({ icon: 'error', title: 'Invalid Max Bid', text: `Max bid must be at least ₹${(currentPrice + minIncrement).toFixed(2)}.` });
+                        return;
+                    }
+                    title = 'Confirm Auto Bid';
+                    html = `Setting your maximum limit to <strong>₹${val.toFixed(2)}</strong>.<br>The system will bid automatically for you until this limit.`;
                 }
 
-                const newTotal = (currentPrice + val).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-
                 Swal.fire({
-                    title: 'Confirm Your Bid',
-                    html: `You are adding <strong>₹${val.toFixed(2)}</strong> to the current price.<br>Your total bid will be <strong>₹${newTotal}</strong>.`,
+                    title: title,
+                    html: html,
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonColor: '#4e73df',
                     cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Yes, Place Bid!',
+                    confirmButtonText: 'Confirm Bid',
                     cancelButtonText: 'Cancel'
-                }).then((result) => {
+                }).then((result) => { 
                     if (result.isConfirmed) {
-                        this.submit();
-                    }
+                        // Clear the field from the other tab to avoid backend confusion
+                        if (activeTab === 'quick-bid-tab') {
+                            if (maxBidInput) maxBidInput.value = '';
+                        } else {
+                            if (bidInput) bidInput.value = '';
+                        }
+                        this.submit(); 
+                    } 
                 });
             });
         }
