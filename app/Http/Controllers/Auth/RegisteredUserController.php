@@ -63,8 +63,18 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // Generate OTP
+        $otp = rand(100000, 999999);
 
-        return redirect(route('home'));
+        session([
+            'otp_code' => $otp,
+            'otp_email' => $request->email,
+            'otp_time' => now(),
+        ]);
+
+        // Dispatch Queue Job to send OTP email in background
+        \App\Jobs\SendOtpEmailJob::dispatch($request->email, $otp);
+
+        return redirect()->route('otp.show')->with('status', 'Account created! Please verify your email with the OTP sent to you.');
     }
 }
