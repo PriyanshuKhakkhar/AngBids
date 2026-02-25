@@ -27,15 +27,23 @@ class BidService
         }
 
         return DB::transaction(function () use ($auction, $bidData, $user) {
+            // Lock the auction for update to prevent race conditions
+            $auction = Auction::where('id', $auction->id)->lockForUpdate()->first();
+            
             $isExtended = false;
-            $minIncrement = $auction->min_increment ?? 0.01;
+            $minIncrement = (float)($auction->min_increment ?? 0.01);
 
-            // Handle Proxy Bidding Setup
+            \Illuminate\Support\Facades\Log::debug("Bidding started for auction {$auction->id} by user {$user->id}", [
+                'bid_data' => $bidData,
+                'current_price' => $auction->current_price
+            ]);
+
+            // 1. Handle Proxy Bidding Setup (Maximum Bid)
             if (isset($bidData['max_bid_amount']) && $bidData['max_bid_amount'] > 0) {
-                $maxBidAmount = $bidData['max_bid_amount'];
+                $maxBidAmount = (float)$bidData['max_bid_amount'];
                 
-                // Ensure max_bid_amount is higher than current price + increment
-                $minimumRequired = $auction->current_price + $minIncrement;
+                // Ensure max_bid_amount is higher than current_price + increment
+                $minimumRequired = (float)$auction->current_price + $minIncrement;
                 if ($maxBidAmount < $minimumRequired) {
                     throw new Exception('Your maximum bid must be at least ₹' . number_format($minimumRequired, 2));
                 }
@@ -44,11 +52,13 @@ class BidService
                     ['user_id' => $user->id, 'auction_id' => $auction->id],
                     ['max_bid_amount' => $maxBidAmount, 'active' => true]
                 );
+                
+                \Illuminate\Support\Facades\Log::debug("Proxy updated for user {$user->id} to {$maxBidAmount}");
             }
 
-            // Calculate the manual bid amount if provided
-            $manualIncrement = $bidData['increment'] ?? 0;
-            $manualBidAmount = $manualIncrement > 0 ? $auction->current_price + $manualIncrement : 0;
+            // 2. Handle Manual Increment (Standard Bidding)
+            $manualIncrement = (float)($bidData['increment'] ?? 0);
+            $manualBidAmount = $manualIncrement > 0 ? (float)$auction->current_price + $manualIncrement : 0;
 
             if ($manualIncrement > 0) {
                 if ($manualIncrement < $minIncrement) {
@@ -59,69 +69,105 @@ class BidService
                 }
             }
 
-            // Determine the "True Winner" and the "Final Price"
-            // 1. Get the top competing AutoBid (not the current user)
-            $topCompetingAutoBid = $auction->autoBids()
+            // 3. Determine the "Current Target"
+            $currentUserProxy = $auction->autoBids()->where('user_id', $user->id)->where('active', true)->first();
+            
+            // If they provided a manual increment, that is a FORCED jump.
+            // If they only have a proxy limit, we use that as their potential.
+            $userMax = (float)max($manualBidAmount, ($currentUserProxy ? $currentUserProxy->max_bid_amount : 0));
+
+            // Get current top bid
+            $currentTopBid = $auction->bids()->first(); 
+            $isAlreadyWinning = ($currentTopBid && (int)$currentTopBid->user_id === (int)$user->id);
+
+            // Get the best competing Proxy
+            $topCompetingProxy = $auction->autoBids()
                 ->where('active', true)
                 ->where('user_id', '!=', $user->id)
                 ->orderByDesc('max_bid_amount')
                 ->first();
 
-            // 2. Determine the user's best offer (manual bid amount OR their own auto-bid limit)
-            $userMax = max($manualBidAmount, (isset($maxBidAmount) ? $maxBidAmount : 0));
-
             $winnerId = null;
-            $newTopPrice = $auction->current_price;
+            $newPrice = (float)$auction->current_price;
 
-            if ($topCompetingAutoBid) {
-                if ($topCompetingAutoBid->max_bid_amount > $userMax) {
-                    // Competition stays winner
-                    $winnerId = $topCompetingAutoBid->user_id;
-                    $newTopPrice = min($topCompetingAutoBid->max_bid_amount, $userMax + $minIncrement);
-                } elseif ($topCompetingAutoBid->max_bid_amount == $userMax) {
-                    // Tie - Tiebreaker: Earliest proxy wins. 
-                    // If competition was already there, they win.
-                    $winnerId = $topCompetingAutoBid->user_id;
-                    $newTopPrice = $userMax;
+            \Illuminate\Support\Facades\Log::debug("Competition analysis", [
+                'manualIncrement' => $manualIncrement,
+                'manualBidAmount' => $manualBidAmount,
+                'userMax' => $userMax,
+                'isAlreadyWinning' => $isAlreadyWinning,
+                'topCompetingProxyUser' => $topCompetingProxy ? $topCompetingProxy->user_id : 'none',
+                'topCompetingProxyMax' => $topCompetingProxy ? (float)$topCompetingProxy->max_bid_amount : 0
+            ]);
+
+            if ($manualIncrement > 0) {
+                // SCENARIO 1: Manual "Strong" Bid. 
+                // This ALWAYS becomes the current price (if higher than current).
+                // It still has to compete with other proxies.
+                if ($topCompetingProxy) {
+                    $competingMax = (float)$topCompetingProxy->max_bid_amount;
+                    if ($competingMax > $manualBidAmount) {
+                        // Competition stays leader. Price = manualBidAmount + increment.
+                        $winnerId = $topCompetingProxy->user_id;
+                        $newPrice = min($competingMax, $manualBidAmount + $minIncrement);
+                        \Illuminate\Support\Facades\Log::debug("Manual bid outbid by competing proxy", ['winnerId' => $winnerId, 'newPrice' => $newPrice]);
+                    } elseif ($competingMax == $manualBidAmount) {
+                        // Tie at manual bid level. Earlier proxy wins.
+                        $winnerId = $topCompetingProxy->user_id;
+                        $newPrice = $manualBidAmount;
+                        \Illuminate\Support\Facades\Log::debug("Manual bid tied with competing proxy", ['winnerId' => $winnerId, 'newPrice' => $newPrice]);
+                    } else {
+                        // Manual bid takes lead
+                        $winnerId = $user->id;
+                        $newPrice = $manualBidAmount;
+                        \Illuminate\Support\Facades\Log::debug("Manual bid successful (outbid proxy)", ['newPrice' => $newPrice]);
+                    }
                 } else {
-                    // User takes the lead
+                    // No proxy competition. Just jump to manual amount.
                     $winnerId = $user->id;
-                    $newTopPrice = min($userMax, $topCompetingAutoBid->max_bid_amount + $minIncrement);
+                    $newPrice = $manualBidAmount;
+                    \Illuminate\Support\Facades\Log::debug("Manual bid successful (no competition)", ['newPrice' => $newPrice]);
                 }
             } else {
-                // No competition from other auto-bids
-                $winnerId = $user->id;
-                
-                // Check current leading bidder (who might not have an auto-bid)
-                $currentTopBid = $auction->bids()->latest('amount')->first();
-                
-                if ($currentTopBid && $currentTopBid->user_id !== $user->id) {
-                    // We must outbid the current static bid
-                    $newTopPrice = min($userMax, $currentTopBid->amount + $minIncrement);
-                } else {
-                    // We are the current winner or no bids yet
-                    // If we just placed a manual bid, use it
-                    if ($manualIncrement > 0) {
-                        $newTopPrice = $manualBidAmount;
+                // SCENARIO 2: Pure Proxy Update / Outbid (No manual increment)
+                if ($topCompetingProxy) {
+                    $competingMax = (float)$topCompetingProxy->max_bid_amount;
+                    if ($competingMax > $userMax) {
+                        $winnerId = $topCompetingProxy->user_id;
+                        $newPrice = min($competingMax, $userMax + $minIncrement);
+                    } elseif ($competingMax == $userMax) {
+                        // Tie at proxy level. Earlier wins.
+                        if ($topCompetingProxy->created_at->lessThan(($currentUserProxy ? $currentUserProxy->created_at : now()))) {
+                            $winnerId = $topCompetingProxy->user_id;
+                        } else {
+                            $winnerId = $user->id;
+                        }
+                        $newPrice = $userMax;
                     } else {
-                        // Just setting/updating a proxy, price doesn't necessarily move
-                        $newTopPrice = $auction->current_price;
+                        $winnerId = $user->id;
+                        $newPrice = min($userMax, $competingMax + $minIncrement);
+                    }
+                    \Illuminate\Support\Facades\Log::debug("Outcome: Proxy competition result", ['winnerId' => $winnerId, 'newPrice' => $newPrice]);
+                } else {
+                    // No competing proxies.
+                    if ($currentTopBid && !$isAlreadyWinning) {
+                        // Outbid static leader by only 1 increment
+                        $winnerId = $user->id;
+                        $newPrice = min($userMax, (float)$currentTopBid->amount + $minIncrement);
+                        \Illuminate\Support\Facades\Log::debug("Outcome: Proxy outbids static leader", ['winnerId' => $winnerId, 'newPrice' => $newPrice]);
+                    } elseif ($isAlreadyWinning) {
+                        $winnerId = $user->id;
+                        $newPrice = (float)$auction->current_price; // Already winning, proxy update only
+                        \Illuminate\Support\Facades\Log::debug("Outcome: Winning user proxy update");
+                    } else {
+                        // First bid ever.
+                        $winnerId = $user->id;
+                        $newPrice = (float)$auction->starting_price;
+                        \Illuminate\Support\Facades\Log::debug("Outcome: First proxy bid at starting price");
                     }
                 }
             }
 
-            // Final safety: price must be at least current_price + minIncrement if bids exist
-            // or at least starting_price if no bids exist.
-            if ($auction->bids()->exists()) {
-                $newTopPrice = max($newTopPrice, $auction->current_price + $minIncrement);
-            } else {
-                $newTopPrice = max($newTopPrice, $auction->starting_price);
-            }
-            
-            // Ensure we never exceed the winner's actual potential maximum
-            if ($winnerId === $user->id) {
-                $newTopPrice = min($newTopPrice, $userMax);
-            }
+            $newPrice = max($newPrice, (float)$auction->current_price);
 
             // Anti-Sniping
             $now = now();
@@ -130,18 +176,40 @@ class BidService
                 $isExtended = true;
             }
 
-            // Create the bid
-            $bid = Bid::create([
-                'auction_id' => $auction->id,
-                'user_id' => $winnerId,
-                'amount' => $newTopPrice, 
-            ]);
+            $previousWinner = $currentTopBid ? $currentTopBid->user : null;
+            $priceChanged = abs((float)($currentTopBid ? $currentTopBid->amount : 0) - $newPrice) > 0.001;
+            $winnerChanged = !$currentTopBid || (int)$currentTopBid->user_id !== (int)$winnerId;
 
-            // Update auction
-            $auction->update([
-                'current_price' => $newTopPrice,
-                'end_time' => $auction->end_time
-            ]);
+            if ($winnerChanged || $priceChanged) {
+                $bid = Bid::create([
+                    'auction_id' => $auction->id,
+                    'user_id' => $winnerId,
+                    'amount' => $newPrice, 
+                ]);
+
+                $auction->update([
+                    'current_price' => $newPrice,
+                    'end_time' => $auction->end_time
+                ]);
+                
+                \Illuminate\Support\Facades\Log::debug("Auction updated with new bid", ['bidId' => $bid->id]);
+
+                // 4. Notifications
+                // A) Notify the PREVIOUS winner that they were outbid
+                if ($previousWinner && (int)$previousWinner->id !== (int)$winnerId) {
+                    $previousWinner->notify(new \App\Notifications\OutbidNotification($auction, $newPrice));
+                }
+
+                // B) Notify the NEW bidder if they were INSTANTLY outbid by a proxy
+                // (This handles the case where $user is our $user but $winnerId is someone else)
+                if ((int)$user->id !== (int)$winnerId && (int)$user->id !== (int)($previousWinner ? $previousWinner->id : 0)) {
+                   $user->notify(new \App\Notifications\OutbidNotification($auction, $newPrice));
+                }
+            } else {
+                $bid = $currentTopBid;
+                $auction->update(['end_time' => $auction->end_time]);
+                \Illuminate\Support\Facades\Log::debug("No bid created (no change)");
+            }
 
             if ($isExtended && $auction->user) {
                 $auction->user->notify(new \App\Notifications\AuctionExtendedNotification($auction));
