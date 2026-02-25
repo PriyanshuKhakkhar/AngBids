@@ -667,11 +667,11 @@
         pointer-events: none;
     }
 
-    /* Gallery Strip */
-    .hibid-gallery-box {
+    /* Vertical Tabs Wrapper */
+    .vertical-tabs-wrapper {
         background: #fff;
-        border: 1px solid #e0e4ea;
-        border-radius: 8px;
+        border: 2px solid #cbd5e0;
+        border-radius: 12px;
         overflow: hidden;
     }
     .hibid-gallery-header {
@@ -898,7 +898,7 @@
     .hibid-shortcut-btn {
         flex: 1;
         min-width: calc(20% - 6px);
-        border: 1.5px solid #4e73df;
+        border: 2px solid #4e73df;
         color: #4e73df;
         background: #fff;
         border-radius: 5px;
@@ -941,7 +941,7 @@
     /* Login Prompt */
     .hibid-login-prompt {
         background: #f0f4ff;
-        border: 1px solid #d0dcff;
+        border: 2px solid #cbd5e0;
         border-radius: 6px;
         padding: 12px 16px;
         font-size: 0.85rem;
@@ -958,7 +958,7 @@
     }
     .hibid-watchlist-btn {
         flex: 1;
-        border: 1.5px solid #ced4da;
+        border: 2px solid #cbd5e0;
         background: #fff;
         color: #495057;
         font-size: 0.85rem;
@@ -975,7 +975,7 @@
     }
     .hibid-watchlist-btn:hover { border-color: #4e73df; color: #4e73df; }
     .hibid-share-btn {
-        border: 1.5px solid #ced4da;
+        border: 2px solid #cbd5e0;
         background: #fff;
         color: #495057;
         border-radius: 6px;
@@ -1020,7 +1020,7 @@
     /* Seller Card */
     .hibid-seller-card {
         background: #fff;
-        border: 1px solid #e0e4ea;
+        border: 2px solid #cbd5e0;
         border-radius: 10px;
         padding: 16px 20px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.05);
@@ -1036,7 +1036,7 @@
         height: 48px;
         border-radius: 50%;
         object-fit: cover;
-        border: 2px solid #e9ecef;
+        border: 2px solid #cbd5e0;
     }
     .hibid-seller-info { flex: 1; }
     .hibid-seller-name {

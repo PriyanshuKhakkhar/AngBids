@@ -20,7 +20,7 @@
     --elite-text-muted: #858796;
     --primary-gradient: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
     --glass-bg: rgba(255, 255, 255, 0.9);
-    --glass-border: rgba(0, 0, 0, 0.1);
+    --glass-border: rgba(0, 0, 0, 0.2);
     --transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
 
     --gray-100: #f8f9fc;
@@ -142,7 +142,7 @@ h4,
 /* --- Navigation --- */
 .navbar-elite {
     background: #ffffff;
-    border-bottom: 1px solid #e3e6f0;
+    border-bottom: 2px solid #cbd5e0;
     box-shadow: 0 .15rem 1.75rem 0 rgba(58, 59, 69, .15);
 }
 
@@ -200,7 +200,7 @@ h4,
 
 .nav-search .form-control {
     background: #f8f9fc;
-    border: 1px solid #e3e6f0;
+    border: 2px solid #cbd5e0;
     color: #6e707e;
     border-radius: 50px;
     padding-left: 40px !important;
@@ -274,7 +274,7 @@ h4,
 .card-elite,
 .glass-panel {
     background: #ffffff;
-    border: 1px solid #e3e6f0;
+    border: 2px solid #cbd5e0;
     border-radius: 1rem;
     box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
     transition: all 0.3s ease;
@@ -283,7 +283,7 @@ h4,
 .glass-panel-premium {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(78, 115, 223, 0.1);
+    border: 2px solid rgba(78, 115, 223, 0.25);
     border-radius: 1.5rem;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -320,7 +320,7 @@ h4,
 
 .glass-timer {
     background: #f8f9fc;
-    border: 1px solid #e3e6f0;
+    border: 2px solid #cbd5e0;
     border-radius: 0.5rem;
     padding: 12px;
     margin-bottom: 15px;
@@ -333,7 +333,7 @@ h4,
 /* --- Forms & Inputs --- */
 .form-control-elite {
     background: #f8f9fc;
-    border: 1px solid #d1d3e2;
+    border: 2px solid #cbd5e0;
     color: #6e707e;
     padding: 12px 20px;
     border-radius: 0.5rem;
@@ -364,7 +364,7 @@ h4,
 /* --- Auction Elements --- */
 .countdown-box {
     background: #f8f9fc;
-    border-top: 1px solid #e3e6f0;
+    border-top: 2px solid #cbd5e0;
 }
 
 .price-tag {
@@ -479,7 +479,7 @@ h4,
 
 .breadcrumb-elite {
     background: #ffffff;
-    border-bottom: 1px solid #e3e6f0;
+    border-bottom: 2px solid #cbd5e0;
     padding: 60px 0;
 }
 
@@ -609,7 +609,7 @@ h4,
 /* --- Featured Components --- */
 .category-card-elite {
     background: #ffffff;
-    border: 1px solid #e3e6f0;
+    border: 2px solid #cbd5e0;
     border-radius: 1rem;
     padding: 2rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -700,7 +700,7 @@ h4,
 }
 
 .navbar-elite .dropdown-menu {
-    border: none;
+    border: 2px solid #cbd5e0;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     border-radius: 15px;
     padding: 0.8rem;
@@ -743,7 +743,7 @@ h4,
     padding: 10px 22px;
     border-radius: 50px;
     background: #f8f9fc;
-    border: 1px solid #e3e6f0;
+    border: 2px solid #cbd5e0;
     color: #4e73df;
     text-decoration: none;
     font-size: 0.85rem;
