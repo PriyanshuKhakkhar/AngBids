@@ -142,49 +142,63 @@
 
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark small text-uppercase">Auction Start Date & Time</label>
-                                <input type="datetime-local" name="start_time" class="form-control form-control-lg bg-light border-0 shadow-none @error('start_time') is-invalid @enderror" 
-                                    value="{{ old('start_time', now()->format('Y-m-d\TH:i')) }}">
-                                <small class="text-muted">When should the bidding begin?</small>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text bg-light border-0"><i class="far fa-calendar-alt text-primary"></i></span>
+                                    <input type="text" name="start_time" id="start_time_picker" class="form-control bg-light border-0 shadow-none @error('start_time') is-invalid @enderror" 
+                                        placeholder="Select start date & time" value="{{ old('start_time', now()->format('Y-m-d h:i A')) }}">
+                                </div>
+                                <small class="text-muted d-block mt-2">When should the bidding begin?</small>
                                 @error('start_time')
-                                    <div class="invalid-feedback" data-server-error>{{ $message }}</div>
+                                    <div class="invalid-feedback d-block" data-server-error>{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark small text-uppercase">Auction End Date & Time</label>
-                                <input type="datetime-local" name="end_time" class="form-control form-control-lg bg-light border-0 shadow-none @error('end_time') is-invalid @enderror" 
-                                    value="{{ old('end_time') }}">
-                                <small class="text-muted">When should the bidding conclude?</small>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text bg-light border-0"><i class="far fa-calendar-check text-primary"></i></span>
+                                    <input type="text" name="end_time" id="end_time_picker" class="form-control bg-light border-0 shadow-none @error('end_time') is-invalid @enderror" 
+                                        placeholder="Select end date & time" value="{{ old('end_time') }}">
+                                </div>
+                                <small class="text-muted d-block mt-2">When should the bidding conclude?</small>
                                 @error('end_time')
-                                    <div class="invalid-feedback" data-server-error>{{ $message }}</div>
+                                    <div class="invalid-feedback d-block" data-server-error>{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="col-12 mt-4">
-                                <label class="form-label fw-bold text-dark small text-uppercase">Item Photos</label>
-                                <div class="image-upload-wrapper" onclick="document.getElementById('imageInput').click()">
-                                    <div class="upload-content text-center">
-                                        <i class="fas fa-images fa-3x text-primary mb-3"></i>
-                                        <h6 class="fw-bold mb-1">Click to upload multiple images</h6>
-                                        <p class="text-muted small mb-0">Drag and drop photos or click to browse. Max 5 photos.</p>
+                                <label class="form-label fw-bold text-dark small text-uppercase mb-3">Item Photos</label>
+                                
+                                <div class="image-upload-wrapper d-flex flex-column justify-content-center align-items-center py-4 px-3 position-relative" id="dragDropArea" onclick="document.getElementById('imageInput').click()">
+                                    <div class="upload-content text-center" style="pointer-events: none;">
+                                        <div class="icon-circle bg-primary bg-opacity-10 text-primary mx-auto mb-2 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; border-radius: 50%;">
+                                            <i class="fas fa-image fa-lg"></i>
+                                        </div>
+                                        <h6 class="fw-bold mb-1">Drag & Drop your images here</h6>
+                                        <p class="text-muted small mb-0">or click to browse files</p>
+                                        <div class="mt-2">
+                                            <span class="badge bg-light text-dark border px-2 py-1 rounded-pill small">Max 5 photos</span>
+                                            <span class="badge bg-light text-dark border px-2 py-1 rounded-pill small">Up to 2MB each</span>
+                                        </div>
                                     </div>
                                     <input type="file" name="images[]" multiple accept="image/jpeg,image/png,image/jpg,image/gif" class="d-none" id="imageInput">
                                 </div>
+                                <div class="invalid-feedback fw-bold mt-2" style="display: none;"></div>
+
                                 <input type="hidden" name="primary_image_index" id="primaryImageIndex" value="0">
-                                <small class="text-muted d-block mt-2">JPG, PNG or GIF (Max 2MB per image). Reorder by dragging. Click "Set Primary" to choose the main photo.</small>
+                                <small class="text-muted d-block mt-2 px-1"><i class="fas fa-info-circle me-1"></i> Tip: Reorder images by dragging them below. Click "Set Primary" to choose the main photo.</small>
                                 
-                                <div id="imagePreviewGrid" class="image-preview-grid">
+                                <div id="imagePreviewGrid" class="image-preview-grid mt-3">
                                     <!-- Previews will be injected here by JS -->
-                                    <div class="col-12 text-center text-muted p-4">No images uploaded yet.</div>
+                                    <div class="col-12 text-center text-muted p-4 border rounded-3 bg-light w-100 placeholder-text" style="grid-column: 1 / -1;">No images uploaded yet.</div>
                                 </div>
 
                                 @error('images')
-                                    <div class="invalid-feedback d-block" data-server-error>{{ $message }}</div>
+                                    <div class="invalid-feedback d-block mt-2 fw-bold" data-server-error>{{ $message }}</div>
                                 @enderror
                                 @foreach($errors->get('images.*') as $message)
-                                    <div class="invalid-feedback d-block" data-server-error>{{ $message[0] }}</div>
+                                    <div class="invalid-feedback d-block mt-1 fw-bold" data-server-error>{{ $message[0] }}</div>
                                 @endforeach
-                                <div class="invalid-feedback" id="image-client-error"></div>
                             </div>
 
                             <!-- Dynamic Category Fields -->
@@ -308,6 +322,9 @@
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/image-upload.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/category-selection.css') }}">
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
 @endpush
 
 @push('scripts')
@@ -315,6 +332,37 @@
 <script src="{{ asset('assets/js/auction-form-validation.js') }}"></script>
 <script src="{{ asset('assets/js/auction-create.js') }}"></script>
 <script src="{{ asset('assets/js/category-selection.js') }}"></script>
+
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const startPicker = flatpickr("#start_time_picker", {
+            enableTime: true,
+            dateFormat: "Y-m-d h:i K",
+            minDate: "today",
+            time_24hr: false,
+            onChange: function(selectedDates, dateStr, instance) {
+                instance.element.dispatchEvent(new Event('input', { bubbles: true }));
+                // When start time changes, re-validate end time
+                const endPickerElement = document.getElementById('end_time_picker');
+                if (endPickerElement && endPickerElement.value) {
+                    endPickerElement.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            }
+        });
+        
+        const endPicker = flatpickr("#end_time_picker", {
+            enableTime: true,
+            dateFormat: "Y-m-d h:i K",
+            minDate: "today",
+            time_24hr: false,
+            onChange: function(selectedDates, dateStr, instance) {
+                instance.element.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        });
+    });
+</script>
 @endpush
 
 @endsection

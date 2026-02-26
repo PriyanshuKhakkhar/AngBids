@@ -23,6 +23,28 @@ class ImageUploadManager {
 
         this.input.addEventListener('change', (e) => this.handleFileSelect(e));
 
+        // Setup dropzone file upload
+        const wrapper = this.input.closest('.image-upload-wrapper');
+        if (wrapper) {
+            wrapper.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                wrapper.classList.add('border-primary', 'bg-light');
+            });
+            wrapper.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                wrapper.classList.remove('border-primary', 'bg-light');
+            });
+            wrapper.addEventListener('drop', (e) => {
+                e.preventDefault();
+                wrapper.classList.remove('border-primary', 'bg-light');
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    // Update input files and trigger change
+                    this.input.files = e.dataTransfer.files;
+                    this.input.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+        }
+
         // Drag and Drop for reordering
         this.grid.addEventListener('dragover', (e) => e.preventDefault());
     }
@@ -34,9 +56,15 @@ class ImageUploadManager {
         selectedFiles.forEach(file => {
             if (this.existingCount + this.fileWrappers.length < this.maxFiles) {
                 // Validation (Frontend only)
-                if (!file.type.startsWith('image/')) return;
+                if (!file.type.startsWith('image/')) {
+                    skipped++;
+                    return;
+                }
 
-                if (file.size > 2 * 1024 * 1024) return;
+                if (file.size > 2 * 1024 * 1024) {
+                    skipped++;
+                    return;
+                }
 
                 this.fileWrappers.push({
                     file: file,
@@ -49,7 +77,7 @@ class ImageUploadManager {
         });
 
         if (skipped > 0) {
-            alert(`You reached the limit of ${this.maxFiles} images. ${skipped} files were not added.`);
+            alert(`Some files were skipped. They might exceed the 2MB size limit, not be valid images, or you reached the ${this.maxFiles} file limit.`);
         }
 
         this.render();

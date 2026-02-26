@@ -185,8 +185,8 @@ class AuctionFormValidator {
         if (isNaN(price)) {
             return 'Starting price must be a valid number.';
         }
-        if (price < 0.01) {
-            return 'Starting price must be at least $0.01.';
+        if (price < 100) {
+            return 'Starting price must be at least ₹100.00.';
         }
         if (price > 999999999) {
             return 'Starting price is too high.';
@@ -198,6 +198,21 @@ class AuctionFormValidator {
         if (!value) {
             return 'Auction start date and time is required.';
         }
+
+        const startTimePicker = document.querySelector('#start_time_picker') && document.querySelector('#start_time_picker')._flatpickr;
+        if (startTimePicker && startTimePicker.selectedDates[0]) {
+            const start = startTimePicker.selectedDates[0];
+            const now = new Date();
+
+            // Check if it's more than a few days in the past (matching server validation subDay())
+            const pastLimit = new Date();
+            pastLimit.setDate(pastLimit.getDate() - 1);
+
+            if (start < pastLimit) {
+                return 'Auction start time cannot be in the past.';
+            }
+        }
+
         return null;
     }
 
@@ -205,13 +220,30 @@ class AuctionFormValidator {
         if (!value) {
             return 'Auction end date and time is required.';
         }
+
+        const parseDateStr = (dateStr) => {
+            if (!dateStr) return null;
+            // Matches YYYY-MM-DD hh:mm AM/PM or similar
+            const parts = dateStr.match(/(\d{4})-(\d{2})-(\d{2})\s+(\d{1,2}):(\d{2})\s+([AP]M)/i);
+            if (!parts) return new Date(dateStr);
+
+            let [_, year, month, day, hours, minutes, ampm] = parts;
+            hours = parseInt(hours, 10);
+            if (ampm.toUpperCase() === 'PM' && hours < 12) hours += 12;
+            if (ampm.toUpperCase() === 'AM' && hours === 12) hours = 0;
+
+            return new Date(year, month - 1, day, hours, minutes);
+        };
+
         if (startTime && value) {
-            const start = new Date(startTime);
-            const end = new Date(value);
-            if (end <= start) {
+            const start = parseDateStr(startTime);
+            const end = parseDateStr(value);
+
+            if (start && end && end <= start) {
                 return 'End time must be after the start time.';
             }
         }
+
         return null;
     }
 
@@ -321,6 +353,7 @@ class AuctionFormValidator {
         // Special case for input-group (like price)
         if (input.parentElement.classList.contains('input-group')) {
             errorDiv = input.parentElement.parentElement.querySelector('.invalid-feedback');
+            input.parentElement.querySelector('.input-group-text').classList.add('border-danger', 'text-danger');
             if (!errorDiv) {
                 errorDiv = document.createElement('div');
                 errorDiv.className = 'invalid-feedback d-block';
@@ -339,6 +372,9 @@ class AuctionFormValidator {
 
     clearFieldError(input) {
         input.classList.remove('is-invalid');
+        if (input.parentElement.classList.contains('input-group')) {
+            input.parentElement.querySelector('.input-group-text').classList.remove('border-danger', 'text-danger');
+        }
 
         // If it's the hidden category input, clear visible select(s)
         if (input.id === 'selected_category_id') {
@@ -351,7 +387,13 @@ class AuctionFormValidator {
         let target = input;
         if (input.id === 'imageInput') {
             const wrapper = input.closest('.image-upload-wrapper');
-            if (wrapper) target = wrapper;
+            if (wrapper) {
+                target = wrapper;
+                target.classList.remove('is-invalid'); // Ensure the wrapper loses the red border
+                const errorDivs = target.parentElement.querySelectorAll('.invalid-feedback');
+                errorDivs.forEach(div => div.style.display = 'none');
+                return;
+            }
         }
 
         const errorDiv = target.parentElement.querySelector('.invalid-feedback') ||
@@ -359,6 +401,7 @@ class AuctionFormValidator {
 
         if (errorDiv) {
             errorDiv.style.display = 'none';
+            errorDiv.textContent = '';
         }
     }
 }
