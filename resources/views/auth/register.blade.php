@@ -14,34 +14,36 @@
                     <form method="POST" action="{{ route('register') }}" id="registerForm" novalidate>
                         @csrf
 
-                        <!-- Name -->
-                        <div class="mb-3">
-                            <label for="name" class="form-label fw-bold">Full Name</label>
-                            <input type="text" 
-                                   class="form-control @error('name') is-invalid @enderror" 
-                                   id="name" 
-                                   name="name" 
-                                   value="{{ old('name') }}" 
-                                   placeholder="Enter your full name"
-                                   required>
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                        <div class="row">
+                            <!-- Name -->
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label fw-bold">Full Name</label>
+                                <input type="text" 
+                                       class="form-control @error('name') is-invalid @enderror" 
+                                       id="name" 
+                                       name="name" 
+                                       value="{{ old('name') }}" 
+                                       placeholder="Full Name"
+                                       required>
+                                @error('name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-                        <!-- Username -->
-                        <div class="mb-3">
-                            <label for="username" class="form-label fw-bold">Username</label>
-                            <input type="text"
-                                      class="form-control @error('username') is-invalid @enderror" 
-                                      id="username" 
-                                      name="username" 
-                                      value="{{ old('username') }}" 
-                                      placeholder="Choose a username"
-                                      required>
-                            @error('username')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <!-- Username -->
+                            <div class="col-md-6 mb-3">
+                                <label for="username" class="form-label fw-bold">Username</label>
+                                <input type="text"
+                                          class="form-control @error('username') is-invalid @enderror" 
+                                          id="username" 
+                                          name="username" 
+                                          value="{{ old('username') }}" 
+                                          placeholder="Username"
+                                          required>
+                                @error('username')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
 
                         <!-- Email -->
@@ -121,11 +123,6 @@
     }
 </style>
 @endpush
-
-@push('scripts')
-<script src="{{ asset('assets/js/form-validation.js') }}"></script>
-@endpush
-
 
 @push('scripts')
 <script src="{{ asset('assets/js/form-validation.js') }}"></script>

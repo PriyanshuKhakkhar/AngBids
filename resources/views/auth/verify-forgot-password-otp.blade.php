@@ -2,16 +2,16 @@
 
 @section('title', 'Verify OTP | LaraBids')
 
+@section('content')
+
 @php
     $remainingSeconds = 0;
-    $email = session('otp_email');
+    $email = session('forgot_password_email');
     if ($email) {
-        $rateLimitKey = 'resend-otp:' . $email;
+        $rateLimitKey = 'forgot-password-resend-otp:' . $email;
         $remainingSeconds = \Illuminate\Support\Facades\RateLimiter::availableIn($rateLimitKey);
     }
 @endphp
-
-@section('content')
 
 <div class="otp-verify-section d-flex align-items-center justify-content-center py-5" style="min-height: 80vh;">
     <div class="container">
@@ -30,10 +30,10 @@
                                 </svg>
                             </div>
                         </div>
-                        <h2 class="fw-bold fs-4 text-dark mb-2">Verify Your Email</h2>
+                        <h2 class="fw-bold fs-4 text-dark mb-2">Reset Password</h2>
                         <p class="text-muted small px-2 mb-0">
                             We've sent a 6-digit code to<br>
-                            <strong class="text-dark">{{ session('otp_email') }}</strong>
+                            <strong class="text-dark">{{ session('forgot_password_email') }}</strong>
                         </p>
                     </div>
 
@@ -58,7 +58,7 @@
                     @endif
 
                     {{-- OTP Form --}}
-                    <form method="POST" action="{{ route('otp.verify') }}" id="otpForm" novalidate>
+                    <form method="POST" action="{{ route('password.verify-otp') }}" id="otpForm" novalidate>
                         @csrf
 
                         <div class="mb-4">
@@ -99,7 +99,7 @@
                                 </span>
                             </span>
 
-                            <form id="resendForm" method="POST" action="{{ route('otp.resend') }}" class="d-inline" style="display: none;">
+                            <form id="resendForm" method="POST" action="{{ route('password.resend-otp') }}" class="d-inline" style="display: none;">
                                 @csrf
                                 <button type="submit" id="resendBtn" class="btn btn-link p-0 m-0 align-baseline fw-bold small text-decoration-none otp-resend-link">
                                     Resend OTP
@@ -129,7 +129,6 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // ===== OTP Individual Digit Inputs =====
         const digitInputs = document.querySelectorAll('.otp-digit-input');
         const hiddenOtp = document.getElementById('otpHidden');
         const verifyBtn = document.getElementById('verifyBtn');
@@ -147,7 +146,6 @@
             verifyBtn.disabled = !isComplete;
 
             if (isComplete) {
-                // Optional: Auto-submit when 6 digits are reached
                 setTimeout(() => {
                     otpForm.submit();
                 }, 300);
@@ -155,10 +153,9 @@
         }
 
         digitInputs.forEach((input, index) => {
-            // Only allow numbers and handle digit entry
             input.addEventListener('input', function(e) {
                 const val = this.value.replace(/[^0-9]/g, '');
-                this.value = val ? val[val.length - 1] : ''; // Keep only last digit if multiple
+                this.value = val ? val[val.length - 1] : '';
 
                 if (this.value.length === 1 && index < digitInputs.length - 1) {
                     digitInputs[index + 1].focus();
@@ -166,7 +163,6 @@
                 updateHiddenOtp();
             });
 
-            // Handle backspace
             input.addEventListener('keydown', function(e) {
                 if (e.key === 'Backspace') {
                     if (this.value === '' && index > 0) {
@@ -183,7 +179,6 @@
                 }
             });
 
-            // Handle paste
             input.addEventListener('paste', function(e) {
                 e.preventDefault();
                 const pastedData = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
@@ -197,7 +192,6 @@
                 updateHiddenOtp();
             });
 
-            // Focus styling
             input.addEventListener('focus', function() {
                 this.select();
                 this.parentElement.classList.add('focused-group');
@@ -208,7 +202,6 @@
             });
         });
 
-        // Form submission spinner and validation
         otpForm.addEventListener('submit', function(e) {
             if (hiddenOtp.value.length !== 6) {
                 e.preventDefault();
@@ -222,7 +215,6 @@
             verifyBtn.disabled = true;
         });
 
-        // ===== Resend Countdown Timer =====
         const resendForm = document.getElementById('resendForm');
         const resendBtn = document.getElementById('resendBtn');
         const countdownText = document.getElementById('countdownText');
@@ -250,7 +242,6 @@
             resendForm.style.display = 'inline';
         }
 
-        // Show spinner on resend click
         if (resendForm && resendBtn) {
             resendForm.addEventListener('submit', function() {
                 resendBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Sending...';
