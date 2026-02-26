@@ -62,6 +62,15 @@ class OtpController extends Controller
             ]);
         }
 
+        // Check expiration (10 minutes)
+        $sessionTime = session('otp_time');
+        if (!$sessionTime || now()->diffInMinutes($sessionTime) >= 10) {
+            session()->forget(['otp_code', 'otp_time']);
+            throw ValidationException::withMessages([
+                'otp' => 'This verification code has expired. Please request a new one.',
+            ]);
+        }
+
         // Clear the rate limiter upon success
         RateLimiter::clear($rateLimitKey);
 

@@ -4,7 +4,7 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
+
 use Illuminate\Notifications\Notification;
 
 class AuctionCanceledNotification extends Notification implements ShouldQueue
@@ -33,18 +33,7 @@ class AuctionCanceledNotification extends Notification implements ShouldQueue
         return ['database'];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     */
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-            ->subject('Auction Cancelled')
-            ->line("Your auction '{$this->auction->title}' has been cancelled by the admin.")
-            ->line('Reason: ' . $this->reason)
-            ->action('View My Auctions', route('user.my-auctions'))
-            ->line('Thank you for using our application!');
-    }
+
 
     /**
      * Get the array representation of the notification.
