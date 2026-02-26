@@ -116,8 +116,8 @@
                                 <label class="form-label fw-bold text-dark small text-uppercase">Min Bid Increment (₹)</label>
                                 <div class="input-group input-group-lg">
                                     <span class="input-group-text bg-light border-0 text-primary fw-bold border-end">₹</span>
-                                    <input type="number" name="min_increment" step="0.01" min="0.01" max="1000.00" class="form-control bg-light border-0 shadow-none @error('min_increment') is-invalid @enderror" 
-                                        placeholder="0.01" value="{{ old('min_increment', '0.01') }}">
+                                    <input type="number" name="min_increment" step="1" min="1" max="100000.00" class="form-control bg-light border-0 shadow-none @error('min_increment') is-invalid @enderror" 
+                                        placeholder="100" value="{{ old('min_increment', '100') }}">
                                 </div>
                                 <small class="text-muted">Minimum amount each next bid must increase by.</small>
                                 @error('min_increment')

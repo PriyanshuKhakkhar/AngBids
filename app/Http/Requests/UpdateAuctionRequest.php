@@ -45,7 +45,7 @@ class UpdateAuctionRequest extends FormRequest
             'category_id' => ['sometimes', 'exists:categories,id'],
             'start_time' => ['sometimes', 'date'],
             'end_time' => ['sometimes', 'date', 'after:start_time'],
-            'min_increment' => ['sometimes', 'numeric', 'min:0.01', 'max:1000.00'],
+            'min_increment' => ['sometimes', 'numeric', 'min:100.00', 'max:100000.00'],
             'specifications' => ['nullable', 'array'],
             'images' => ['nullable', 'array', 'max:5'],
             'images.*' => ['image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
@@ -73,7 +73,7 @@ class UpdateAuctionRequest extends FormRequest
 
         // Only allow price/category change if no bids exist
         if (!$hasBids) {
-            $rules['starting_price'] = ['sometimes', 'numeric', 'min:0.01', 'max:999999999'];
+            $rules['starting_price'] = ['sometimes', 'numeric', 'min:100.00', 'max:999999999'];
         }
 
         return $rules;
@@ -86,7 +86,7 @@ class UpdateAuctionRequest extends FormRequest
     {
         return [
             'end_time.after' => 'The auction end time must be after the start time.',
-            'starting_price.min' => 'Starting price must be at least $0.01.',
+            'starting_price.min' => 'Starting price must be at least ₹100.00.',
             'images.max' => 'You can only upload up to 5 images.',
             'images.*.image' => 'Each file must be an image.',
             'images.*.max' => 'Each image must not exceed 2MB.',

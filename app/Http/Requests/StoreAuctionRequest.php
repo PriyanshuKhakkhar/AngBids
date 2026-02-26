@@ -19,7 +19,7 @@ class StoreAuctionRequest extends FormRequest
             'title' => ['required', 'string', 'min:3', 'max:100'],
             'category_id' => ['required', 'exists:categories,id'],
             'description' => ['required', 'string', 'min:20', 'max:5000'],
-            'starting_price' => ['required', 'numeric', 'min:0.01', 'max:999999999'],
+            'starting_price' => ['required', 'numeric', 'min:100.00', 'max:999999999'],
             'start_time' => ['required', 'date', 'after_or_equal:' . now()->subDay()->toDateTimeString()],
             'end_time' => ['required', 'date', 'after:start_time'],
             'images' => ['required', 'array', 'min:1', 'max:5'],
@@ -27,7 +27,7 @@ class StoreAuctionRequest extends FormRequest
             'primary_image_index' => ['nullable', 'integer', 'min:0'],
             'document' => ['nullable', 'file', 'mimes:pdf,jpg,png,jpeg,doc,docx', 'max:5120'],
             'specifications' => ['nullable', 'array'],
-            'min_increment' => ['nullable', 'numeric', 'min:0.01', 'max:1000.00'],
+            'min_increment' => ['nullable', 'numeric', 'min:100.00', 'max:100000.00'],
         ];
     }
 
@@ -45,7 +45,7 @@ class StoreAuctionRequest extends FormRequest
             'description.max' => 'Description must not exceed 5000 characters.',
             'starting_price.required' => 'Starting price is required.',
             'starting_price.numeric' => 'Starting price must be a valid number.',
-            'starting_price.min' => 'Starting price must be at least $0.01.',
+            'starting_price.min' => 'Starting price must be at least ₹100.00.',
             'starting_price.max' => 'Starting price is too high.',
             'start_time.required' => 'Auction start date and time is required.',
             'start_time.date' => 'Please enter a valid start date and time.',
