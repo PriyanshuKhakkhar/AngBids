@@ -28,11 +28,19 @@ Route::middleware('guest')->group(function () {
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
         ->name('password.email');
 
-    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
-        ->name('password.reset');
+    Route::get('forgot-password/verify-otp', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'showVerifyForm'])
+        ->name('password.verify-otp');
 
-    Route::post('reset-password', [NewPasswordController::class, 'store'])
-        ->name('password.store');
+    Route::post('forgot-password/verify-otp', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'verifyOtp']);
+
+    Route::post('forgot-password/resend-otp', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'resendOtp'])
+        ->name('password.resend-otp');
+
+    Route::get('forgot-password/reset-password', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'showResetForm'])
+        ->name('password.reset-form');
+
+    Route::post('forgot-password/reset-password', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'resetPassword'])
+        ->name('password.update-new');
 
     // OTP Verification Routes
     Route::get('verify-otp', [\App\Http\Controllers\Auth\OtpController::class, 'show'])->name('otp.show');
