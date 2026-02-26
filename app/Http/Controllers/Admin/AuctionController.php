@@ -70,7 +70,7 @@ class AuctionController extends Controller
                 })
 
                 ->addColumn('current_price', function ($row) {
-                    return '$'.number_format($row->current_price, 2);
+                    return '₹'.number_format($row->current_price, 2);
                 })
 
                 ->addColumn('status', function ($row) {

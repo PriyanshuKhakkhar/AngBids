@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\User\WatchlistController;
 use App\Http\Controllers\Api\User\ProfileController;
 use App\Http\Controllers\Api\User\NotificationController;
 use App\Http\Controllers\Api\User\BidController;
+use App\Http\Controllers\Api\User\AutoBidController;
 
 // Admin Controllers
 use App\Http\Controllers\Api\Admin\CategoryController as AdminCategoryController;
@@ -83,6 +84,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('user/bids/won', [BidController::class, 'won'])->name('api.user.bids.won');
     Route::get('/user/bids/lost', [BidController::class, 'lost'])->name('api.user.bids.lost');
     Route::get('/user/auctions', [AuctionController::class, 'managedAuctions'])->name('api.user.auctions');
+
+    // Auto Bidding
+    Route::get('/user/auto-bids', [AutoBidController::class, 'index'])->name('api.user.auto-bids.index');
+    Route::post('/user/auto-bids', [AutoBidController::class, 'store'])->name('api.user.auto-bids.store');
+    Route::delete('/user/auto-bids/{id}', [AutoBidController::class, 'destroy'])->name('api.user.auto-bids.destroy');
 
 
 
