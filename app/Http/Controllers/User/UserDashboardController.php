@@ -16,7 +16,7 @@ class UserDashboardController extends Controller
 
         $stats = [
             'active_bids'      => $user->bids()->count(),
-            'total_wins'       => 0, // TODO: Implement win logic
+            'total_wins'       => $user->getWonAuctionsCount(),
             'watchlist_count'  => $user->watchlist()->count(),
             'messages_count'   => 0,
         ];
@@ -52,8 +52,19 @@ class UserDashboardController extends Controller
     // Winning items
     public function winningItems()
     {
-        // TODO: Fetch user's winning items from database
-        return view('website.user.winning-items');
+        $user = auth()->user();
+        
+        $auctions = \App\Models\Auction::where('end_time', '<=', now())
+            ->whereIn('status', ['active', 'closed'])
+            ->whereHas('bids', function ($query) use ($user) {
+                $query->where('user_id', $user->id)
+                      ->whereRaw('amount = (SELECT MAX(amount) FROM bids WHERE auction_id = auctions.id)');
+            })
+            ->with(['category', 'user'])
+            ->latest()
+            ->paginate(10);
+
+        return view('website.user.winning-items', compact('auctions'));
     }
 
     // Watchlist
