@@ -43,10 +43,6 @@ class AutoBidController extends Controller
         try {
             $bidService = app(\App\Services\BidService::class);
             
-            // Re-using the logic from BidService naturally ensures consistency
-            // but BidService->placeBid handles both manual and proxy.
-            // We can call placeBid with just max_bid_amount.
-            
             $result = $bidService->placeBid($auction, [
                 'max_bid_amount' => $request->max_bid_amount
             ], auth()->user());
