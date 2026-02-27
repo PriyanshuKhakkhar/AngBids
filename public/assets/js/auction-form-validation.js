@@ -411,5 +411,3 @@ class AuctionFormValidator {
     }
 }
 
-// Export for manual initialization
-// No automatic initialization - must be called manually from the page

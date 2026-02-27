@@ -1,6 +1,6 @@
 /* 
-   LaraBids Elite - Complete Bootstrap 5 Design System
-   Color: Deep Navy (#0a192f) & Metallic Gold (#d4af37)
+   LaraBids Design System
+   Color: Standard Blue (#4e73df)
 */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700;800&display=swap');
@@ -14,13 +14,6 @@
     --bs-danger: #e74a3b;
     --bs-dark: #5a5c69;
     --bs-light: #f8f9fc;
-    --elite-primary: #4e73df;
-    --elite-primary-light: #7191f1;
-    --elite-secondary: #858796;
-    --elite-text-muted: #858796;
-    --primary-gradient: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
-    --glass-bg: rgba(255, 255, 255, 0.9);
-    --glass-border: rgba(0, 0, 0, 0.2);
     --transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
 
     --gray-100: #f8f9fc;
@@ -361,16 +354,6 @@ h4,
 
 
 
-/* --- Auction Elements --- */
-.countdown-box {
-    background: #f8f9fc;
-    border-top: 2px solid #cbd5e0;
-}
-
-.price-tag {
-    color: var(--bs-primary);
-    font-weight: 800;
-}
 
 
 /* --- Specific Sections --- */
@@ -606,44 +589,6 @@ h4,
     }
 }
 
-/* --- Featured Components --- */
-.category-card-elite {
-    background: #ffffff;
-    border: 2px solid #cbd5e0;
-    border-radius: 1rem;
-    padding: 2rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
-}
-
-.category-card-elite:hover {
-    background: #ffffff;
-    border-color: #4e73df;
-    transform: translateY(-10px);
-    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.15);
-}
-
-.icon-box-gold {
-    width: 80px;
-    height: 80px;
-    background: rgba(78, 115, 223, 0.08);
-    color: #4e73df;
-    border-radius: 1.25rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid rgba(78, 115, 223, 0.15);
-    transition: all 0.3s ease;
-    margin-bottom: 25px;
-    box-shadow: 0 0.5rem 1rem rgba(78, 115, 223, 0.05);
-}
-
-.category-card-elite:hover .icon-box-gold {
-    background: #4e73df;
-    color: #ffffff;
-    transform: scale(1.1) rotate(5deg);
-    box-shadow: 0 0.5rem 1rem rgba(78, 115, 223, 0.3);
-}
 
 
 
@@ -776,10 +721,6 @@ footer {
 
 /* --- Responsive Polish & Fixes --- */
 @media (max-width: 991.98px) {
-    .metrics-overlap {
-        margin-top: 0 !important;
-        padding-top: 30px;
-    }
 
     .hero-section {
         padding: 80px 0 60px;
@@ -850,25 +791,6 @@ footer {
     color: #b8962d !important;
 }
 
-.bid-history-scroll {
-    max-height: 400px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--bs-primary) #f8f9fc;
-}
-
-.bid-history-scroll::-webkit-scrollbar {
-    width: 6px;
-}
-
-.bid-history-scroll::-webkit-scrollbar-track {
-    background: #f8f9fc;
-}
-
-.bid-history-scroll::-webkit-scrollbar-thumb {
-    background: var(--bs-primary);
-    border-radius: 10px;
-}
 
 /* Base Animations */
 .animate__animated {

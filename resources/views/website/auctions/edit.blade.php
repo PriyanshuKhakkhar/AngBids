@@ -1,6 +1,6 @@
 @extends('website.layouts.app')
 
-@section('title', 'Edit Auction | LaraBids')
+@section('title', 'Refine Listing | LaraBids')
 
 @section('content')
 
@@ -8,20 +8,7 @@
     $hasBids = $auction->bids()->exists();
 @endphp
 
-<!-- Hero Header -->
-<section class="hero-section text-center text-white d-flex align-items-center mb-5">
-    <div class="container" data-aos="fade-up">
-        <span class="badge bg-white text-primary fw-bold px-3 py-2 rounded-pill mb-3 shadow-sm">
-            ✏️ EDIT YOUR AUCTION
-        </span>
-        <h1 class="display-3 fw-bold mb-3">Refine Your <span class="text-white">Listing</span></h1>
-        <p class="lead opacity-75 mx-auto" style="max-width: 700px;">
-            Update your item details. Note that some fields are locked once bidding has started to ensure fairness.
-        </p>
-    </div>
-</section>
-
-<section class="pb-5">
+<section class="py-5 mt-3 mt-lg-5">
     <div class="container">
         <div class="row">
             <div class="col-lg-8" data-aos="fade-right">
@@ -30,6 +17,11 @@
                         @csrf
                         @method('PUT')
                         
+                        <div class="text-center mb-5">
+                            <h2 class="fw-bolder text-dark mb-2">Update Your Listing</h2>
+                            <p class="text-muted">Modify your item details. Some fields are locked once bidding has started.</p>
+                        </div>
+                        
                         <div class="row g-4">
                             <!-- Basic Info -->
                             <div class="col-12">
@@ -37,7 +29,7 @@
                             </div>
 
                             <div class="col-12">
-                                <label class="form-label fw-bold text-dark small text-uppercase">Item Title</label>
+                                <label class="form-label fw-bold text-dark small">Item Title</label>
                                 <input type="text" name="title" class="form-control form-control-lg bg-light border-0 shadow-none @error('title') is-invalid @enderror" 
                                     placeholder="What are you selling?" value="{{ old('title', $auction->title) }}">
                                 @error('title')
@@ -46,43 +38,34 @@
                             </div>
 
                             <div class="col-12">
-                                <label class="form-label fw-bold text-dark small text-uppercase mb-3">Item Category <span class="text-danger">*</span></label>
+                                <label class="form-label fw-bold text-dark small mb-3">Item Category <span class="text-danger">*</span></label>
                                 
                                 <input type="hidden" name="category_id" id="selected_category_id" value="{{ old('category_id', $auction->category_id) }}">
                                 
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <select id="mainCategorySelect" class="form-select form-select-lg bg-light border-0 shadow-none" {{ $hasBids ? 'disabled' : '' }}>
-                                            <option value="" disabled selected>Choose Main Category</option>
+                                            <option value="" disabled>Choose Main Category</option>
                                             @foreach($categories as $parent)
-                                                @php
-                                                    $isCurrentParent = $auction->category->parent_id == $parent->id || $auction->category_id == $parent->id;
-                                                @endphp
                                                 <option value="{{ $parent->id }}" 
-                                                    {{ (old('category_id', $auction->category_id) && $isCurrentParent) ? 'selected' : '' }}>
+                                                    {{ old('category_id', $auction->category_id) == $parent->id || ($parent->children->contains('id', old('category_id', $auction->category_id))) ? 'selected' : '' }}>
                                                     {{ $parent->name }}
                                                 </option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="col-md-6">
-                                        <div id="subCategoryDropdownWrapper" style="{{ $auction->category->parent_id ? '' : 'display: none;' }}">
+                                        <div id="subCategoryDropdownWrapper" style="display: none;">
                                             <select id="subCategorySelect" class="form-select form-select-lg bg-light border-0 shadow-none" {{ $hasBids ? 'disabled' : '' }}>
-                                                <option value="" disabled>Choose Sub-Category</option>
-                                                @if($auction->category->parent_id)
-                                                    @foreach($auction->category->parent->children as $child)
-                                                        <option value="{{ $child->id }}" {{ $auction->category_id == $child->id ? 'selected' : '' }}>
-                                                            {{ $child->name }}
-                                                        </option>
-                                                    @endforeach
-                                                @endif
+                                                <option value="" disabled selected>Choose Sub-Category</option>
+                                                {{-- Populated via JS --}}
                                             </select>
                                         </div>
                                     </div>
                                 </div>
                                 
                                 @if($hasBids)
-                                    <small class="text-muted"><i class="fas fa-lock me-1"></i> Category is locked because this auction already has bids.</small>
+                                    <small class="text-muted mt-2 d-block"><i class="fas fa-lock me-1"></i> Category cannot be changed after bids are placed.</small>
                                 @endif
 
                                 @error('category_id')
@@ -96,14 +79,14 @@
                             </script>
 
                             <div class="col-md-6">
-                                <label class="form-label fw-bold text-dark small text-uppercase">Starting Price (₹)</label>
+                                <label class="form-label fw-bold text-dark small">Starting Price (₹)</label>
                                 <div class="input-group input-group-lg">
                                     <span class="input-group-text bg-light border-0 text-primary fw-bold border-end">₹</span>
                                     <input type="number" name="starting_price" step="0.01" min="0.01" class="form-control bg-light border-0 shadow-none @error('starting_price') is-invalid @enderror" 
                                         placeholder="0.00" value="{{ old('starting_price', $auction->starting_price) }}" {{ $hasBids ? 'disabled' : '' }}>
                                 </div>
                                 @if($hasBids)
-                                    <small class="text-muted"><i class="fas fa-lock me-1"></i> Starting price is locked due to active bids.</small>
+                                    <small class="text-muted mt-1 d-block"><i class="fas fa-lock me-1"></i> Locked due to active bids.</small>
                                 @endif
                                 @error('starting_price')
                                     <div class="invalid-feedback d-block" data-server-error>{{ $message }}</div>
@@ -111,11 +94,11 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label fw-bold text-dark small text-uppercase">Min Bid Increment (₹)</label>
+                                <label class="form-label fw-bold text-dark small">Min Bid Increment (₹)</label>
                                 <div class="input-group input-group-lg">
                                     <span class="input-group-text bg-light border-0 text-primary fw-bold border-end">₹</span>
                                     <input type="number" name="min_increment" step="1" min="1" max="100000.00" class="form-control bg-light border-0 shadow-none @error('min_increment') is-invalid @enderror" 
-                                        placeholder="100" value="{{ old('min_increment', $auction->min_increment ?? '100') }}">
+                                        placeholder="100" value="{{ old('min_increment', $auction->min_increment) }}">
                                 </div>
                                 <small class="text-muted">Minimum amount each next bid must increase by.</small>
                                 @error('min_increment')
@@ -125,7 +108,7 @@
 
 
                             <div class="col-12">
-                                <label class="form-label fw-bold text-dark small text-uppercase">Description</label>
+                                <label class="form-label fw-bold text-dark small">Description</label>
                                 <textarea name="description" rows="5" class="form-control bg-light border-0 shadow-none @error('description') is-invalid @enderror" 
                                     placeholder="Describe your item in detail...">{{ old('description', $auction->description) }}</textarea>
                                 @error('description')
@@ -139,41 +122,54 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label fw-bold text-dark small text-uppercase">Auction Start Date & Time</label>
-                                <input type="datetime-local" name="start_time" class="form-control form-control-lg bg-light border-0 shadow-none @error('start_time') is-invalid @enderror" 
-                                    value="{{ old('start_time', $auction->start_time->format('Y-m-d\TH:i')) }}" {{ $hasBids ? 'disabled' : '' }}>
-                                <small class="text-muted">When should the bidding begin?</small>
+                                <label class="form-label fw-bold text-dark small">Auction Start Date & Time</label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text bg-light border-0"><i class="far fa-calendar-alt text-primary"></i></span>
+                                    <input type="text" name="start_time" id="start_time_picker" class="form-control bg-light border-0 shadow-none @error('start_time') is-invalid @enderror" 
+                                        placeholder="Select start date & time" value="{{ old('start_time', $auction->start_time->format('Y-m-d h:i A')) }}" {{ $hasBids ? 'disabled' : '' }}>
+                                </div>
+                                @if($hasBids)
+                                    <small class="text-muted mt-1 d-block"><i class="fas fa-lock me-1"></i> Start time is locked.</small>
+                                @endif
                                 @error('start_time')
-                                    <div class="invalid-feedback" data-server-error>{{ $message }}</div>
+                                    <div class="invalid-feedback d-block" data-server-error>{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label fw-bold text-dark small text-uppercase">Auction End Date & Time</label>
-                                <input type="datetime-local" name="end_time" class="form-control form-control-lg bg-light border-0 shadow-none @error('end_time') is-invalid @enderror" 
-                                    value="{{ old('end_time', $auction->end_time->format('Y-m-d\TH:i')) }}">
-                                <small class="text-muted">When should the bidding conclude?</small>
+                                <label class="form-label fw-bold text-dark small">Auction End Date & Time</label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text bg-light border-0"><i class="far fa-calendar-check text-primary"></i></span>
+                                    <input type="text" name="end_time" id="end_time_picker" class="form-control bg-light border-0 shadow-none @error('end_time') is-invalid @enderror" 
+                                        placeholder="Select end date & time" value="{{ old('end_time', $auction->end_time->format('Y-m-d h:i A')) }}">
+                                </div>
+                                <small class="text-muted d-block mt-2">Update whenever you need more exposure.</small>
                                 @error('end_time')
-                                    <div class="invalid-feedback" data-server-error>{{ $message }}</div>
+                                    <div class="invalid-feedback d-block" data-server-error>{{ $message }}</div>
                                 @enderror
                             </div>
 
-                            <!-- Images Management -->
                             <div class="col-12 mt-4">
-                                <label class="form-label fw-bold text-dark small text-uppercase">Item Photos</label>
+                                <label class="form-label fw-bold text-dark small mb-3">Item Photos</label>
                                 
-                                <!-- Existing Images -->
-                                <div class="row g-3 mb-3">
+                                <!-- Existing Images Row -->
+                                <div class="row g-3 mb-4 mt-1">
                                     @foreach($auction->images as $img)
                                         <div class="col-md-3 existing-image-container" id="existing-img-{{ $img->id }}">
-                                            <div class="position-relative rounded-3 overflow-hidden border">
-                                                <img src="{{ asset('storage/' . $img->image_path) }}" class="w-100 h-100 object-fit-cover" style="aspect-ratio: 1/1;">
+                                            <div class="position-relative rounded-4 overflow-hidden border shadow-sm h-100 bg-white">
+                                                <img src="{{ str_starts_with($img->image_path, 'http') ? $img->image_path : asset('storage/' . $img->image_path) }}" 
+                                                    class="w-100 h-100 object-fit-cover" style="aspect-ratio: 1/1;">
+                                                
                                                 @if($img->is_primary)
-                                                    <span class="badge bg-primary position-absolute top-0 start-0 m-2">Primary</span>
+                                                    <div class="position-absolute top-0 start-0 m-2">
+                                                        <span class="badge bg-primary rounded-pill small px-2">Main</span>
+                                                    </div>
                                                 @endif
-                                                <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 shadow-sm delete-existing-img" 
-                                                    data-id="{{ $img->id }}" onclick="removeExistingImage({{ $img->id }})">
-                                                    <i class="fas fa-times"></i>
+                                                
+                                                <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle shadow ripple-on-click" 
+                                                    style="width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; padding: 0;"
+                                                    onclick="removeExistingImage({{ $img->id }})">
+                                                    <i class="fas fa-times fa-xs"></i>
                                                 </button>
                                             </div>
                                         </div>
@@ -181,25 +177,29 @@
                                 </div>
                                 <div id="deletedImagesContainer"></div>
 
-                                <div class="image-upload-wrapper mt-3" onclick="document.getElementById('imageInput').click()">
-                                    <div class="upload-content text-center">
-                                        <i class="fas fa-plus-circle fa-2x text-primary mb-2"></i>
+                                <div class="image-upload-wrapper d-flex flex-column justify-content-center align-items-center py-4 px-3 position-relative" id="dragDropArea" onclick="document.getElementById('imageInput').click()">
+                                    <div class="upload-content text-center" style="pointer-events: none;">
+                                        <div class="icon-circle bg-primary bg-opacity-10 text-primary mx-auto mb-2 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; border-radius: 50%;">
+                                            <i class="fas fa-plus fa-lg"></i>
+                                        </div>
                                         <h6 class="fw-bold mb-1">Add More Photos</h6>
-                                        <p class="text-muted small mb-0">Click to browse. Max 5 total photos.</p>
+                                        <p class="text-muted small mb-0">Drag & Drop or click to browse</p>
                                     </div>
                                     <input type="file" name="images[]" multiple accept="image/jpeg,image/png,image/jpg,image/gif" class="d-none" id="imageInput">
                                 </div>
-                                <small class="text-muted d-block mt-2" id="imageLimitInfo">
-                                    You have {{ $auction->images->count() }} images. You can add {{ max(0, 5 - $auction->images->count()) }} more.
-                                </small>
+                                
+                                <div id="imageLimitInfo" class="small text-muted mt-2 fw-semibold px-1">
+                                    You have {{ $auction->images->count() }} images. Max limit is 5.
+                                </div>
+
                                 <input type="hidden" name="primary_image_index" id="primaryImageIndex" value="0">
                                 
-                                <div id="imagePreviewGrid" class="image-preview-grid">
-                                    <!-- New previews will be injected here by JS -->
+                                <div id="imagePreviewGrid" class="image-preview-grid mt-3">
+                                    <!-- New previews injected here -->
                                 </div>
 
                                 @error('images')
-                                    <div class="invalid-feedback d-block" data-server-error>{{ $message }}</div>
+                                    <div class="invalid-feedback d-block mt-2 fw-bold" data-server-error>{{ $message }}</div>
                                 @enderror
                             </div>
 
@@ -207,7 +207,9 @@
                                 <button type="submit" class="btn btn-primary btn-lg w-100 py-3 rounded-pill shadow fw-bold">
                                     💾 Save Changes
                                 </button>
-                                <a href="{{ route('user.my-auctions') }}" class="btn btn-link w-100 text-muted mt-2 text-decoration-none small">Cancel and Go Back</a>
+                                <a href="{{ route('user.my-auctions') }}" class="btn btn-link w-100 text-muted mt-3 text-decoration-none small">
+                                    <i class="fas fa-chevron-left me-1"></i> Back to My Auctions
+                                </a>
                             </div>
                         </div>
                     </form>
@@ -220,24 +222,35 @@
                     <div class="card card-elite border-0 shadow-sm p-4 mb-4">
                         <div class="d-flex align-items-center gap-3 mb-4">
                             <div class="bg-primary bg-opacity-10 p-3 rounded-4">
-                                <i class="fas fa-info-circle text-primary fs-4"></i>
+                                <i class="fas fa-shield-alt text-primary fs-4"></i>
                             </div>
                             <h5 class="mb-0 fw-bold text-dark">Editing Rules</h5>
                         </div>
-                        <ul class="list-unstyled mb-0 small">
-                            <li class="d-flex gap-3 mb-3">
-                                <i class="fas fa-check-circle text-success mt-1"></i>
-                                <div>You can update the **Title** and **Description** at any time.</div>
+                        <ul class="list-unstyled mb-0">
+                            <li class="d-flex gap-3 mb-4">
+                                <div class="text-primary fw-bold mt-1 small">01.</div>
+                                <div class="small">Description and increment can be updated anytime to attract more bidders.</div>
                             </li>
-                            <li class="d-flex gap-3 mb-3">
-                                <i class="fas fa-{{ $hasBids ? 'lock' : 'check-circle' }} text-{{ $hasBids ? 'warning' : 'success' }} mt-1"></i>
-                                <div>**Starting Price** can only be changed if no bids have been placed.</div>
+                            <li class="d-flex gap-3 mb-4">
+                                <div class="text-{{ $hasBids ? 'warning' : 'primary' }} fw-bold mt-1 small">02.</div>
+                                <div class="small {{ $hasBids ? 'text-muted' : '' }}">
+                                    Starting price is locked once the first bid is placed to maintain marketplace integrity.
+                                </div>
                             </li>
                             <li class="d-flex gap-3">
-                                <i class="fas fa-clock text-primary mt-1"></i>
-                                <div>You can extend the **End Time** if you need more exposure.</div>
+                                <div class="text-primary fw-bold mt-1 small">03.</div>
+                                <div class="small">You can add up to 5 photos. High quality images lead to faster sales.</div>
                             </li>
                         </ul>
+                    </div>
+
+                    <div class="card bg-primary text-white p-4 border-0 shadow-sm rounded-4 overflow-hidden position-relative">
+                        <div class="position-relative" style="z-index: 2;">
+                            <h5 class="fw-bold mb-3">Questions?</h5>
+                            <p class="small opacity-75 mb-4">Need help adjusting your auction? Our support team is here to assist.</p>
+                            <a href="{{ route('contact') }}" class="btn btn-white btn-sm px-4 rounded-pill fw-bold text-primary">Get Help</a>
+                        </div>
+                        <i class="fas fa-headset position-absolute opacity-10" style="font-size: 8rem; right: -1rem; bottom: -1rem; z-index: 1;"></i>
                     </div>
                 </div>
             </div>
@@ -248,6 +261,9 @@
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/image-upload.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/category-selection.css') }}">
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
 @endpush
 
 @push('scripts')
@@ -255,11 +271,40 @@
 <script src="{{ asset('assets/js/auction-form-validation.js') }}"></script>
 <script src="{{ asset('assets/js/category-selection.js') }}"></script>
 <script src="{{ asset('assets/js/auction-edit.js') }}"></script>
+
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize modular auction edit logic
-        initAuctionEdit({
-            existingImageCount: {{ $auction->images->count() }}
+        // Initialize dynamic category selection logic
+        // (Handled by category-selection.js - ensure categories are passed via categoryTree)
+        
+        // Initialize edit-specific logic
+        if (typeof initAuctionEdit === 'function') {
+            initAuctionEdit({
+                existingImageCount: {{ $auction->images->count() }}
+            });
+        }
+
+        // Initialize Time Pickers
+        const startPicker = flatpickr("#start_time_picker", {
+            enableTime: true,
+            dateFormat: "Y-m-d h:i K",
+            minDate: @json($hasBids ? null : 'today'), // If has bids, don't restrict min date for start time (though it's disabled anyway)
+            time_24hr: false,
+            onChange: function(selectedDates, dateStr, instance) {
+                instance.element.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        });
+        
+        const endPicker = flatpickr("#end_time_picker", {
+            enableTime: true,
+            dateFormat: "Y-m-d h:i K",
+            minDate: "today",
+            time_24hr: false,
+            onChange: function(selectedDates, dateStr, instance) {
+                instance.element.dispatchEvent(new Event('input', { bubbles: true }));
+            }
         });
     });
 </script>
