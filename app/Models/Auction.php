@@ -150,6 +150,7 @@ class Auction extends Model
         return $this->hasMany(Watchlist::class);
     }
 
+
     // Get auto bids
     public function autoBids()
     {

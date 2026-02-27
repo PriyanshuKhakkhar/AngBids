@@ -30,12 +30,43 @@
                 </tr>
             </thead>
             <tbody class="align-middle bg-white">
+                @forelse($auctions as $auction)
+                <tr>
+                    <td class="ps-4 py-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="{{ $auction->image ? asset('storage/' . $auction->image) : asset('assets/images/product/default.png') }}" 
+                                class="rounded-3" height="50" width="50" style="object-fit: cover;" alt="{{ $auction->title }}">
+                            <div>
+                                <h6 class="mb-0 text-dark fw-bold small">{{ $auction->title }}</h6>
+                                <small class="text-muted">ID: #{{ str_pad($auction->id, 5, '0', STR_PAD_LEFT) }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-3">
+                        <span class="fw-bold text-dark">₹{{ number_format($auction->current_price, 2) }}</span>
+                    </td>
+                    <td class="py-3">
+                        <span class="text-secondary small">{{ $auction->end_time->format('M d, Y') }}</span>
+                    </td>
+                    <td class="py-3">
+                        <span class="badge bg-soft-success text-success border border-success rounded-pill small px-3">
+                            Paid
+                        </span>
+                    </td>
+                    <td class="pe-4 text-end">
+                        <a href="{{ route('auctions.show', $auction->id) }}" class="btn btn-outline-gold btn-sm rounded-pill px-3">
+                            <i class="fas fa-eye me-1"></i>View
+                        </a>
+                    </td>
+                </tr>
+                @empty
                 <tr>
                     <td colspan="5" class="text-center py-5">
                         <i class="fas fa-trophy fs-1 mb-3 d-block text-gray-300 opacity-25"></i>
                         <span class="text-secondary small">No winning items yet. Keep bidding to win amazing items!</span>
                     </td>
                 </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
