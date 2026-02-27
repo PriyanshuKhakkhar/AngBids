@@ -209,5 +209,6 @@ class ImageUploadManager {
             dataTransfer.items.add(wrapper.file);
         });
         this.input.files = dataTransfer.files;
+        this.input.dispatchEvent(new Event('filesUpdated', { bubbles: true }));
     }
 }
