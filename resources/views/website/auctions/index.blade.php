@@ -1,4 +1,4 @@
-@extends('website.layouts.app')
+@extends('website.layouts.app', ['hideFooter' => true])
 
 @section('title', 'Browse Auctions | LaraBids')
 

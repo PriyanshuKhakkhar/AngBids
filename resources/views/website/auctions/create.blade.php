@@ -4,26 +4,18 @@
 
 @section('content')
 
-<!-- Hero Header -->
-<section class="hero-section text-center text-white d-flex align-items-center mb-5">
-    <div class="container" data-aos="fade-up">
-        <span class="badge bg-white text-primary fw-bold px-3 py-2 rounded-pill mb-3 shadow-sm">
-            ✨ START SELLING TODAY
-        </span>
-        <h1 class="display-3 fw-bold mb-3">List Your <span class="text-white">Item</span></h1>
-        <p class="lead opacity-75 mx-auto" style="max-width: 700px;">
-            Turn your treasures into cash. Fill out the details below to reach thousands of potential bidders.
-        </p>
-    </div>
-</section>
-
-<section class="pb-5">
+<section class="py-5 mt-3 mt-lg-5">
     <div class="container">
         <div class="row">
             <div class="col-lg-8" data-aos="fade-right">
                 <div class="card card-elite p-4 p-md-5 border-0 shadow-lg">
                     <form action="{{ route('auctions.store') }}" method="POST" enctype="multipart/form-data" id="auctionCreateForm" novalidate>
                         @csrf
+                        
+                        <div class="text-center mb-5">
+                            <h2 class="fw-bolder text-dark mb-2">Create Your Listing</h2>
+                            <p class="text-muted">Fill out the details below to reach thousands of potential bidders.</p>
+                        </div>
                         
                         <div class="row g-4">
                             <!-- Basic Info -->
@@ -32,7 +24,7 @@
                             </div>
 
                             <div class="col-12">
-                                <label class="form-label fw-bold text-dark small text-uppercase">Item Title</label>
+                                <label class="form-label fw-bold text-dark small">Item Title</label>
                                 <input type="text" name="title" class="form-control form-control-lg bg-light border-0 shadow-none @error('title') is-invalid @enderror" 
                                     placeholder="What are you selling?" value="{{ old('title') }}">
                                 @error('title')
@@ -41,7 +33,7 @@
                             </div>
 
                             <div class="col-12">
-                                <label class="form-label fw-bold text-dark small text-uppercase mb-3">Item Category <span class="text-danger">*</span></label>
+                                <label class="form-label fw-bold text-dark small mb-3">Item Category <span class="text-danger">*</span></label>
                                 
                                 <input type="hidden" name="category_id" id="selected_category_id" value="{{ old('category_id') }}">
                                 
@@ -101,7 +93,7 @@
                             </script>
 
                             <div class="col-md-6">
-                                <label class="form-label fw-bold text-dark small text-uppercase">Starting Price (₹)</label>
+                                <label class="form-label fw-bold text-dark small">Starting Price (₹)</label>
                                 <div class="input-group input-group-lg">
                                     <span class="input-group-text bg-light border-0 text-primary fw-bold border-end">₹</span>
                                     <input type="number" name="starting_price" step="0.01" min="0.01" class="form-control bg-light border-0 shadow-none @error('starting_price') is-invalid @enderror" 
@@ -113,7 +105,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label fw-bold text-dark small text-uppercase">Min Bid Increment (₹)</label>
+                                <label class="form-label fw-bold text-dark small">Min Bid Increment (₹)</label>
                                 <div class="input-group input-group-lg">
                                     <span class="input-group-text bg-light border-0 text-primary fw-bold border-end">₹</span>
                                     <input type="number" name="min_increment" step="1" min="1" max="100000.00" class="form-control bg-light border-0 shadow-none @error('min_increment') is-invalid @enderror" 
@@ -127,7 +119,7 @@
 
 
                             <div class="col-12">
-                                <label class="form-label fw-bold text-dark small text-uppercase">Description</label>
+                                <label class="form-label fw-bold text-dark small">Description</label>
                                 <textarea name="description" rows="5" class="form-control bg-light border-0 shadow-none @error('description') is-invalid @enderror" 
                                     placeholder="Describe your item in detail...">{{ old('description') }}</textarea>
                                 @error('description')
@@ -141,7 +133,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label fw-bold text-dark small text-uppercase">Auction Start Date & Time</label>
+                                <label class="form-label fw-bold text-dark small">Auction Start Date & Time</label>
                                 <div class="input-group input-group-lg">
                                     <span class="input-group-text bg-light border-0"><i class="far fa-calendar-alt text-primary"></i></span>
                                     <input type="text" name="start_time" id="start_time_picker" class="form-control bg-light border-0 shadow-none @error('start_time') is-invalid @enderror" 
@@ -154,7 +146,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label fw-bold text-dark small text-uppercase">Auction End Date & Time</label>
+                                <label class="form-label fw-bold text-dark small">Auction End Date & Time</label>
                                 <div class="input-group input-group-lg">
                                     <span class="input-group-text bg-light border-0"><i class="far fa-calendar-check text-primary"></i></span>
                                     <input type="text" name="end_time" id="end_time_picker" class="form-control bg-light border-0 shadow-none @error('end_time') is-invalid @enderror" 
@@ -167,7 +159,7 @@
                             </div>
 
                             <div class="col-12 mt-4">
-                                <label class="form-label fw-bold text-dark small text-uppercase mb-3">Item Photos</label>
+                                <label class="form-label fw-bold text-dark small mb-3">Item Photos</label>
                                 
                                 <div class="image-upload-wrapper d-flex flex-column justify-content-center align-items-center py-4 px-3 position-relative" id="dragDropArea" onclick="document.getElementById('imageInput').click()">
                                     <div class="upload-content text-center" style="pointer-events: none;">
@@ -209,15 +201,15 @@
                                 <div id="category_fields_vintage-cars" class="category-fields-group d-none">
                                     <div class="row g-3">
                                         <div class="col-md-4">
-                                            <label class="form-label small text-uppercase fw-bold">Year</label>
+                                            <label class="form-label small fw-bold">Year</label>
                                             <input type="number" name="specifications[year]" class="form-control bg-light border-0 shadow-none" placeholder="e.g. 1965">
                                         </div>
                                         <div class="col-md-4">
-                                            <label class="form-label small text-uppercase fw-bold">Mileage (km)</label>
+                                            <label class="form-label small fw-bold">Mileage (km)</label>
                                             <input type="number" name="specifications[mileage]" class="form-control bg-light border-0 shadow-none" placeholder="e.g. 50000">
                                         </div>
                                         <div class="col-md-4">
-                                            <label class="form-label small text-uppercase fw-bold">Fuel Type</label>
+                                            <label class="form-label small fw-bold">Fuel Type</label>
                                             <select name="specifications[fuel_type]" class="form-select bg-light border-0 shadow-none">
                                                 <option value="">Select Fuel</option>
                                                 <option value="Petrol">Petrol</option>
@@ -226,7 +218,7 @@
                                             </select>
                                         </div>
                                         <div class="col-12 mt-3">
-                                            <label class="form-label small text-uppercase fw-bold">Vehicle Documentation (PDF/Image)</label>
+                                            <label class="form-label small fw-bold">Vehicle Documentation (PDF/Image)</label>
                                             <input type="file" name="document" class="form-control bg-light border-0 shadow-none">
                                             <small class="text-muted">Registration, Title, or Inspection reports.</small>
                                         </div>
@@ -237,11 +229,11 @@
                                 <div id="category_fields_jewelry" class="category-fields-group d-none">
                                     <div class="row g-3">
                                         <div class="col-md-6">
-                                            <label class="form-label small text-uppercase fw-bold">Metal Type</label>
+                                            <label class="form-label small fw-bold">Metal Type</label>
                                             <input type="text" name="specifications[metal]" class="form-control bg-light border-0 shadow-none" placeholder="e.g. 24K Gold">
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="form-label small text-uppercase fw-bold">Certificate of Authenticity</label>
+                                            <label class="form-label small fw-bold">Certificate of Authenticity</label>
                                             <input type="file" name="document" class="form-control bg-light border-0 shadow-none">
                                         </div>
                                     </div>
@@ -251,11 +243,11 @@
                                 <div id="category_fields_art" class="category-fields-group d-none">
                                     <div class="row g-3">
                                         <div class="col-md-6">
-                                            <label class="form-label small text-uppercase fw-bold">Artist Name</label>
+                                            <label class="form-label small fw-bold">Artist Name</label>
                                             <input type="text" name="specifications[artist]" class="form-control bg-light border-0 shadow-none" placeholder="e.g. Vincent van Gogh">
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="form-label small text-uppercase fw-bold">Authenticity Document</label>
+                                            <label class="form-label small fw-bold">Authenticity Document</label>
                                             <input type="file" name="document" class="form-control bg-light border-0 shadow-none">
                                         </div>
                                     </div>

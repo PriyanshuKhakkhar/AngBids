@@ -48,6 +48,7 @@ class AuctionFormValidator {
         const imageInput = this.form.querySelector('input[name="images[]"]');
         if (imageInput) {
             imageInput.addEventListener('change', () => this.validateImage(imageInput));
+            imageInput.addEventListener('filesUpdated', () => this.validateImage(imageInput));
         }
 
         const documentInput = this.form.querySelector('input[name="document"]');
@@ -391,7 +392,10 @@ class AuctionFormValidator {
                 target = wrapper;
                 target.classList.remove('is-invalid'); // Ensure the wrapper loses the red border
                 const errorDivs = target.parentElement.querySelectorAll('.invalid-feedback');
-                errorDivs.forEach(div => div.style.display = 'none');
+                errorDivs.forEach(div => {
+                    div.style.display = 'none';
+                    div.classList.remove('d-block');
+                });
                 return;
             }
         }
@@ -401,6 +405,7 @@ class AuctionFormValidator {
 
         if (errorDiv) {
             errorDiv.style.display = 'none';
+            errorDiv.classList.remove('d-block');
             errorDiv.textContent = '';
         }
     }

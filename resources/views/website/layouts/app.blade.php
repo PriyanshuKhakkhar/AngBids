@@ -28,7 +28,9 @@
 
     @yield('content')
 
-    @include('website.partials.footer')
+    @if(!isset($hideFooter) || !$hideFooter)
+        @include('website.partials.footer')
+    @endif
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
