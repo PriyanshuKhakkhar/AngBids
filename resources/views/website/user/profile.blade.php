@@ -147,8 +147,7 @@
                     <i class="bi bi-camera"></i>
                 </label>
             </div>
-            <h5 class="text-dark fw-bold mb-0">{{ auth()->user()->name }}</h5>
-            <p class="text-primary small mb-3">@_{{ auth()->user()->username }}</p>
+            <h5 class="text-dark fw-bold mb-0">{{ auth()->user()->username }}</h5>
             <p class="text-secondary small mb-3">{{ auth()->user()->email }}</p>
             <div class="d-flex flex-column gap-2 align-items-center">
                 <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3 w-75" onclick="document.getElementById('avatar-input').click()">Change Avatar</button>

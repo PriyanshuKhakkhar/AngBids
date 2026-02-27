@@ -104,7 +104,7 @@
                             data-bs-toggle="dropdown">
                             <img src="{{ auth()->user()->avatar_url }}"
                                 class="rounded-circle border border-primary border-opacity-25 me-2" height="35" width="35" style="object-fit: cover;" alt="Avatar">
-                            <span class="small d-none d-md-inline">{{ auth()->user()->name }}</span>
+                            <span class="small d-none d-md-inline">{{ auth()->user()->username }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">
 
