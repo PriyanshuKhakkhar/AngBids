@@ -53,8 +53,7 @@ class AuctionController extends Controller
                 abort(404);
             }
 
-            // Check if user is owner or admin
-            // Assuming 'role' column exists on User model for admin check
+            // Only owner, admin, or super admin can view non-active auctions
             $user = auth()->user();
             if ($user->id !== $auction->user_id && $user->role !== 'admin' && $user->role !== 'super admin') {
                  abort(404);
@@ -121,9 +120,7 @@ class AuctionController extends Controller
         return $this->index($request);
     }
 
-    /**
-     * Show the form for editing the specified auction.
-     */
+    // Edit form
     public function edit($id)
     {
         $auction = Auction::findOrFail($id);
@@ -148,9 +145,7 @@ class AuctionController extends Controller
         return view('website.auctions.edit', compact('auction', 'categories', 'categoryTree'));
     }
 
-    /**
-     * Update the specified auction in storage.
-     */
+    // Update auction
     public function update(UpdateAuctionRequest $request, $id)
     {
         $auction = Auction::findOrFail($id);
