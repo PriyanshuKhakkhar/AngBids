@@ -95,20 +95,28 @@ class Auction extends Model
     }
 
     /**
-     * Get human-readable status label
+     * Get human-readable status label with time logic
      */
     public function getStatusLabelAttribute(): string
     {
-        if ($this->status !== 'active') {
-            return ucfirst($this->status);
+        if ($this->status === 'cancelled') {
+            return 'Cancelled';
         }
 
-        if ($this->start_time->isFuture()) {
-            return 'Starting Soon';
-        }
-
-        if ($this->end_time->isPast()) {
+        if ($this->end_time && $this->end_time->isPast()) {
             return 'Ended';
+        }
+
+        if ($this->status === 'pending') {
+            return 'Pending';
+        }
+
+        if ($this->status === 'closed') {
+            return 'Closed';
+        }
+
+        if ($this->start_time && $this->start_time->isFuture()) {
+            return 'Starting Soon';
         }
 
         return 'Live';

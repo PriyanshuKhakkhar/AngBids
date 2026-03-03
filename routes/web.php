@@ -55,15 +55,20 @@ Route::middleware('auth')->group(function () {
     Route::post('/auctions', [AuctionController::class, 'store'])->name('auctions.store');
     Route::get('/auctions/{auction}/edit', [AuctionController::class, 'edit'])->name('auctions.edit');
     Route::put('/auctions/{auction}', [AuctionController::class, 'update'])->name('auctions.update');
+    Route::delete('/auctions/{auction}', [AuctionController::class, 'destroy'])->name('auctions.destroy');
 
     // User Dashboard Routes
     Route::prefix('user')->name('user.')->group(function () {
 
         Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
         Route::get('/my-auctions', [UserDashboardController::class, 'myAuctions'])->name('my-auctions');
+        Route::get('/my-auctions/data', [UserDashboardController::class, 'myAuctionsData'])->name('my-auctions.data');
         Route::get('/my-bids', [UserDashboardController::class, 'myBids'])->name('my-bids');
+        Route::get('/my-bids/data', [UserDashboardController::class, 'myBidsData'])->name('my-bids.data');
         Route::get('/winning-items', [UserDashboardController::class, 'winningItems'])->name('winning-items');
+        Route::get('/winning-items/data', [UserDashboardController::class, 'winningItemsData'])->name('winning-items.data');
         Route::get('/watchlist', [UserDashboardController::class, 'watchlist'])->name('watchlist');
+        Route::get('/watchlist/data', [UserDashboardController::class, 'watchlistData'])->name('watchlist.data');
 
         Route::post('/watchlist/{auction}/toggle', [WatchlistController::class, 'toggle'])->name('watchlist.toggle');
 

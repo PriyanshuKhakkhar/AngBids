@@ -162,5 +162,22 @@ class AuctionController extends Controller
         return redirect()->route('auctions.show', $auction->id)
             ->with('success', 'Auction updated successfully!');
     }
+
+    /**
+     * Remove the specified auction from storage.
+     */
+    public function destroy($id)
+    {
+        $auction = Auction::findOrFail($id);
+
+        if ($auction->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $this->auctionService->deleteAuction($id);
+
+        return redirect()->route('user.my-auctions')
+            ->with('success', 'Auction deleted successfully!');
+    }
 }
 

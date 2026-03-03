@@ -42,6 +42,7 @@ class AuctionFormValidator {
         inputs.forEach(input => {
             input.addEventListener('blur', () => this.validateField(input));
             input.addEventListener('input', () => this.clearFieldError(input));
+            input.addEventListener('change', () => this.validateField(input)); // Add change listener for selects and hidden inputs
         });
 
         // Special handling for file inputs
@@ -51,10 +52,11 @@ class AuctionFormValidator {
             imageInput.addEventListener('filesUpdated', () => this.validateImage(imageInput));
         }
 
-        const documentInput = this.form.querySelector('input[name="document"]');
-        if (documentInput) {
-            documentInput.addEventListener('change', () => this.validateDocument(documentInput));
-        }
+        const documentInputs = this.form.querySelectorAll('input[name="document"]');
+        documentInputs.forEach(input => {
+            input.addEventListener('change', () => this.validateDocument(input));
+            input.addEventListener('input', () => this.clearFieldError(input));
+        });
     }
 
     validateForm() {
@@ -63,8 +65,11 @@ class AuctionFormValidator {
         let isValid = true;
 
         inputs.forEach(input => {
-            if (!this.validateField(input)) {
-                isValid = false;
+            // Check if input is visible before validating
+            if (input.offsetParent !== null || input.type === 'hidden') {
+                if (!this.validateField(input)) {
+                    isValid = false;
+                }
             }
         });
 
@@ -76,19 +81,21 @@ class AuctionFormValidator {
             }
         }
 
-        const documentInput = this.form.querySelector('input[name="document"]');
-        if (documentInput && documentInput.files.length > 0) {
-            if (!this.validateDocument(documentInput)) {
-                isValid = false;
+        const documentInputs = this.form.querySelectorAll('input[name="document"]');
+        documentInputs.forEach(input => {
+            // Only validate if visible
+            if (input.offsetParent !== null) {
+                if (!this.validateDocument(input)) {
+                    isValid = false;
+                }
             }
-        }
+        });
 
         return isValid;
     }
 
     validateField(input) {
         const name = input.name;
-        // Handle input names like specifications[year]
         const cleanName = name.split('[')[0];
         const value = input.value.trim();
         let error = null;
@@ -96,33 +103,65 @@ class AuctionFormValidator {
         // Clear previous error
         this.clearFieldError(input);
 
-        // Skip validation for optional fields that are empty
-        const requiredFields = ['title', 'category_id', 'description', 'starting_price', 'start_time', 'end_time'];
-        if (!requiredFields.includes(cleanName) && !value) {
+        // Skip validation for hidden/invisible or disabled fields
+        if ((input.offsetParent === null && input.type !== 'hidden') || input.disabled) {
             return true;
         }
 
-        // Validation rules based on field name
-        switch (cleanName) {
-            case 'title':
-                error = this.validateTitle(value);
-                break;
-            case 'category_id':
-                error = this.validateCategory(value);
-                break;
-            case 'description':
-                error = this.validateDescription(value);
-                break;
-            case 'starting_price':
-                error = this.validatePrice(value);
-                break;
-            case 'start_time':
-                error = this.validateStartTime(value);
-                break;
-            case 'end_time':
-                const startTimeInput = this.form.querySelector('input[name="start_time"]');
-                error = this.validateEndTime(value, startTimeInput ? startTimeInput.value : null);
-                break;
+        // Handle specifications sub-fields (dynamic category fields)
+        if (cleanName === 'specifications') {
+            // Regex to get text inside brackets: specifications[year] -> year
+            const match = name.match(/\[(.*?)\]/);
+            const subName = (match && match[1]) ? match[1] : null;
+
+            if (subName && !value) {
+                // Friendly names for the fields
+                const displayNames = {
+                    'year': 'Model Year',
+                    'mileage': 'Mileage',
+                    'fuel_type': 'Fuel Type',
+                    'metal': 'Metal Type',
+                    'artist': 'Artist Name',
+                    'condition': 'Condition'
+                };
+                error = `${displayNames[subName] || subName.charAt(0).toUpperCase() + subName.slice(1)} is required.`;
+            } else if (subName === 'year') {
+                const year = parseInt(value);
+                const currentYear = new Date().getFullYear();
+                if (isNaN(year) || year < 1850 || year > currentYear + 1) {
+                    error = 'Please enter a valid year (1850-' + (currentYear + 1) + ').';
+                }
+            } else if (subName === 'mileage') {
+                if (isNaN(parseFloat(value)) || parseFloat(value) < 0) {
+                    error = 'Please enter a valid mileage.';
+                }
+            }
+        } else {
+            // Validation rules for standard fields
+            switch (cleanName) {
+                case 'title':
+                    error = this.validateTitle(value);
+                    break;
+                case 'category_id':
+                    error = this.validateCategory(value);
+                    break;
+                case 'description':
+                    error = this.validateDescription(value);
+                    break;
+                case 'starting_price':
+                    error = this.validatePrice(value);
+                    break;
+                case 'start_time':
+                    error = this.validateStartTime(value);
+                    break;
+                case 'end_time':
+                    const startTimeInput = this.form.querySelector('input[name="start_time"]');
+                    error = this.validateEndTime(value, startTimeInput ? startTimeInput.value : null);
+                    break;
+                case 'min_increment':
+                    error = this.validateMinIncrement(value);
+                    break;
+            }
         }
 
         if (error) {
@@ -195,6 +234,15 @@ class AuctionFormValidator {
         return null;
     }
 
+    validateMinIncrement(value) {
+        if (!value) return null; // It's optional on client side
+        const inc = parseFloat(value);
+        if (isNaN(inc)) return 'Min increment must be a number.';
+        if (inc < 100) return 'Min increment must be at least ₹100.00.';
+        if (inc > 100000) return 'Min increment cannot exceed ₹100,000.';
+        return null;
+    }
+
     validateStartTime(value) {
         if (!value) {
             return 'Auction start date and time is required.';
@@ -249,7 +297,10 @@ class AuctionFormValidator {
     }
 
     validateImage(input) {
-        if (!input.files || input.files.length === 0) {
+        const existingImages = document.querySelectorAll('.existing-image-container');
+        const totalImages = (input.files ? input.files.length : 0) + existingImages.length;
+
+        if (totalImages === 0) {
             const error = 'At least one image is required.';
             this.showError(input, error);
             this.errors['images'] = error;
@@ -260,9 +311,9 @@ class AuctionFormValidator {
         const maxSize = 2 * 1024 * 1024; // 2MB
         let error = null;
 
-        if (input.files.length > 5) {
+        if (totalImages > 5) {
             error = 'You cannot upload more than 5 images.';
-        } else {
+        } else if (input.files && input.files.length > 0) {
             for (let i = 0; i < input.files.length; i++) {
                 const file = input.files[i];
                 if (!allowedTypes.includes(file.type)) {
@@ -286,6 +337,14 @@ class AuctionFormValidator {
     }
 
     validateDocument(input) {
+        // Document is required for certain categories if visible
+        if ((!input.files || input.files.length === 0) && input.offsetParent !== null) {
+            const error = 'Document/Certificate is required for this category.';
+            this.showError(input, error);
+            this.errors['document'] = error;
+            return false;
+        }
+
         if (!input.files || input.files.length === 0) {
             return true;
         }
@@ -326,7 +385,7 @@ class AuctionFormValidator {
         let target = input;
 
         // If it's the hidden category input, highlight the visible select(s)
-        if (input.id === 'selected_category_id') {
+        if (input.id === 'selected_category_id' || input.name === 'category_id') {
             const mainCategorySelect = this.form.querySelector('#mainCategorySelect');
             const subCategorySelect = this.form.querySelector('#subCategorySelect');
             const subCategoryWrapper = this.form.querySelector('#subCategoryDropdownWrapper');
@@ -335,7 +394,7 @@ class AuctionFormValidator {
                 if (!mainCategorySelect.value) {
                     mainCategorySelect.classList.add('is-invalid');
                     target = mainCategorySelect;
-                } else if (subCategorySelect && subCategoryWrapper && subCategoryWrapper.style.display !== 'none') {
+                } else if (subCategorySelect && subCategoryWrapper && subCategoryWrapper.style.display !== 'none' && !subCategorySelect.value) {
                     subCategorySelect.classList.add('is-invalid');
                     target = subCategorySelect;
                 }

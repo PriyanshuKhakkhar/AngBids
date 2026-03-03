@@ -21,109 +21,188 @@
 </div>
 
 <!-- Auctions List -->
-<div class="card card-elite p-0 overflow-hidden shadow-sm">
-    <div class="table-responsive">
-        <table class="table table-hover mb-0">
-            <thead class="bg-light">
-                <tr>
-                    <th class="border-light py-3 ps-4 text-xs font-weight-bold text-gray-600 text-uppercase small">ITEM</th>
-                    <th class="border-light py-3 text-xs font-weight-bold text-gray-600 text-uppercase small">CATEGORY</th>
-                    <th class="border-light py-3 text-xs font-weight-bold text-gray-600 text-uppercase small">STATUS</th>
-                    <th class="border-light py-3 text-xs font-weight-bold text-gray-600 text-uppercase small">CURRENT PRICE</th>
-                    <th class="border-light py-3 text-xs font-weight-bold text-gray-600 text-uppercase small">WINNER</th>
-                    <th class="border-light py-3 text-xs font-weight-bold text-gray-600 text-uppercase small">BIDS</th>
-                    <th class="border-light py-3 pe-4 text-end text-xs font-weight-bold text-gray-600 text-uppercase small">ACTION</th>
-                </tr>
-            </thead>
-            <tbody class="align-middle bg-white">
-                @forelse($auctions as $auction)
-                <tr>
-                    <td class="py-3 ps-4">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="rounded-3 overflow-hidden border" style="width: 50px; height: 50px;">
-                                @if($auction->image)
-                                    <img src="{{ str_starts_with($auction->image, 'http') ? $auction->image : asset('storage/' . $auction->image) }}" class="w-100 h-100 object-fit-cover">
-                                @else
-                                    <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120" class="w-100 h-100 object-fit-cover">
-                                @endif
-                            </div>
-                            <div style="max-width: 250px;">
-                                <h6 class="text-dark fw-bold mb-0 small text-truncate" title="{{ $auction->title }}">{{ $auction->title }}</h6>
-                                <small class="text-muted" style="font-size: 0.7rem;">Created: {{ $auction->created_at->format('M d, Y') }}</small>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="py-3">
-                        <span class="small text-secondary fw-bold">{{ $auction->category->name ?? 'N/A' }}</span>
-                    </td>
-                    <td class="py-3">
-                        @php
-                            $isExpired = \Carbon\Carbon::parse($auction->end_time)->isPast();
-                        @endphp
-                        @if($auction->status === 'pending')
-                            <span class="badge bg-warning text-white rounded-pill px-3 py-2 small">Pending Approval</span>
-                        @elseif($isExpired)
-                            <span class="badge bg-danger text-white rounded-pill px-3 py-2 small">Expired</span>
-                        @else
-                            <span class="badge bg-success text-white rounded-pill px-3 py-2 small">Active</span>
-                        @endif
-                    </td>
-                    <td class="py-3 fw-bold text-primary">
-                        ₹{{ number_format($auction->current_price, 2) }}
-                    </td>
-                    <td class="py-3">
-                        @php
-                            $highestBid = $auction->highestBid();
-                        @endphp
-                        @if($highestBid)
-                            <div class="d-flex align-items-center gap-2">
-                                <img src="{{ $highestBid->user->avatar_url }}" class="rounded-circle border" width="24" height="24" alt="Winner Avatar">
-                                <span class="small text-dark fw-bold text-truncate" style="max-width: 100px;" title="{{ $highestBid->user->username }}">
-                                    @_{{ $highestBid->user->username }}
-                                </span>
-                            </div>
-                        @else
-                            <span class="text-muted small">No Bids</span>
-                        @endif
-                    </td>
-                    <td class="py-3">
-                        <span class="badge bg-light text-dark rounded-pill px-3 py-1 border small">
-                            {{ $auction->bids->count() }} Bids
-                        </span>
-                    </td>
-                    <td class="py-3 pe-4 text-end">
-                        <div class="d-flex justify-content-end gap-2">
-                            <a href="{{ route('auctions.show', $auction->id) }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                                <i class="fas fa-eye me-1"></i> View
-                            </a>
-                            @if(!$isExpired)
-                                <a href="{{ route('auctions.edit', $auction->id) }}" class="btn btn-outline-warning btn-sm rounded-pill px-3">
-                                    <i class="fas fa-edit me-1"></i> Edit
-                                </a>
-                            @endif
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="6" class="text-center py-5">
-                        <div class="opacity-50">
-                            <i class="fas fa-inbox fs-1 mb-3 d-block text-gray-300"></i>
-                            <h6 class="text-secondary small">You haven't listed any items yet.</h6>
-                            <div class="mt-3">
-                                <a href="{{ route('auctions.create') }}" class="btn btn-primary btn-sm px-4">Start Selling Today</a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+<div class="card card-elite border-0 shadow-sm overflow-hidden" style="border-radius: 1.25rem;">
+    <div class="card-body p-0">
+        <div class="table-responsive p-4">
+            <table class="table table-hover align-middle mb-0 w-100" id="myAuctionsTable" style="border-collapse: separate; border-spacing: 0 12px;">
+                <thead>
+                    <tr class="text-muted small text-uppercase fw-bold opacity-75">
+                        <th class="border-0 ps-3">Item Details</th>
+                        <th class="border-0">Status</th>
+                        <th class="border-0">Price</th>
+                        <th class="border-0">Winner</th>
+                        <th class="border-0 text-center">Stats</th>
+                        <th class="border-0 text-end pe-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="border-0">
+                    {{-- Data injected via DataTables --}}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
-<div class="d-flex justify-content-center mt-4">
-    {{ $auctions->links('pagination::bootstrap-5') }}
-</div>
+{{-- Hidden Delete Form --}}
+<form id="deleteAuctionForm" method="POST" style="display: none;">
+    @csrf
+    @method('DELETE')
+</form>
+
+@push('styles')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<style>
+    /* Premium Table Styling */
+    #myAuctionsTable tbody tr {
+        background-color: #fff;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        transition: all 0.2s ease;
+        border-radius: 1rem;
+    }
+    #myAuctionsTable tbody tr:hover {
+        background-color: #fbfcfe;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    #myAuctionsTable td {
+        padding: 1.25rem 0.75rem;
+        border-top: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid #f1f5f9 !important;
+    }
+    #myAuctionsTable td:first-child {
+        border-left: 1px solid #f1f5f9 !important;
+        border-top-left-radius: 1rem;
+        border-bottom-left-radius: 1rem;
+        padding-left: 1.5rem;
+    }
+    #myAuctionsTable td:last-child {
+        border-right: 1px solid #f1f5f9 !important;
+        border-top-right-radius: 1rem;
+        border-bottom-right-radius: 1rem;
+        padding-right: 1.5rem;
+    }
+    
+    /* Button Elite Styling */
+    .btn-icon-elite {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        padding: 0;
+    }
+    .btn-icon-elite:hover {
+        transform: scale(1.1);
+    }
+
+    /* DataTable Overrides */
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter {
+        margin-bottom: 1.5rem;
+        padding: 0 0.5rem;
+    }
+    .dataTables_wrapper .dataTables_filter input {
+        border-radius: 2rem;
+        padding: 0.5rem 1.5rem;
+        border: 1px solid #e2e8f0;
+        min-width: 250px;
+        background: #f8fafc;
+    }
+    .dataTables_wrapper .dataTables_filter input:focus {
+        background: #fff;
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        outline: none;
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+$(document).ready(function() {
+    if ($.fn.DataTable.isDataTable('#myAuctionsTable')) {
+        $('#myAuctionsTable').DataTable().destroy();
+    }
+
+    var table = $('#myAuctionsTable').DataTable({
+        processing: true,
+        serverSide: true,
+        responsive: true,
+        autoWidth: false,
+        ajax: {
+            url: "{{ route('user.my-auctions.data') }}",
+            type: "GET",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            error: function (xhr, error, code) {
+                console.error('DataTables Error:', xhr.responseText);
+                if(xhr.status == 500) {
+                    alert('Server Error: Check controller logic.');
+                }
+            }
+        },
+        columns: [
+            { data: 'item', name: 'title' },
+            { data: 'status', name: 'status', orderable: true },
+            { data: 'price', name: 'current_price' },
+            { data: 'winner', name: 'winner', orderable: false, searchable: false },
+            { data: 'bids', name: 'bids', orderable: false, searchable: false, className: 'text-center' },
+            { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-end' }
+        ],
+        order: [[2, 'desc']], 
+        language: {
+            search: "_INPUT_",
+            searchPlaceholder: "Search by title, price or status...",
+            lengthMenu: "Show _MENU_",
+            paginate: {
+                previous: '<i class="fas fa-chevron-left"></i>',
+                next: '<i class="fas fa-chevron-right"></i>'
+            },
+            processing: '<div class="d-flex justify-content-center py-4"><div class="spinner-border text-primary" role="status"></div></div>'
+        },
+        dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+             "<'row'<'col-sm-12'tr>>" +
+             "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+        drawCallback: function() {
+            $('.pagination').addClass('pagination-sm justify-content-end mb-0 ps-0');
+            $('.page-item.active .page-link').css('border-radius', '0.5rem');
+        }
+    });
+
+    window.confirmDelete = function(id) {
+        Swal.fire({
+            title: 'Delete Auction?',
+            text: "This action cannot be undone. All bids will be lost!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Yes, Delete it',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true,
+            borderRadius: '1rem',
+            customClass: {
+                confirmButton: 'btn btn-danger px-4 py-2 rounded-pill fw-bold',
+                cancelButton: 'btn btn-light px-4 py-2 rounded-pill fw-bold ms-2'
+            },
+            buttonsStyling: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let form = document.getElementById('deleteAuctionForm');
+                form.action = "{{ url('auctions') }}/" + id;
+                form.submit();
+            }
+        });
+    }
+});
+</script>
+@endpush
 
 @endsection

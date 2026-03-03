@@ -60,3 +60,60 @@ function updateImageLimitUI() {
         info.textContent = `You have ${existingImageCount} images. You can add ${Math.max(0, remaining)} more.`;
     }
 }
+
+// Dynamic Category Fields Logic for Edit Page
+function initDynamicFields() {
+    const categorySelect = document.querySelector('[name="category_id"]');
+    const dynamicFieldsContainer = document.getElementById('dynamicFieldsContainer');
+    const categoryGroups = document.querySelectorAll('.category-fields-group');
+
+    if (categorySelect && dynamicFieldsContainer) {
+        categorySelect.onchange = function () {
+            const categoryId = this.value;
+
+            // Hide all groups first
+            categoryGroups.forEach(group => group.classList.add('d-none'));
+            dynamicFieldsContainer.classList.add('d-none');
+
+            // If no category is selected, just stop here
+            if (!categoryId || categoryId === "" || !window.categoryTree) return;
+
+            // Find category or its parent's slug
+            let targetSlug = null;
+            window.categoryTree.forEach(parent => {
+                if (parent.id == categoryId) {
+                    targetSlug = parent.slug;
+                } else if (parent.children) {
+                    const child = parent.children.find(c => c.id == categoryId);
+                    if (child) {
+                        targetSlug = parent.slug; // Use parent slug for specs
+                    }
+                }
+            });
+
+            if (!targetSlug) return;
+
+            // Show relevant group
+            const targetGroup = document.getElementById(`category_fields_${targetSlug}`);
+            if (targetGroup) {
+                dynamicFieldsContainer.classList.remove('d-none');
+                targetGroup.classList.remove('d-none');
+            }
+        };
+
+        // Trigger change on load if category already selected
+        if (categorySelect.value && categorySelect.value !== "") {
+            // Use a small timeout to ensure categoryTree is ready and other scripts finished
+            setTimeout(() => {
+                categorySelect.onchange();
+            }, 100);
+        }
+    }
+}
+
+// Add to init function
+const originalInitAuctionEdit = initAuctionEdit;
+initAuctionEdit = function (config) {
+    originalInitAuctionEdit(config);
+    initDynamicFields();
+};

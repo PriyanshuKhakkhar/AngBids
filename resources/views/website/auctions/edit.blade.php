@@ -203,6 +203,67 @@
                                 @enderror
                             </div>
 
+                            <!-- Dynamic Category Fields -->
+                            <div id="dynamicFieldsContainer" class="col-12 mt-4 d-none">
+                                <h5 class="fw-bold text-dark border-start border-primary border-4 ps-3 mb-4">Category Specific Details</h5>
+                                
+                                <!-- Vintage Cars (vintage-cars) -->
+                                <div id="category_fields_vintage-cars" class="category-fields-group d-none">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label small fw-bold">Year</label>
+                                            <input type="number" name="specifications[year]" class="form-control bg-light border-0 shadow-none" placeholder="e.g. 1965">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small fw-bold">Mileage (km)</label>
+                                            <input type="number" name="specifications[mileage]" class="form-control bg-light border-0 shadow-none" placeholder="e.g. 50000">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small fw-bold">Fuel Type</label>
+                                            <select name="specifications[fuel_type]" class="form-select bg-light border-0 shadow-none">
+                                                <option value="">Select Fuel</option>
+                                                <option value="Petrol">Petrol</option>
+                                                <option value="Diesel">Diesel</option>
+                                                <option value="Electric">Electric</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 mt-3">
+                                            <label class="form-label small fw-bold">Vehicle Documentation (PDF/Image)</label>
+                                            <input type="file" name="document" class="form-control bg-light border-0 shadow-none">
+                                            <small class="text-muted">Registration, Title, or Inspection reports.</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Jewelry (jewelry) -->
+                                <div id="category_fields_jewelry" class="category-fields-group d-none">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">Metal Type</label>
+                                            <input type="text" name="specifications[metal]" class="form-control bg-light border-0 shadow-none" placeholder="e.g. 24K Gold">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">Certificate of Authenticity</label>
+                                            <input type="file" name="document" class="form-control bg-light border-0 shadow-none">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Art (art) -->
+                                <div id="category_fields_art" class="category-fields-group d-none">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">Artist Name</label>
+                                            <input type="text" name="specifications[artist]" class="form-control bg-light border-0 shadow-none" placeholder="e.g. Vincent van Gogh">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">Authenticity Document</label>
+                                            <input type="file" name="document" class="form-control bg-light border-0 shadow-none">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="col-12 mt-5">
                                 <button type="submit" class="btn btn-primary btn-lg w-100 py-3 rounded-pill shadow fw-bold">
                                     💾 Save Changes
