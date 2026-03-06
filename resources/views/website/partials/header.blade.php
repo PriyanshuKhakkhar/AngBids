@@ -61,9 +61,10 @@
 
                             @forelse(auth()->user()->notifications()->take(3)->get() as $notification)
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center p-3 border-bottom {{ $notification->read_at ? 'bg-white' : 'bg-light' }}" 
-                                       href="{{ (isset($notification->data['link']) && str_contains($notification->data['link'], 'messages')) ? '#' : ($notification->data['link'] ?? route('user.notifications.index')) }}"
-                                       onclick="event.preventDefault(); document.getElementById('mark-read-{{ $notification->id }}').submit();">
+                                    <div class="dropdown-item d-flex align-items-center p-3 border-bottom {{ $notification->read_at ? 'bg-white' : 'bg-light' }} header-notification-item" 
+                                       data-id="{{ $notification->id }}"
+                                       data-url="{{ route('user.notifications.read', $notification->id) }}"
+                                       style="cursor: pointer;">
                                         <div class="me-3">
                                             <div class="bg-{{ isset($notification->data['type']) && $notification->data['type'] === 'auction_cancelled' ? 'danger' : 'primary' }} text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
                                                 <i class="fas fa-{{ isset($notification->data['type']) && $notification->data['type'] === 'auction_cancelled' ? 'gavel' : 'bell' }} fa-sm"></i>
@@ -76,10 +77,7 @@
                                             </div>
                                             <div class="text-secondary text-truncate small" style="font-size: 0.75rem;">{{ $notification->data['message'] ?? '' }}</div>
                                         </div>
-                                    </a>
-                                    <form id="mark-read-{{ $notification->id }}" action="{{ route('user.notifications.read', $notification->id) }}" method="POST" style="display: none;">
-                                        @csrf
-                                    </form>
+                                    </div>
                                 </li>
                             @empty
                                 <li>
@@ -149,3 +147,39 @@
         </div>
     </div>
 </nav>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Header Notification AJAX
+    document.querySelectorAll('.header-notification-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const url = this.getAttribute('data-url');
+            if (this.classList.contains('bg-light')) {
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.classList.remove('bg-light');
+                        this.classList.add('bg-white');
+                        const badge = document.querySelector('#alertsDropdown .badge');
+                        if (badge) {
+                            if (data.unread_count > 0) {
+                                badge.textContent = data.unread_count > 9 ? '9+' : data.unread_count;
+                            } else {
+                                badge.remove();
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
