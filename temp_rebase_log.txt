@@ -1,0 +1,15 @@
+﻿615e511 solve problem for style
+6524ac7 delete swal pop for notification
+bb6f00a addd websocket and share auction
+5122a59 Merge branch 'development' of https://github.com/Sanedo22/LaraBids into temp4
+89e18b7 add yajra database for active bid, my auction, won items, and watchlist
+4d43f7f Merge branch 'development' of https://github.com/Sanedo22/LaraBids into temp
+4c131ef api resolutions
+f254cdb Merge branch 'development' of https://github.com/Sanedo22/LaraBids into temp4
+212e3e5 Daily commit
+dc254b9 update edit auction page design
+e78826c Merge branch 'development' of https://github.com/Sanedo22/LaraBids into temp
+1ef990f Won items done
+9ee6375 delete footer for auction index page and user dashboard page add only user name for topbar
+5f7faff add auction form design and validation drag and drop
+8253472 Daily commit

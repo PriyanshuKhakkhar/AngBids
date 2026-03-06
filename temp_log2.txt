@@ -1,0 +1,17 @@
+﻿*   60f2568 Merge branch 'development' of https://github.com/Sanedo22/LaraBids into development
+|\  
+| * 6524ac7 delete swal pop for notification
+* | fcba512 solve problem for style
+|/  
+* bb6f00a addd websocket and share auction
+*   5122a59 Merge branch 'development' of https://github.com/Sanedo22/LaraBids into temp4
+|\  
+| *   4d43f7f Merge branch 'development' of https://github.com/Sanedo22/LaraBids into temp
+| |\  
+| * | 4c131ef api resolutions
+| * | 212e3e5 Daily commit
+* | | 89e18b7 add yajra database for active bid, my auction, won items, and watchlist
+| |/  
+|/|   
+* | f254cdb Merge branch 'development' of https://github.com/Sanedo22/LaraBids into temp4
+|\| 

@@ -1,0 +1,11 @@
+﻿commit fcba5122ac23ca8ac2959a9521a1b223b6b12278
+Author: sandip <sandeeppal8471@gmail.com>
+Date:   Fri Mar 6 16:47:24 2026 +0530
+
+    solve problem for style
+
+ public/assets/images/ddmm3.png | Bin 0 -> 466052 bytes
+ public/assets/images/demo.jpg  | Bin 0 -> 34624 bytes
+ public/assets/images/demo3.jpg | Bin 0 -> 57588 bytes
+ public/assets/images/demo4.jpg | Bin 0 -> 159016 bytes
+ 4 files changed, 0 insertions(+), 0 deletions(-)
