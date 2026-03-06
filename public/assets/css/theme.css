@@ -110,6 +110,12 @@
 
 
 /* --- Base Styles --- */
+html,
+body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
 body {
     background-color: var(--bs-light);
     color: #5a5c69;
@@ -741,18 +747,8 @@ footer {
 }
 
 
-::-webkit-scrollbar {
-    width: 10px;
-}
+/* Removed custom scrollbar to fix the 'coming and going' blue line issue */
 
-::-webkit-scrollbar-track {
-    background: var(--bs-dark);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--bs-primary);
-    border-radius: 10px;
-}
 
 .partner-logo {
     transition: all 0.3s ease;
