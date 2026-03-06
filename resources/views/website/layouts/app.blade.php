@@ -19,6 +19,7 @@
     <!-- Custom Theme CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/theme.css') }}">
 
+    @stack('meta')
     @stack('styles')
 </head>
 

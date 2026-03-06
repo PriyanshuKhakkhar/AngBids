@@ -183,7 +183,11 @@ class UserDashboardController extends Controller
                 })
                 ->addColumn('action', function($auction) {
                     $status = $auction->status_label;
-                    $canEdit = ($auction->status === 'pending') || ($auction->status === 'active' && $status === 'Starting Soon');
+                    $isWithin24Hours = $auction->created_at && $auction->created_at->diffInHours(now()) <= 24;
+                    $canEdit = $auction->end_time->isFuture() && (
+                        $auction->status === 'active' || 
+                        ($auction->status === 'pending' && $isWithin24Hours)
+                    );
                     
                     $viewUrl = route('auctions.show', $auction->id);
                     $editUrl = route('auctions.edit', $auction->id);

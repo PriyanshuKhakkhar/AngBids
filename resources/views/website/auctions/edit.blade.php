@@ -20,6 +20,12 @@
                         <div class="text-center mb-5">
                             <h2 class="fw-bolder text-dark mb-2">Update Your Listing</h2>
                             <p class="text-muted">Modify your item details. Some fields are locked once bidding has started.</p>
+                            
+                            @if($auction->status === 'active')
+                                <div class="alert alert-warning border-0 shadow-sm rounded-4 small p-3 d-inline-block mt-2">
+                                    <i class="fas fa-info-circle me-1"></i> <strong>Note:</strong> Since this auction is already approved, editing it will move it back to <strong>Pending</strong> for admin re-approval.
+                                </div>
+                            @endif
                         </div>
                         
                         <div class="row g-4">

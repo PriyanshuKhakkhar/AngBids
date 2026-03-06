@@ -27,23 +27,53 @@ class BidController extends Controller
             $user = auth()->user();
             $result = $this->bidService->placeBid($auction, $request->validated(), $user);
 
-            // Determine if the user who placed the bid is actually the current winner
-            // If they are not, it means an auto-bid outbid them instantly.
-            $currentWinnerId = (int)$result['bid']->user_id;
-            
-            if ($currentWinnerId === (int)$user->id) {
-                $message = 'Great news! Your bid has been placed successfully and you are currently the highest bidder.';
-                if ($result['is_extended']) {
-                    $message .= ' This auction has been extended by 5 minutes to give everyone a fair chance to respond.';
+                $auction = $auction->fresh();
+                $highestBid = $auction->bids()->first();
+                $currentWinnerId = $highestBid ? (int)$highestBid->user_id : null;
+                
+                if ($currentWinnerId === (int)$user->id) {
+                    $message = 'Great news! Your bid has been placed successfully and you are currently the highest bidder.';
+                    if ($result['is_extended']) {
+                        $message .= ' This auction has been extended by 5 minutes to give everyone a fair chance to respond.';
+                    }
+
+                    if ($request->wantsJson() || $request->ajax()) {
+                        return response()->json([
+                            'status' => 'success', 
+                            'message' => $message, 
+                            'bid' => $result['bid'],
+                            'current_price' => (float)$auction->current_price,
+                            'min_increment' => (float)$auction->min_increment,
+                            'is_winning' => true,
+                            'current_user_id' => (int)$user->id,
+                            'winner_username' => $user->username
+                        ]);
+                    }
+                    return redirect()->back()->with('success', $message);
+                } else {
+                    $minNextBid = number_format($auction->current_price + ($auction->min_increment ?? 0.01), 2);
+                    $message = 'You were instantly outbid! Another user has a higher automatic "Proxy Bid" limit. To take the lead, you will need to bid at least ₹' . $minNextBid . '.';
+                    
+                    if ($request->wantsJson() || $request->ajax()) {
+                        return response()->json([
+                            'status' => 'warning', 
+                            'message' => $message, 
+                            'bid' => $result['bid'],
+                            'current_price' => (float)$auction->current_price,
+                            'min_increment' => (float)$auction->min_increment,
+                            'is_winning' => false,
+                            'winner_id' => $currentWinnerId,
+                            'current_user_id' => (int)$user->id,
+                            'winner_username' => $highestBid ? $highestBid->user->username : null
+                        ]);
+                    }
+                    return redirect()->back()->with('warning', $message);
                 }
-                return redirect()->back()->with('success', $message);
-            } else {
-                $minNextBid = number_format($auction->current_price + ($auction->min_increment ?? 0.01), 2);
-                $message = 'You were instantly outbid! Another user has a higher automatic "Proxy Bid" limit. To take the lead, you will need to bid at least ₹' . $minNextBid . '.';
-                return redirect()->back()->with('warning', $message);
-            }
 
         } catch (Exception $e) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json(['status' => 'error', 'message' => $e->getMessage()], 422);
+            }
             return redirect()->back()->with('error', $e->getMessage());
         }
     }

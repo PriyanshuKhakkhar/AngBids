@@ -130,6 +130,11 @@ class AuctionController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
+        $isWithin24Hours = $auction->created_at && $auction->created_at->diffInHours(now()) <= 24;
+        if ($auction->status === 'pending' && !$isWithin24Hours) {
+            abort(403, 'You can only edit a pending auction within 24 hours of its creation.');
+        }
+
         $categories = Category::topLevel()->active()->with('children')->get();
         $categoryTree = $categories->map(function($cat) {
             return [
@@ -151,11 +156,19 @@ class AuctionController extends Controller
         $auction = Auction::findOrFail($id);
         
         // Ownership check is handled in the Request (authorize method)
+        $isWithin24Hours = $auction->created_at && $auction->created_at->diffInHours(now()) <= 24;
+        if ($auction->status === 'pending' && !$isWithin24Hours) {
+            abort(403, 'You can only edit a pending auction within 24 hours of its creation.');
+        }
         
         $this->auctionService->updateAuction($auction, $request->validated());
+        
+        $message = $auction->fresh()->status === 'pending' 
+            ? 'Auction updated successfully! It is now pending admin approval again.' 
+            : 'Auction updated successfully!';
 
         return redirect()->route('auctions.show', $auction->id)
-            ->with('success', 'Auction updated successfully!');
+            ->with('success', $message);
     }
 
     /**

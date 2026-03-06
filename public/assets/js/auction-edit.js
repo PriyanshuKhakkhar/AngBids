@@ -26,31 +26,47 @@ function initAuctionEdit(config) {
 }
 
 function removeExistingImage(imageId) {
-    if (!confirm('Are you sure you want to remove this image?')) return;
+    Swal.fire({
+        title: 'Remove Image?',
+        text: "Are you sure you want to remove this image?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, remove it!',
+        cancelButtonText: 'Cancel',
+        customClass: {
+            confirmButton: 'btn btn-danger px-4 rounded-pill',
+            cancelButton: 'btn btn-outline-secondary px-4 rounded-pill ms-2'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const container = document.getElementById(`existing-img-${imageId}`);
+            if (container) {
+                container.remove();
 
-    const container = document.getElementById(`existing-img-${imageId}`);
-    if (container) {
-        container.remove();
+                // Add to hidden deleted_images input
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'deleted_images[]';
+                input.value = imageId;
 
-        // Add to hidden deleted_images input
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'deleted_images[]';
-        input.value = imageId;
+                const targetContainer = document.getElementById('deletedImagesContainer');
+                if (targetContainer) {
+                    targetContainer.appendChild(input);
+                }
 
-        const targetContainer = document.getElementById('deletedImagesContainer');
-        if (targetContainer) {
-            targetContainer.appendChild(input);
+                existingImageCount--;
+                updateImageLimitUI();
+
+                // Notify ImageUploadManager
+                if (window.imageUploadManager) {
+                    window.imageUploadManager.setExistingCount(existingImageCount);
+                }
+            }
         }
-
-        existingImageCount--;
-        updateImageLimitUI();
-
-        // Notify ImageUploadManager
-        if (window.imageUploadManager) {
-            window.imageUploadManager.setExistingCount(existingImageCount);
-        }
-    }
+    });
 }
 
 function updateImageLimitUI() {

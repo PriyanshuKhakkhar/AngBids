@@ -170,6 +170,58 @@ class AuctionService
     public function updateAuction(Auction $auction, array $data)
     {
         $hasBids = $auction->bids()->exists();
+        
+        // Track if any meaningful changes occurred
+        $hasChanges = false;
+
+        // Check basic fields against existing values
+        if (isset($data['title']) && $data['title'] !== $auction->title) $hasChanges = true;
+        if (isset($data['description']) && $data['description'] !== $auction->description) $hasChanges = true;
+        if (isset($data['min_increment']) && (float)$data['min_increment'] !== (float)$auction->min_increment) $hasChanges = true;
+        
+        // Compare specifications array
+        if (isset($data['specifications']) && json_encode($data['specifications']) !== json_encode($auction->specifications)) {
+            $hasChanges = true;
+        }
+
+        // Check lockable fields
+        if (!$hasBids) {
+            if (isset($data['starting_price']) && (float)$data['starting_price'] !== (float)$auction->starting_price) $hasChanges = true;
+            if (isset($data['category_id']) && (int)$data['category_id'] !== (int)$auction->category_id) $hasChanges = true;
+        }
+
+        // Check times
+        if (isset($data['start_time'])) {
+            $newStart = Carbon::parse($data['start_time']);
+            if (!$auction->start_time->eq($newStart) && !($newStart->isPast() && $auction->start_time->isPast())) {
+                $hasChanges = true;
+            }
+        }
+        if (isset($data['end_time'])) {
+            $newEnd = Carbon::parse($data['end_time']);
+            if (!$auction->end_time->eq($newEnd)) {
+                $hasChanges = true;
+            }
+        }
+
+        // Check media
+        if (!empty($data['deleted_images']) || !empty($data['images']) || isset($data['document'])) {
+            $hasChanges = true;
+        }
+
+        // Check primary image change
+        if (isset($data['primary_image_index'])) {
+            $currentPrimary = $auction->images()->where('is_primary', true)->first();
+            // If there's a primary array index change but no new images, it means reordering existing ones
+            if (empty($data['images']) && $currentPrimary && $currentPrimary->sort_order != $data['primary_image_index']) {
+                 $hasChanges = true;
+            }
+        }
+
+        // Re-approval logic: Reset status to pending IF edited by a non-admin AND actual changes happened
+        if ($hasChanges && !auth()->user()->hasAnyRole(['admin', 'super admin'])) {
+            $auction->status = 'pending';
+        }
 
         // 1. Update basic fields
         if (isset($data['title'])) $auction->title = $data['title'];

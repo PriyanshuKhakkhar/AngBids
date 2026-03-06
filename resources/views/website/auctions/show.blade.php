@@ -18,6 +18,31 @@
     }
 @endphp
 
+@push('meta')
+    @php
+        $seoTitle = $auction->title . ' | LaraBids';
+        $seoDescription = Str::limit(strip_tags($auction->description), 160);
+        $seoImage = $auction->image ? (str_starts_with($auction->image, 'http') ? $auction->image : asset('storage/' . $auction->image)) : asset('assets/images/hero-premium.png');
+        $currentPrice = '₹' . number_format($auction->current_price);
+    @endphp
+    <!-- Standard Meta Tags -->
+    <meta name="description" content="{{ $seoDescription }}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="{{ $seoTitle }}">
+    <meta property="og:description" content="{{ $seoDescription }} - Current Bid: {{ $currentPrice }}">
+    <meta property="og:image" content="{{ $seoImage }}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ url()->current() }}">
+    <meta property="twitter:title" content="{{ $seoTitle }}">
+    <meta property="twitter:description" content="{{ $seoDescription }} - Current Bid: {{ $currentPrice }}">
+    <meta property="twitter:image" content="{{ $seoImage }}">
+@endpush
+
 <!-- Auction Details -->
 <section class="hibid-auction-section pt-4 pb-3 mt-5">
     <div class="container">
@@ -116,7 +141,7 @@
                         @endphp
 
                         @if(!$isClosed)
-                        <div class="hibid-timer timer-val mb-4"
+                        <div class="hibid-timer timer-val mb-3"
                             data-days="{{ $diff->d }}" data-hours="{{ $diff->h }}" data-min="{{ $diff->i }}" data-sec="{{ $diff->s }}">
                             <div class="hibid-timer-unit">
                                 <span class="hibid-timer-num" data-days>{{ sprintf('%02d', $diff->d) }}</span>
@@ -139,11 +164,10 @@
                         <div class="hibid-closed-badge mb-4">🔒 Auction Closed</div>
                         @endif
 
-                        <!-- Bid Info Rows -->
-                        <div class="hibid-bid-info">
+                        <div class="hibid-bid-info mb-3">
                             <div class="hibid-bid-row hibid-bid-row--current">
                                 <span class="hibid-bid-label">Current Bid</span>
-                                <span class="hibid-bid-value hibid-bid-value--primary">₹{{ number_format($auction->current_price, 2) }}</span>
+                                <span class="hibid-bid-value hibid-bid-value--primary" id="current-bid-display">₹{{ number_format($auction->current_price, 2) }}</span>
                             </div>
                             <div class="hibid-bid-row">
                                 <span class="hibid-bid-label">Starting Price</span>
@@ -162,14 +186,15 @@
                         <!-- Bid Form / Login -->
                         @if(!$isClosed)
                         @auth
-                            <!-- Winner Status Badge -->
+                            <div id="bid-status-container" class="mb-2"></div>
+                             <!-- Winner Status Badge -->
                             @php
                                 $highestBid = $auction->bids()->first();
                                 $isWinning = ($highestBid && (int)$highestBid->user_id === (int)auth()->id());
                                 $userProxy = $auction->autoBids()->where('user_id', auth()->id())->where('active', true)->first();
                             @endphp
 
-                            <div class="mb-3">
+                            <div class="mb-3" id="winner-status-badge" data-user-id="{{ auth()->id() }}">
                                 @if($isWinning)
                                     <div class="badge bg-success py-2 px-3 rounded-pill w-100 hibid-pulse mb-2">
                                         <i class="fas fa-check-circle me-1"></i> You are the highest bidder!
@@ -179,16 +204,15 @@
                                         <i class="fas fa-times-circle me-1"></i> Someone has outbid you!
                                     </div>
                                 @endif
-
+                            </div>
                                 @if($userProxy)
-                                    <div class="card border-primary-subtle bg-primary-subtle bg-opacity-10 border-dashed rounded-3 p-2 text-center">
+                                    <div class="card border-primary-subtle bg-primary-subtle bg-opacity-10 border-dashed rounded-3 p-2 text-center mb-2">
                                         <div class="small text-primary fw-bold">
                                             <i class="fas fa-robot me-1"></i> Your Auto-Bid Limit: 
                                             <span class="fs-6">₹{{ number_format($userProxy->max_bid_amount, 2) }}</span>
                                         </div>
                                     </div>
                                 @endif
-                            </div>
                             @if(session('success'))
                                 <div class="alert alert-success alert-dismissible fade show mb-3 rounded-3" role="alert">
                                     {{ session('success') }}
@@ -483,17 +507,47 @@
                         </div>
                     </div>
 
-                    <!-- 6. Shipping / Pick Up -->
+                        </div>
+                    </div>
+
+                    <!-- 7. Bidding History -->
                     <div class="accordion-item border-0 mb-3 shadow-sm rounded-4 overflow-hidden">
                         <h2 class="accordion-header">
-                            <button class="accordion-button collapsed fw-bold text-primary bg-white px-4 py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseShipping">
-                                Shipping / Pick Up
+                            <button class="accordion-button collapsed fw-bold text-primary bg-white px-4 py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHistory">
+                                Bidding History
                             </button>
                         </h2>
-                        <div id="collapseShipping" class="accordion-collapse collapse" data-bs-parent="#auctionAccordion">
-                            <div class="accordion-body px-4 py-4 text-secondary">
-                                <p class="mb-2"><strong>Pick Up:</strong> Monday through Friday, 9:00 AM - 5:00 PM at our warehouse location.</p>
-                                <p class="mb-0"><strong>Shipping:</strong> We offer nationwide shipping via premium carriers. Shipping costs are calculated based on weight and destination after the auction ends.</p>
+                        <div id="collapseHistory" class="accordion-collapse collapse" data-bs-parent="#auctionAccordion">
+                            <div class="accordion-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0" id="bidding-history-table">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th class="ps-4">Bidder</th>
+                                                <th>Amount</th>
+                                                <th class="pe-4">Time</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse($auction->bids->sortByDesc('created_at') as $bid)
+                                            <tr>
+                                                <td class="ps-4 fw-medium text-dark">
+                                                    @_{{ $bid->user->username }}
+                                                    @if($loop->first && !$isClosed)
+                                                        <span class="badge bg-success-subtle text-success ms-1 small">Highest</span>
+                                                    @endif
+                                                </td>
+                                                <td class="fw-bold text-primary">₹{{ number_format($bid->amount, 2) }}</td>
+                                                <td class="text-secondary small pe-4">{{ $bid->created_at->diffForHumans() }}</td>
+                                            </tr>
+                                            @empty
+                                            <tr id="no-bids-row">
+                                                <td colspan="3" class="text-center py-4 text-muted">No bids placed yet. Be the first to bid!</td>
+                                            </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1112,6 +1166,8 @@
 
 @push('scripts')
 <script src="{{ asset('assets/js/auction-gallery.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://js.pusher.com/8.0/pusher.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const images = [
@@ -1127,10 +1183,91 @@
         const totalFeedback = document.querySelector('.bid-feedback-total');
         const errorFeedback = document.getElementById('bid-feedback-area');
         const placeBidForm = document.getElementById('place-bid-form');
-        const currentPrice = {{ $auction->current_price }};
-        const minIncrement = {{ $auction->min_increment ?? 0.01 }};
+        let currentPrice = {{ $auction->current_price }};
+        let minIncrement = {{ $auction->min_increment ?? 0.01 }};
         const maxIncrement = {{ \App\Models\Auction::MAX_INCREMENT_ALLOWED }};
 
+        function syncAuctionUI(data) {
+            if (!data) return;
+
+            // 1. Update Current Price
+            if (typeof data.current_price !== 'undefined') {
+                currentPrice = parseFloat(data.current_price);
+                const display = document.getElementById('current-bid-display');
+                if (display) {
+                    display.innerText = '₹' + currentPrice.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                }
+                document.querySelectorAll('.hibid-bid-value--primary, .h6.mb-0.text-primary.fw-bold').forEach(el => {
+                   if (el.innerText.includes('₹')) {
+                        el.innerText = '₹' + currentPrice.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    }
+                });
+            }
+
+            // 2. Update Min Increment
+            if (typeof data.min_increment !== 'undefined') {
+                minIncrement = parseFloat(data.min_increment);
+                const incInput = document.getElementById('bid-increment');
+                if(incInput) {
+                    incInput.placeholder = minIncrement.toFixed(2);
+                    incInput.min = minIncrement;
+                }
+                const maxInp = document.getElementById('max-bid-amount');
+                if(maxInp) {
+                    maxInp.min = (currentPrice + minIncrement).toFixed(2);
+                }
+                document.querySelectorAll('.hibid-min-badge').forEach(badge => {
+                    badge.innerText = 'Min: ₹' + minIncrement.toFixed(2);
+                });
+            }
+
+            // 3. Update Status Badge
+            const statusBadge = document.getElementById('winner-status-badge');
+            if (statusBadge) {
+                const authUserId = parseInt(statusBadge.dataset.userId);
+                let isWinning = data.is_winning;
+                if (typeof isWinning === 'undefined' && data.winner_id) {
+                    isWinning = (authUserId === parseInt(data.winner_id));
+                }
+
+                if (typeof isWinning !== 'undefined') {
+                    if (isWinning) {
+                        statusBadge.innerHTML = `<div class="badge bg-success py-2 px-3 rounded-pill w-100 hibid-pulse mb-2">
+                            <i class="fas fa-check-circle me-1"></i> You are the highest bidder!
+                        </div>`;
+                    } else if (data.winner_id || data.winner_username) {
+                        statusBadge.innerHTML = `<div class="badge bg-danger py-2 px-3 rounded-pill w-100 mb-2">
+                            <i class="fas fa-times-circle me-1"></i> Someone has outbid you!
+                        </div>`;
+                    }
+                }
+            }
+
+            // 4. Update History Table
+            const historyTable = document.getElementById('bidding-history-table');
+            if (historyTable && data.winner_username) {
+                const tbody = historyTable.querySelector('tbody');
+                const noBidsRow = document.getElementById('no-bids-row');
+                if (noBidsRow) noBidsRow.remove();
+
+                tbody.querySelectorAll('.badge.bg-success-subtle').forEach(b => b.remove());
+
+                const amount = data.bid_amount || data.current_price;
+                const newRow = document.createElement('tr');
+                newRow.className = 'animate__animated animate__fadeInDown';
+                newRow.innerHTML = `
+                    <td class="ps-4 fw-medium text-dark">
+                        @_${data.winner_username}
+                        <span class="badge bg-success-subtle text-success ms-1 small">Highest</span>
+                    </td>
+                    <td class="fw-bold text-primary">₹${parseFloat(amount).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <td class="text-secondary small pe-4">just now</td>
+                `;
+                tbody.insertBefore(newRow, tbody.firstChild);
+            }
+
+            updateBidFeedback();
+        }
 
         function updateBidFeedback() {
             const activeTab = document.querySelector('#bidTab .nav-link.active') ? document.querySelector('#bidTab .nav-link.active').id : 'quick-bid-tab';
@@ -1198,53 +1335,7 @@
             });
         });
 
-        if (placeBidForm) {
-            placeBidForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const activeTab = document.querySelector('#bidTab .nav-link.active') ? document.querySelector('#bidTab .nav-link.active').id : 'quick-bid-tab';
-                let title = '', html = '';
-
-                if (activeTab === 'quick-bid-tab') {
-                    const val = parseFloat(bidInput.value);
-                    if (isNaN(val) || val < minIncrement || val > maxIncrement) {
-                        Swal.fire({ icon: 'error', title: 'Invalid Bid', text: `Enter increment between ₹${minIncrement.toFixed(2)} and ₹${maxIncrement.toFixed(2)}.` });
-                        return;
-                    }
-                    const newTotal = (currentPrice + val).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                    title = 'Confirm Quick Bid';
-                    html = `Adding <strong>₹${val.toFixed(2)}</strong> to current price.<br>Total bid: <strong>₹${newTotal}</strong>.`;
-                } else {
-                    const val = parseFloat(maxBidInput.value);
-                    if (isNaN(val) || val < (currentPrice + minIncrement)) {
-                        Swal.fire({ icon: 'error', title: 'Invalid Max Bid', text: `Max bid must be at least ₹${(currentPrice + minIncrement).toFixed(2)}.` });
-                        return;
-                    }
-                    title = 'Confirm Auto Bid';
-                    html = `Setting your maximum limit to <strong>₹${val.toFixed(2)}</strong>.<br>The system will bid automatically for you until this limit.`;
-                }
-
-                Swal.fire({
-                    title: title,
-                    html: html,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#4e73df',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Confirm Bid',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => { 
-                    if (result.isConfirmed) {
-                        // Clear the field from the other tab to avoid backend confusion
-                        if (activeTab === 'quick-bid-tab') {
-                            if (maxBidInput) maxBidInput.value = '';
-                        } else {
-                            if (bidInput) bidInput.value = '';
-                        }
-                        this.submit(); 
-                    } 
-                });
-            });
-        }
+        // Removed frontend SweetAlert validation. Handled completely by Axios and backend now.
         // Universal Countdown functionality
         const timerBoxes = document.querySelectorAll('.timer-val');
         if (timerBoxes.length > 0) {
@@ -1283,7 +1374,116 @@
                 });
             }, 1000);
         }
-    });
+
+    const form = document.getElementById('place-bid-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = form.querySelector('button[type="submit"]');
+            const originalBtnHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Placing...';
+            
+            const activeTab = document.querySelector('#bidTab .nav-link.active') ? document.querySelector('#bidTab .nav-link.active').id : 'quick-bid-tab';
+            
+            const formData = new FormData(form);
+            
+            // Do not send the field from the inactive tab to avoid backend confusion
+            if (activeTab === 'quick-bid-tab') {
+                formData.delete('max_bid_amount');
+            } else {
+                formData.delete('increment');
+            }
+
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                if (value !== "") {
+                    data[key] = value;
+                }
+            }
+            
+            axios.post(form.action, data, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            }).then(response => {
+                const res = response.data;
+                const statusContainer = document.getElementById('bid-status-container');
+                
+                if (res.status === 'success') {
+                    statusContainer.innerHTML = `<div class="alert alert-success alert-dismissible fade show py-2 px-3 rounded-3 small border-0 shadow-sm mb-3">
+                        <i class="fas fa-check-circle me-2"></i>${res.message}
+                        <button type="button" class="btn-close small" data-bs-dismiss="alert" style="padding: 0.75rem;"></button>
+                    </div>`;
+                    
+                    const incInput = document.getElementById('bid-increment');
+                    if(incInput) incInput.value = '';
+                    const maxInput = document.getElementById('max-bid-amount');
+                    if(maxInput) maxInput.value = '';
+                    
+                } else if (res.status === 'warning') {
+                    statusContainer.innerHTML = `<div class="alert alert-warning alert-dismissible fade show py-2 px-3 rounded-3 small border-0 shadow-sm mb-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i>${res.message}
+                        <button type="button" class="btn-close small" data-bs-dismiss="alert" style="padding: 0.75rem;"></button>
+                    </div>`;
+                }
+
+                syncAuctionUI(res);
+            }).catch(error => {
+                console.error("Bid Placement Error:", error);
+                const statusContainer = document.getElementById('bid-status-container');
+                let errorMsg = 'An error occurred while placing your bid.';
+                
+                if (error.response && error.response.data) {
+                    if (error.response.data.message) {
+                        errorMsg = error.response.data.message;
+                    }
+                    if (error.response.data.errors) {
+                        const errors = error.response.data.errors;
+                        errorMsg = Object.values(errors)[0][0];
+                    }
+                    if (typeof error.response.data === 'string' && error.response.data.includes('<!DOCTYPE html>')) {
+                        errorMsg = `Server Error (${error.response.status}).`;
+                    }
+                } else if (error.message) {
+                    errorMsg = error.message;
+                }
+                
+                statusContainer.innerHTML = `<div class="alert alert-danger alert-dismissible fade show py-2 px-3 rounded-3 small border-0 shadow-sm mb-3">
+                    <i class="fas fa-exclamation-circle me-2"></i>${errorMsg}
+                    <button type="button" class="btn-close small" data-bs-dismiss="alert" style="padding: 0.75rem;"></button>
+                </div>`;
+            }).finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+            });
+        });
+    }
+
+    try {
+        if('{{ env('BROADCAST_CONNECTION') }}' === 'reverb') {
+            Pusher.logToConsole = false;
+            var pusher = new Pusher('{{ env("REVERB_APP_KEY") }}', {
+                wsHost: window.location.hostname,
+                wsPort: {{ env("REVERB_PORT", 8080) }},
+                wssPort: {{ env("REVERB_PORT", 8080) }},
+                forceTLS: {{ env("REVERB_SCHEME", "http") === "https" ? "true" : "false" }},
+                disableStats: true,
+                enabledTransports: ['ws', 'wss'],
+            });
+
+            var channel = pusher.subscribe('auction.{{ $auction->id }}');
+            channel.bind('bid.placed', function(data) {
+                console.log("New Bid Received:", data);
+                syncAuctionUI(data);
+            });
+        }
+    } catch(err) {
+        console.error("Pusher setup error:", err);
+    }
+});
 </script>
 @endpush
 

@@ -215,6 +215,11 @@ class BidService
                 $auction->user->notify(new \App\Notifications\AuctionExtendedNotification($auction));
             }
 
+            // Broadcast the new bid dynamically
+            if ($bid) {
+                event(new \App\Events\BidPlaced($auction, $bid));
+            }
+
             return [
                 'bid' => $bid,
                 'is_extended' => $isExtended
