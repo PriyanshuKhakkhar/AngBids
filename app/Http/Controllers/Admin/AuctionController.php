@@ -49,9 +49,9 @@ class AuctionController extends Controller
 
                 ->addColumn('category', function ($row) {
                     if ($row->category) {
-                        return '<span class="badge badge-primary">'.$row->category->name.'</span>';
+                        return $row->category->name;
                     }
-                    return '<span class="badge badge-secondary">N/A</span>';
+                    return 'N/A';
                 })
 
                 ->filterColumn('category', function ($query, $keyword) {
@@ -181,7 +181,10 @@ class AuctionController extends Controller
         }
 
         return view('admin.auctions.index', [
-            'total_auctions' => Auction::count()
+            'total_auctions' => Auction::count(),
+            'categories' => \App\Models\Category::active()->whereNull('parent_id')->with(['children' => function($q) {
+                $q->active();
+            }])->get()
         ]);
     }
 

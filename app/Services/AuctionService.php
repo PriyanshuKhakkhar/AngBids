@@ -79,6 +79,12 @@ class AuctionService
             $query->where('current_price', '<=', $maxPrice);
         }
 
+        // Date filter
+        if ($request->filled('date')) {
+            $date = $request->input('date');
+            $query->whereDate('auctions.created_at', $date);
+        }
+
         // Sorting
         $sort = $request->input('sort', 'latest');
 
