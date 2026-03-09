@@ -25,6 +25,7 @@ class User extends Authenticatable
         'avatar',
         'bio',
         'deleted_by',
+        'created_by',
     ];
 
     protected $hidden = [
@@ -43,6 +44,11 @@ class User extends Authenticatable
     public function deletedBy()
     {
         return $this->belongsTo(User::class, 'deleted_by')->withTrashed();
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by')->withTrashed();
     }
 
     // Check super admin

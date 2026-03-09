@@ -74,7 +74,7 @@
 
                     <div class="col-md-6">
                         <div class="form-group mb-4">
-                            <label for="otp" class="font-weight-bold text-dark small">Email OTP Verification <span class="text-muted">(Optional)</span></label>
+                            <label for="otp" class="font-weight-bold text-dark small">Email OTP Verification <span class="text-danger">*</span></label>
                             <div class="input-group input-group-lg shadow-sm rounded">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text bg-light border-0"><i class="fas fa-key text-primary"></i></span>
@@ -295,10 +295,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const value = otpInput.value.trim();
         const errorDiv = document.getElementById('otp-error');
         
-        if (value !== '' && !/^\d{6}$/.test(value)) {
+        if (value === '') {
+            otpInput.classList.add('is-invalid');
+            errorDiv.textContent = 'OTP is required.';
+            errorDiv.classList.add('d-block');
+            return false;
+        } else if (!/^\d{6}$/.test(value)) {
             otpInput.classList.add('is-invalid');
             errorDiv.textContent = 'OTP must be exactly 6 digits.';
-            // Add d-block in case it's outside input-group
             errorDiv.classList.add('d-block');
             return false;
         } else {

@@ -20,7 +20,7 @@
                 @method('PUT')
                 
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label for="name">Full Name <span class="text-danger">*</span></label>
                             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" id="name" value="{{ old('name', $user->name) }}">
@@ -33,7 +33,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label for="username">Username <span class="text-danger">*</span></label>
                             <div class="input-group">
@@ -51,11 +51,14 @@
                             @enderror
                         </div>
                     </div>
+                </div>
 
-                    <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <label for="email">Email Address <span class="text-danger">*</span></label>
-                            <input type="text" name="email" class="form-control @error('email') is-invalid @enderror" id="email" value="{{ old('email', $user->email) }}">
+                            <label for="email">Email Address <span class="text-muted small">(Cannot be changed)</span></label>
+                            <input type="email" class="form-control" value="{{ $user->email }}" disabled style="cursor: not-allowed; background-color: #eaecf4;">
+                            <input type="hidden" name="email" id="email" value="{{ $user->email }}">
                             <div class="invalid-feedback" id="email-error"></div>
                             @error('email')
                                 <span class="invalid-feedback d-block" role="alert">
@@ -64,9 +67,7 @@
                             @enderror
                         </div>
                     </div>
-                </div>
 
-                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="role">User Role <span class="text-danger">*</span></label>
@@ -78,7 +79,7 @@
                             </select>
                             @if($user->id === auth()->id())
                                 <input type="hidden" name="role" value="{{ $user->roles->first()->name }}">
-                                <small class="text-muted">You cannot change your own role.</small>
+                                <small class="text-muted mt-1 d-block">You cannot change your own role.</small>
                             @endif
                             <div class="invalid-feedback" id="role-error"></div>
                             @error('role')
@@ -121,22 +122,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (value === '') {
             nameInput.classList.add('is-invalid');
-            nameInput.classList.remove('is-valid');
             errorDiv.textContent = 'Full name is required.';
             return false;
         } else if (value.length < 2) {
             nameInput.classList.add('is-invalid');
-            nameInput.classList.remove('is-valid');
             errorDiv.textContent = 'Name must be at least 2 characters.';
             return false;
         } else if (value.length > 255) {
             nameInput.classList.add('is-invalid');
-            nameInput.classList.remove('is-valid');
             errorDiv.textContent = 'Name must not exceed 255 characters.';
             return false;
         } else {
             nameInput.classList.remove('is-invalid');
-            nameInput.classList.add('is-valid');
             errorDiv.textContent = '';
             return true;
         }
@@ -149,22 +146,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (value === '') {
             usernameInput.classList.add('is-invalid');
-            usernameInput.classList.remove('is-valid');
             errorDiv.textContent = 'Username is required.';
             return false;
         } else if (!usernameRegex.test(value)) {
             usernameInput.classList.add('is-invalid');
-            usernameInput.classList.remove('is-valid');
             errorDiv.textContent = 'Username can only contain letters, numbers, dashes, and underscores.';
             return false;
         } else if (value.length > 255) {
             usernameInput.classList.add('is-invalid');
-            usernameInput.classList.remove('is-valid');
             errorDiv.textContent = 'Username must not exceed 255 characters.';
             return false;
         } else {
             usernameInput.classList.remove('is-invalid');
-            usernameInput.classList.add('is-valid');
             errorDiv.textContent = '';
             return true;
         }
@@ -177,22 +170,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (value === '') {
             emailInput.classList.add('is-invalid');
-            emailInput.classList.remove('is-valid');
             errorDiv.textContent = 'Email address is required.';
             return false;
         } else if (!emailRegex.test(value)) {
             emailInput.classList.add('is-invalid');
-            emailInput.classList.remove('is-valid');
             errorDiv.textContent = 'Please enter a valid email address.';
             return false;
         } else if (value.length > 255) {
             emailInput.classList.add('is-invalid');
-            emailInput.classList.remove('is-valid');
             errorDiv.textContent = 'Email must not exceed 255 characters.';
             return false;
         } else {
             emailInput.classList.remove('is-invalid');
-            emailInput.classList.add('is-valid');
             errorDiv.textContent = '';
             return true;
         }
@@ -209,12 +198,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (value === '' || value === null) {
             roleSelect.classList.add('is-invalid');
-            roleSelect.classList.remove('is-valid');
             errorDiv.textContent = 'Please select a user role.';
             return false;
         } else {
             roleSelect.classList.remove('is-invalid');
-            roleSelect.classList.add('is-valid');
             errorDiv.textContent = '';
             return true;
         }

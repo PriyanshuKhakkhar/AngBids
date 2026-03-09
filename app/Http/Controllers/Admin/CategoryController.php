@@ -32,7 +32,7 @@ class CategoryController extends Controller
 
                     // View/Edit (only if not deleted)
                     if(!$row->trashed()){
-                        $btn .= '<a href="'.route('admin.categories.edit', $row->id).'" class="btn btn-sm btn-circle btn-info mr-1" title="Edit"><i class="fas fa-edit"></i></a>';
+                        $btn .= '<a href="'.route('admin.categories.edit', $row->id).'" class="btn btn-sm btn-circle btn-primary mr-1" title="Edit"><i class="fas fa-edit"></i></a>';
 
                         // Soft Delete
                         $btn .= '<button type="button" class="btn btn-sm btn-circle btn-danger delete-category" data-id="'.$row->id.'" data-url="'.route('admin.categories.destroy', $row->id).'" title="Delete"><i class="fas fa-trash"></i></button>';

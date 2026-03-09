@@ -172,7 +172,7 @@
                 <table class="table table-hover border-bottom" id="auctions-table" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th width="30">ID</th>
+                            <th width="30">Id</th>
                             <th width="60" class="text-center">Image</th>
                             <th>Title & Details</th>
                             <th>Category</th>
@@ -240,8 +240,8 @@
                     $('.btn-info').removeClass('btn-info').addClass('btn-outline-info').html('<i class="fas fa-eye"></i>');
                     $('.btn-success:not(.restore-auction)').removeClass('btn-success').addClass('btn-outline-success').html('<i class="fas fa-check"></i>');
                     $('.btn-danger:not(.force-delete-auction)').removeClass('btn-danger').addClass('btn-outline-danger').html('<i class="fas fa-trash"></i>');
-                    $('.restore-auction').removeClass('btn-success').addClass('btn-outline-primary');
-                    $('.force-delete-auction').removeClass('btn-danger').addClass('btn-outline-dark');
+                    $('.restore-auction').removeClass('btn-success').addClass('btn-outline-success').html('<i class="fas fa-trash-restore"></i>');
+                    $('.force-delete-auction').removeClass('btn-danger').addClass('btn-outline-danger').html('<i class="fas fa-times"></i>');
                     
                     $('.btn-sm').addClass('btn-action mx-1');
                     

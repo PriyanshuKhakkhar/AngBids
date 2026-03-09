@@ -18,26 +18,65 @@ class UserController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = User::withTrashed()->with('roles')->latest();
+            $query = User::withTrashed()->with('roles');
 
-            return DataTables::of($data)
+            // Apply Filters Before DataTables wraps it
+            if ($request->filled('role')) {
+                $role = $request->role;
+                if ($role === 'user_only') {
+                    // Find standard users (either 'user' role or no role)
+                    $query->where(function($q) {
+                        $q->doesntHave('roles')
+                          ->orWhereHas('roles', function($roleQuery) {
+                              $roleQuery->where('name', 'user');
+                          });
+                    });
+                } elseif ($role === 'super-admin') {
+                    $query->whereHas('roles', function($q) {
+                        $q->whereIn('name', ['super-admin', 'super admin', 'Super Admin']);
+                    });
+                } else {
+                    $query->whereHas('roles', function($q) use ($role) {
+                        $q->where('name', $role);
+                    });
+                }
+            }
+
+            if ($request->filled('status') && $request->status !== 'all') {
+                if ($request->status === 'active') {
+                    $query->whereNull('users.deleted_at');
+                } elseif ($request->status === 'deleted') {
+                    $query->whereNotNull('users.deleted_at');
+                }
+            }
+
+            if ($request->filled('date')) {
+                $query->whereDate('users.created_at', $request->date);
+            }
+
+            return DataTables::of($query)
+                ->order(function ($q) use ($request) {
+                    if ($request->filled('sort')) {
+                        if ($request->sort === 'oldest') {
+                            $q->orderBy('users.created_at', 'asc');
+                        } else {
+                            $q->orderBy('users.created_at', 'desc');
+                        }
+                    } else {
+                        $q->orderBy('users.created_at', 'desc');
+                    }
+                })
                 ->addIndexColumn()
                 ->addColumn('role_name', function($row){
-                    $rolesHtml = '';
                     if ($row->roles->isEmpty()) {
-                        return '<span class="badge badge-primary px-3 py-2 rounded-pill shadow-sm" style="font-size: 0.85rem; font-weight: 600;">User</span>';
+                        return 'User';
                     }
+                    
+                    $roleNames = [];
                     foreach($row->roles as $role){
-                        if ($role->name == 'super admin' || $role->name == 'super-admin') {
-                            $badgeClass = 'badge-dark';
-                        } elseif ($role->name == 'admin') {
-                            $badgeClass = 'badge-info';
-                        } else {
-                            $badgeClass = 'badge-primary';
-                        }
-                        $rolesHtml .= '<span class="badge '.$badgeClass.' px-3 py-2 rounded-pill shadow-sm mr-1" style="font-size: 0.85rem; font-weight: 600;">'.ucwords(str_replace('-', ' ', $role->name)).'</span>';
+                        $roleNames[] = ucwords(str_replace('-', ' ', $role->name));
                     }
-                    return $rolesHtml;
+                    return implode(', ', $roleNames);
                 })
                 ->addColumn('status', function($row){
                     if($row->trashed()){
@@ -57,7 +96,10 @@ class UserController extends Controller
                         $canManageUser = $row->hasRole('user');
                     }
                     elseif ($currentUser->isSuperAdmin()) {
-                        $canManageUser = !($row->hasRole('super-admin') && $row->id !== $currentUser->id);
+                        // Super Admin can manage themselves or any user they created (including other Super Admins)
+                        $canManageUser = ($row->id === $currentUser->id) || 
+                                        ($row->created_by === $currentUser->id) || 
+                                        (!$row->isSuperAdmin());
                     }
 
                     $btn = '';
@@ -158,7 +200,7 @@ class UserController extends Controller
             'email'    => 'required|email|max:255|unique:users,email',
             'password' => ['required', 'confirmed', 'min:8', Rules\Password::defaults()],
             'role'     => 'required|exists:roles,name',
-            'otp'      => 'nullable|string|size:6',
+            'otp'      => 'required|string|size:6',
         ]);
 
         $emailVerifiedAt = null;
@@ -181,6 +223,7 @@ class UserController extends Controller
                 'email'    => strtolower(trim($validated['email'])),
                 'password' => Hash::make($validated['password']),
                 'email_verified_at' => $emailVerifiedAt,
+                'created_by' => auth()->id(),
             ]);
 
             $user->assignRole($validated['role']);
@@ -214,11 +257,13 @@ class UserController extends Controller
             }
         }
 
-        // Super admin cannot edit other super admins
+        // Super admin cannot edit other super admins UNLESS they created them
         if ($currentUser->isSuperAdmin() && $user->isSuperAdmin() && $user->id !== $currentUser->id) {
-            return redirect()
-                ->route('admin.users.index')
-                ->with('error', 'You cannot edit other Super Admin users');
+            if ($user->created_by !== $currentUser->id) {
+                return redirect()
+                    ->route('admin.users.index')
+                    ->with('error', 'You can only edit Super Admin users that you created');
+            }
         }
 
         // Admin can assign user or admin role
@@ -248,11 +293,13 @@ class UserController extends Controller
             }
         }
 
-        // Super admin cannot update other super admins
+        // Super admin cannot update other super admins UNLESS they created them
         if ($currentUser->isSuperAdmin() && $user->isSuperAdmin() && $user->id !== $currentUser->id) {
-            return redirect()
-                ->route('admin.users.index')
-                ->with('error', 'You cannot update other Super Admin users');
+            if ($user->created_by !== $currentUser->id) {
+                return redirect()
+                    ->route('admin.users.index')
+                    ->with('error', 'You can only update Super Admin users that you created');
+            }
         }
 
         // Admin can assign user or admin role
@@ -313,7 +360,16 @@ class UserController extends Controller
                 : back()->with('error', 'You cannot delete yourself');
         }
 
-        // Check permissions
+        // Check permissions for Super Admin hierarchy
+        if ($currentUser->isSuperAdmin() && $user->isSuperAdmin() && $user->id !== $currentUser->id) {
+            if ($user->created_by !== $currentUser->id) {
+                return request()->ajax()
+                    ? response()->json(['error' => 'You can only delete Super Admin users that you created'], 403)
+                    : back()->with('error', 'You can only delete Super Admin users that you created');
+            }
+        }
+
+        // Check permissions for Admin
         if ($currentUser->isAdmin() && !$currentUser->isSuperAdmin() && ($user->isSuperAdmin() || $user->isAdmin())) {
              return request()->ajax()
                 ? response()->json(['error' => 'Unauthorized'], 403)
@@ -333,6 +389,23 @@ class UserController extends Controller
     public function restore($id)
     {
         $user = User::withTrashed()->findOrFail($id);
+        $currentUser = Auth::user();
+
+        // Super Admin hierarchy check
+        if ($currentUser->isSuperAdmin() && $user->isSuperAdmin() && $user->id !== $currentUser->id) {
+            if ($user->created_by !== $currentUser->id) {
+                return request()->ajax()
+                    ? response()->json(['error' => 'You can only restore Super Admin users that you created'], 403)
+                    : back()->with('error', 'You can only restore Super Admin users that you created');
+            }
+        }
+
+        // Admin check
+        if ($currentUser->isAdmin() && !$currentUser->isSuperAdmin() && ($user->isSuperAdmin() || $user->isAdmin())) {
+            return request()->ajax()
+                ? response()->json(['error' => 'Unauthorized'], 403)
+                : back()->with('error', 'You can only restore User role accounts');
+        }
 
         $user->restore();
         $user->update(['deleted_by' => null]);
@@ -347,7 +420,29 @@ class UserController extends Controller
     public function forceDelete($id)
     {
         $user = User::withTrashed()->findOrFail($id);
-        // permission checks
+        $currentUser = Auth::user();
+
+        if ($user->id === Auth::id()) {
+            return request()->ajax()
+                ? response()->json(['error' => 'You cannot delete yourself'], 422)
+                : back()->with('error', 'You cannot delete yourself');
+        }
+
+        // Super Admin hierarchy check
+        if ($currentUser->isSuperAdmin() && $user->isSuperAdmin() && $user->id !== $currentUser->id) {
+            if ($user->created_by !== $currentUser->id) {
+                return request()->ajax()
+                    ? response()->json(['error' => 'You can only permanently delete Super Admin users that you created'], 403)
+                    : back()->with('error', 'You can only permanently delete Super Admin users that you created');
+            }
+        }
+
+        // Admin check
+        if ($currentUser->isAdmin() && !$currentUser->isSuperAdmin() && ($user->isSuperAdmin() || $user->isAdmin())) {
+            return request()->ajax()
+                ? response()->json(['error' => 'Unauthorized'], 403)
+                : back()->with('error', 'You can only permanently delete User role accounts');
+        }
 
         $user->roles()->detach();
         $user->forceDelete();
