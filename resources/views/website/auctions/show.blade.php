@@ -507,10 +507,7 @@
                         </div>
                     </div>
 
-                        </div>
-                    </div>
-
-                    <!-- 7. Bidding History -->
+                    <!-- 6. Bidding History -->
                     <div class="accordion-item border-0 mb-3 shadow-sm rounded-4 overflow-hidden">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed fw-bold text-primary bg-white px-4 py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHistory">

@@ -26,6 +26,10 @@ class NotificationController extends Controller
 
         $notification->markAsRead();
 
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['success' => true]);
+        }
+
         return redirect()->back()->with('success', 'Notification marked as read.');
     }
 
@@ -34,6 +38,10 @@ class NotificationController extends Controller
     {
         auth()->user()->unreadNotifications->markAsRead();
 
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['success' => true]);
+        }
+
         return redirect()->back()->with('success', 'All notifications marked as read.');
     }
 
@@ -41,6 +49,10 @@ class NotificationController extends Controller
     public function clearAll()
     {
         auth()->user()->notifications()->delete();
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['success' => true]);
+        }
 
         return redirect()->back()->with('success', 'All notifications cleared.');
     }
@@ -53,6 +65,10 @@ class NotificationController extends Controller
             ->findOrFail($id);
 
         $notification->delete();
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['success' => true]);
+        }
 
         return redirect()->back()->with('success', 'Notification deleted.');
     }

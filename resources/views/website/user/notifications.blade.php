@@ -123,7 +123,7 @@
                             <!-- Actions Column -->
                             <div class="col-auto border-start ps-3 d-flex flex-column gap-2 justify-content-center">
                                 @if(!$isRead)
-                                    <form action="{{ route('user.notifications.read', $notification->id) }}" method="POST">
+                                    <form action="{{ route('user.notifications.read', $notification->id) }}" method="POST" class="mark-read-form">
                                         @csrf
                                         <button type="submit" class="btn btn-light btn-sm rounded-circle text-success" data-bs-toggle="tooltip" title="Mark as Read" style="width: 32px; height: 32px;">
                                             <i class="fas fa-check"></i>
@@ -197,26 +197,66 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Single Delete Confirmation
+    // AJAX Delete Notification
     const deleteForms = document.querySelectorAll('.delete-notification-form');
     deleteForms.forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            Swal.fire({
-                title: 'Delete Notification?',
-                text: "This action cannot be undone.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'Cancel',
-                width: '350px' // Smaller width for single item
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    this.submit();
+
+            fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
                 }
-            });
+            }).then(res => res.json()).then(data => {
+                if(data.success) {
+                    const card = this.closest('.card');
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.95)';
+                    setTimeout(() => card.remove(), 300);
+                }
+            }).catch(err => console.error(err));
+        });
+    });
+
+    // AJAX Mark as Read
+    const markReadForms = document.querySelectorAll('.mark-read-form');
+    markReadForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            }).then(res => res.json()).then(data => {
+                if(data.success) {
+                    const card = this.closest('.card');
+                    card.className = card.className.replace(/border-start border-4 border-[a-z]+/g, '');
+                    card.classList.add('opacity-75'); 
+                    
+                    const badge = card.querySelector('.badge.bg-danger');
+                    if(badge) badge.remove();
+                    
+                    this.remove(); // removes the form with the green button
+                    
+                    let headerBadge = document.querySelector('.fa-bell').nextElementSibling;
+                    if(headerBadge && headerBadge.classList.contains('badge')) {
+                        let count = parseInt(headerBadge.innerText.replace('+', ''));
+                        if(!isNaN(count) && count > 0) {
+                            count--;
+                            if(count === 0) headerBadge.remove();
+                            else headerBadge.innerText = count;
+                        }
+                    }
+                }
+            }).catch(err => console.error(err));
         });
     });
 
