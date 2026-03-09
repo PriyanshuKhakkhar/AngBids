@@ -25,11 +25,17 @@ class UserController extends Controller
                 ->addColumn('role_name', function($row){
                     $rolesHtml = '';
                     if ($row->roles->isEmpty()) {
-                        return '<span class="badge badge-secondary">User</span>';
+                        return '<span class="badge badge-primary px-3 py-2 rounded-pill shadow-sm" style="font-size: 0.85rem; font-weight: 600;">User</span>';
                     }
                     foreach($row->roles as $role){
-                        $badgeClass = $role->name == 'admin' ? 'badge-danger' : ($role->name == 'super-admin' ? 'badge-warning' : 'badge-info');
-                        $rolesHtml .= '<span class="badge '.$badgeClass.' mr-1">'.ucfirst($role->name).'</span>';
+                        if ($role->name == 'super admin' || $role->name == 'super-admin') {
+                            $badgeClass = 'badge-dark';
+                        } elseif ($role->name == 'admin') {
+                            $badgeClass = 'badge-info';
+                        } else {
+                            $badgeClass = 'badge-primary';
+                        }
+                        $rolesHtml .= '<span class="badge '.$badgeClass.' px-3 py-2 rounded-pill shadow-sm mr-1" style="font-size: 0.85rem; font-weight: 600;">'.ucwords(str_replace('-', ' ', $role->name)).'</span>';
                     }
                     return $rolesHtml;
                 })
@@ -109,6 +115,28 @@ class UserController extends Controller
         return view('admin.users.create', compact('roles'));
     }
 
+    public function sendOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|unique:users,email'
+        ]);
+
+        $email = strtolower(trim($request->email));
+        $otp = rand(100000, 999999);
+        
+        session([
+            'admin_create_user_otp_' . $email => $otp,
+            'admin_create_user_otp_time_' . $email => now(),
+        ]);
+
+        \App\Jobs\SendOtpEmailJob::dispatch($email, $otp);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'OTP sent successfully to ' . $email
+        ]);
+    }
+
     public function store(Request $request)
     {
         $currentUser = Auth::user();
@@ -126,18 +154,33 @@ class UserController extends Controller
 
         $validated = $request->validate([
             'name'     => 'required|string|min:2|max:255',
-            'username' => 'required|string|alpha_dash|max:255|unique:users,username',
+            'username' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_-]+$/', 'unique:users,username'],
             'email'    => 'required|email|max:255|unique:users,email',
             'password' => ['required', 'confirmed', 'min:8', Rules\Password::defaults()],
             'role'     => 'required|exists:roles,name',
+            'otp'      => 'nullable|string|size:6',
         ]);
 
-        DB::transaction(function () use ($validated) {
+        $emailVerifiedAt = null;
+
+        if (!empty($validated['otp'])) {
+            $sessionOtp = session('admin_create_user_otp_' . strtolower(trim($validated['email'])));
+            if ($sessionOtp && $sessionOtp == $validated['otp']) {
+                $emailVerifiedAt = now();
+                session()->forget('admin_create_user_otp_' . strtolower(trim($validated['email'])));
+                session()->forget('admin_create_user_otp_time_' . strtolower(trim($validated['email'])));
+            } else {
+                return back()->withInput()->with('error', 'Invalid OTP provided for the email. User not created.');
+            }
+        }
+
+        DB::transaction(function () use ($validated, $emailVerifiedAt) {
             $user = User::create([
                 'name'     => trim($validated['name']),
                 'username' => strtolower(trim($validated['username'])),
                 'email'    => strtolower(trim($validated['email'])),
                 'password' => Hash::make($validated['password']),
+                'email_verified_at' => $emailVerifiedAt,
             ]);
 
             $user->assignRole($validated['role']);

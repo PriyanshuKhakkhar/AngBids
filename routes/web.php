@@ -110,6 +110,7 @@ Route::middleware(['auth', 'role:admin|super admin'])
         Route::delete('/auctions/{auction}/force-delete', [AdminAuctionController::class, 'forceDelete'])->name('auctions.force_delete');
 
         // Users
+        Route::post('users/send-otp', [UserController::class, 'sendOtp'])->name('users.send_otp');
         Route::resource('users', UserController::class);
         Route::post('users/{user}/restore', [UserController::class, 'restore'])->name('users.restore');
         Route::delete('users/{user}/force-delete', [UserController::class, 'forceDelete'])->name('users.force_delete');

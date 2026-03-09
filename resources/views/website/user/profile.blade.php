@@ -91,6 +91,7 @@
             </form>
         </div>
 
+        @if(is_null(auth()->user()->google_id))
         <div class="card card-elite p-4 mt-4 shadow-sm border-light">
             <h5 class="text-primary fw-bold mb-4">Change Password</h5>
 
@@ -136,6 +137,17 @@
                 </div>
             </form>
         </div>
+        @else
+        <div class="card card-elite p-4 mt-4 shadow-sm border-light bg-light">
+            <div class="d-flex align-items-center mb-0">
+                <i class="fab fa-google fa-2x text-danger me-3"></i>
+                <div>
+                    <h5 class="text-dark fw-bold mb-1">Google Account</h5>
+                    <p class="text-muted small mb-0">You are logged in using Google. Password changes are managed by your Google account.</p>
+                </div>
+            </div>
+        </div>
+        @endif
     </div>
 
     <div class="col-lg-4">
