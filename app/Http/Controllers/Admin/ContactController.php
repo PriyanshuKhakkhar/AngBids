@@ -20,7 +20,6 @@ class ContactController extends Controller
 
             $status = $request->get('status', 'all');
             $sort   = $request->get('sort', 'latest');
-            $date   = $request->get('date', '');
 
             // Base query (with soft deletes)
             $contacts = Contact::withTrashed();
@@ -33,8 +32,12 @@ class ContactController extends Controller
             }
 
             // Date filter
-            if (!empty($date)) {
-                $contacts->whereDate('created_at', $date);
+            if ($request->filled('start_date')) {
+                $contacts->whereDate('created_at', '>=', $request->get('start_date'));
+            }
+
+            if ($request->filled('end_date')) {
+                $contacts->whereDate('created_at', '<=', $request->get('end_date'));
             }
 
             // Sort

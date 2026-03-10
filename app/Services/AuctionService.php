@@ -80,9 +80,12 @@ class AuctionService
         }
 
         // Date filter
-        if ($request->filled('date')) {
-            $date = $request->input('date');
-            $query->whereDate('auctions.created_at', $date);
+        if ($request->filled('start_date')) {
+            $query->whereDate('auctions.created_at', '>=', $request->input('start_date'));
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('auctions.created_at', '<=', $request->input('end_date'));
         }
 
         // Sorting
