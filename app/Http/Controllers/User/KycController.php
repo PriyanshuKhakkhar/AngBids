@@ -20,6 +20,7 @@ class KycController extends Controller
         return view('website.user.kyc_form');
     }
 
+    // Submit KYC
     public function submitKyc(Request $request)
     {
         $user = Auth::user();
@@ -56,6 +57,7 @@ class KycController extends Controller
         return redirect()->route('user.kyc.status')->with('success', 'KYC submitted successfully and is pending verification.');
     }
 
+    // Show KYC Status
     public function showStatus()
     {
         $kyc = Auth::user()->kyc;
