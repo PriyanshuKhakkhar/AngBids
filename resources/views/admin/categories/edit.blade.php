@@ -2,7 +2,7 @@
 
 @section('title', 'Edit Category - LaraBids')
 
-@section('content')php
+@section('content')
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Edit Category: {{ $category->name }}</h1>
         <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary shadow-sm btn-sm">

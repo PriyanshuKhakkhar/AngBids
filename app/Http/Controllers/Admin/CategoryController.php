@@ -14,7 +14,41 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Category::withTrashed()->with(['parent'])->withCount('auctions')->latest();
+
+            $parent   = $request->get('parent', '');
+            $type     = $request->get('type', 'all');    // all | top | sub
+            $status   = $request->get('status', 'all'); // all | active | trashed
+            $sort     = $request->get('sort', 'latest'); // latest | oldest | name_asc | name_desc
+
+            $data = Category::withTrashed()->with(['parent'])->withCount('auctions');
+
+            // Parent filter
+            if ($parent !== '') {
+                $data->where('parent_id', $parent);
+            }
+
+            // Type filter
+            if ($type === 'top') {
+                $data->whereNull('parent_id');
+            } elseif ($type === 'sub') {
+                $data->whereNotNull('parent_id');
+            }
+
+            // Status filter
+            if ($status === 'active') {
+                $data->whereNull('deleted_at');
+            } elseif ($status === 'trashed') {
+                $data->whereNotNull('deleted_at');
+            }
+
+            // Sort
+            match ($sort) {
+                'oldest'    => $data->oldest(),
+                'name_asc'  => $data->orderBy('name', 'asc'),
+                'name_desc' => $data->orderBy('name', 'desc'),
+                default     => $data->latest(),
+            };
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('icon', function($row){
@@ -22,7 +56,7 @@ class CategoryController extends Controller
                     return '<i class="'.$icon.' text-primary"></i>';
                 })
                 ->addColumn('parent', function($row){
-                    return $row->parent ? $row->parent->name : '<span class="text-muted">None</span>';
+                    return $row->parent ? $row->parent->name : '<span class="text-muted">—</span>';
                 })
                 ->addColumn('count', function($row){
                     return '<span class="badge badge-info badge-pill px-2 py-1">'.$row->auctions_count.' Items</span>';
@@ -35,7 +69,7 @@ class CategoryController extends Controller
                         $btn .= '<a href="'.route('admin.categories.edit', $row->id).'" class="btn btn-sm btn-circle btn-primary mr-1" title="Edit"><i class="fas fa-edit"></i></a>';
 
                         // Soft Delete
-                        $btn .= '<button type="button" class="btn btn-sm btn-circle btn-danger delete-category" data-id="'.$row->id.'" data-url="'.route('admin.categories.destroy', $row->id).'" title="Delete"><i class="fas fa-trash"></i></button>';
+                        $btn .= '<button type="button" class="btn btn-sm btn-circle btn-danger delete-category" data-id="'.$row->id.'" data-url="'.route('admin.categories.destroy', $row->id).'" title="Move to Trash"><i class="fas fa-trash"></i></button>';
                     } else {
                         // Restore
                         $btn .= '<button type="button" class="btn btn-sm btn-circle btn-success restore-category mr-1" data-id="'.$row->id.'" data-url="'.route('admin.categories.restore', $row->id).'" title="Restore"><i class="fas fa-trash-restore"></i></button>';
@@ -54,8 +88,14 @@ class CategoryController extends Controller
                 ->make(true);
         }
 
+        $parentCategories = Category::whereNull('parent_id')->orderBy('name')->get();
+
         return view('admin.categories.index', [
-            'total_categories' => Category::count()
+            'total_categories'  => Category::count(),
+            'top_categories'    => Category::whereNull('parent_id')->count(),
+            'sub_categories'    => Category::whereNotNull('parent_id')->count(),
+            'trashed_categories'=> Category::onlyTrashed()->count(),
+            'parentCategories'  => $parentCategories,
         ]);
     }
 

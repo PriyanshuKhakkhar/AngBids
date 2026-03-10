@@ -5,18 +5,42 @@
 @push('styles')
     <link href="{{ asset('admin-assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
     <style>
-        #categories-table th {
+        .filter-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.4rem;
+            color: #4a5568;
+            font-weight: 700;
+        }
+        .filter-control {
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            padding: 0.55rem 1rem;
+            font-size: 0.9rem;
+            color: #4a5568;
+            background-color: #f8fafc;
+            transition: all 0.2s ease-in-out;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
+        }
+        .filter-control:focus {
+            border-color: #a3bffa;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+            outline: none;
+        }
+        .table th {
             text-transform: uppercase;
             font-size: 0.75rem;
             letter-spacing: 0.05em;
             color: #64748b;
             font-weight: 700;
-            border-top: none;
-            padding-top: 1.25rem;
-            padding-bottom: 1.25rem;
+            border-bottom-width: 2px !important;
+            background-color: #f8fafc;
         }
-        #categories-table td {
+        .table td {
             vertical-align: middle;
+            color: #475569;
             font-size: 0.9rem;
         }
         .btn-action {
@@ -26,9 +50,7 @@
             line-height: 32px;
             text-align: center;
             border-radius: 0.35rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            display: inline-block;
             transition: all 0.2s;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
@@ -36,66 +58,133 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
+        .dataTables_wrapper .dataTables_filter input {
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            padding: 0.4rem 0.75rem;
+        }
+        .dataTables_wrapper .dataTables_filter input:focus {
+            outline: none;
+            border-color: #a3bffa;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+        }
+        .btn-reset-filter {
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            background-color: #fff;
+            color: #4a5568;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .btn-reset-filter:hover {
+            background-color: #f1f5f9;
+            color: #1a202c;
+            border-color: #cbd5e0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
         .category-icon-box {
-            width: 35px;
-            height: 35px;
-            display: flex;
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             border-radius: 0.5rem;
-            background-color: #eef2ff;
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
             color: #4e73df;
-            margin: 0 auto;
-            font-size: 1rem;
+            font-size: 1.05rem;
+            box-shadow: 0 1px 3px rgba(78, 115, 223, 0.1);
         }
     </style>
 @endpush
 
 @section('content')
+
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Auction Categories</h1>
-        <a href="{{ route('admin.categories.create') }}" class="btn btn-primary shadow-sm btn-sm">
-            <i class="fas fa-plus fa-sm text-white-50"></i> Add New Category
-        </a>
+        <div>
+            <h1 class="h3 mb-0 text-gray-800 font-weight-bold">
+                <i class="fas fa-tags text-primary mr-2"></i>Auction Categories
+            </h1>
+            <p class="text-muted small mt-1 mb-0">Manage top-level and sub-categories for your marketplace.</p>
+        </div>
+        <div class="d-flex align-items-center">
+            <div class="d-none d-sm-inline-block shadow-sm px-4 py-2 bg-white rounded-pill border mr-3">
+                <span class="text-xs font-weight-bold text-uppercase text-muted mr-2">Total:</span>
+                <span class="h5 mb-0 font-weight-bold text-primary">{{ $total_categories }}</span>
+            </div>
+            <a href="{{ route('admin.categories.create') }}" class="btn btn-primary shadow-sm">
+                <i class="fas fa-plus fa-sm text-white-50 mr-1"></i> Add New Category
+            </a>
+        </div>
     </div>
 
-    <!-- Stats Row -->
-    <div class="row">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Categories</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $total_categories }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-tags fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
+    <!-- Filters Section -->
+    <div class="card shadow-sm border-0 mb-4 rounded-lg" style="border-left: 4px solid #4e73df !important;">
+        <div class="card-body p-4">
+            <div class="row align-items-end">
+
+                <!-- Parent Category -->
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-3">
+                    <label for="parentFilter" class="filter-label"><i class="fas fa-folder mr-1"></i> Parent Category</label>
+                    <select id="parentFilter" class="custom-select filter-control w-100">
+                        <option value="">All Categories</option>
+                        @foreach($parentCategories as $parent)
+                            <option value="{{ $parent->id }}">{{ $parent->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
+
+                <!-- Status -->
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-3">
+                    <label for="statusFilter" class="filter-label"><i class="fas fa-circle-notch mr-1"></i> Status</label>
+                    <select id="statusFilter" class="custom-select filter-control w-100">
+                        <option value="all" selected>All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="trashed">In Trash</option>
+                    </select>
+                </div>
+
+                <!-- Sort -->
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-3">
+                    <label for="sortFilter" class="filter-label"><i class="fas fa-sort-amount-down-alt mr-1"></i> Sort By</label>
+                    <select id="sortFilter" class="custom-select filter-control w-100">
+                        <option value="latest" selected>Latest Added</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="name_asc">Name A → Z</option>
+                        <option value="name_desc">Name Z → A</option>
+                    </select>
+                </div>
+
+                <!-- Reset -->
+                <div class="col-xl-2 col-lg-2 col-md-6 col-sm-12 mb-3">
+                    <label class="filter-label" style="visibility: hidden;">Reset</label>
+                    <button type="button" class="btn-reset-filter w-100" id="resetFilters" style="height: calc(1.5em + .75rem + 2px);">
+                        <i class="fas fa-sync-alt mr-2 text-primary"></i> Reset Search
+                    </button>
+                </div>
+
             </div>
         </div>
     </div>
 
     <!-- Table Card -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">All Categories List</h6>
+    <div class="card shadow-sm border-0 rounded-lg">
+        <div class="card-header py-3 bg-white border-bottom d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-list-ul mr-2 text-primary"></i>Category Directory</h6>
         </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover" id="categories-table" width="100%" cellspacing="0">
+        <div class="card-body p-0">
+            <div class="table-responsive px-3 py-4">
+                <table class="table table-hover border-bottom" id="categories-table" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th width="40">#</th>
+                            <th width="30">Id</th>
                             <th width="60" class="text-center">Icon</th>
                             <th>Category Name</th>
                             <th>Parent</th>
                             <th>Slug</th>
-                            <th>Count</th>
-                            <th width="130" class="text-center">Actions</th>
+                            <th class="text-center">Items</th>
+                            <th width="130" class="text-center text-nowrap">Action</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -103,63 +192,77 @@
             </div>
         </div>
     </div>
+
 @endsection
 
 @push('scripts')
-    <!-- Page level plugins -->
     <script src="{{ asset('admin-assets/vendor/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('admin-assets/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
 
-    <!-- Page level custom scripts -->
     <script>
         $(document).ready(function () {
-            // Setup CSRF token for AJAX
             $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
             });
+
+            var currentParent = '';
+            var currentStatus = 'all';
+            var currentSort   = 'latest';
 
             var table = $('#categories-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('admin.categories.index') }}",
+                ajax: {
+                    url: "{{ route('admin.categories.index') }}",
+                    data: function (d) {
+                        d.parent = currentParent;
+                        d.status = currentStatus;
+                        d.sort   = currentSort;
+                    }
+                },
                 language: {
-                    searchPlaceholder: "Search Name, Slug...",
-                    lengthMenu: "_MENU_ entries per page",
+                    searchPlaceholder: "Search records...",
+                    lengthMenu: "Show _MENU_ entries",
                     info: "Showing _START_ to _END_ of _TOTAL_ categories"
                 },
+                pageLength: -1,
+                lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                 columns: [
-                    {data: 'DT_RowIndex',  name: 'DT_RowIndex',  orderable: false, searchable: false, className: 'text-muted text-center'},
-                    {data: 'icon',         name: 'icon',         orderable: false, searchable: false, className: 'text-center'},
-                    {data: 'name',         name: 'name',         className: 'font-weight-bold text-dark'},
-                    {data: 'parent',       name: 'parent',       orderable: false},
-                    {data: 'slug',         name: 'slug',         className: 'text-muted small'},
-                    {data: 'count',        name: 'auctions_count', searchable: false},
-                    {data: 'action',       name: 'action',       orderable: false, searchable: false, className: 'text-center text-nowrap'},
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex',   orderable: false, searchable: false, className: 'text-muted text-center'},
+                    {data: 'icon',        name: 'icon',           orderable: false, searchable: false, className: 'text-center'},
+                    {data: 'name',        name: 'name',           className: 'font-weight-bold text-dark'},
+                    {data: 'parent',      name: 'parent',         orderable: false},
+                    {data: 'slug',        name: 'slug',           className: 'text-muted small'},
+                    {data: 'count',       name: 'auctions_count', searchable: false, className: 'text-center'},
+                    {data: 'action',      name: 'action',         orderable: false, searchable: false, className: 'text-center text-nowrap'},
                 ],
                 drawCallback: function () {
-                    // Consistent Edit icon (btn-primary)
+                    // Edit (btn-primary → outline-primary)
                     $('#categories-table .btn-primary:not(.btn-action-done)')
                         .addClass('btn-outline-primary btn-action btn-action-done mx-1')
                         .removeClass('btn-primary btn-circle');
 
-                    // Consistent Delete icon (soft delete)
+                    // Delete → outline-danger
                     $('#categories-table .delete-category')
                         .addClass('btn-outline-danger btn-action mx-1')
                         .removeClass('btn-danger btn-circle');
 
-                    // Consistent Restore icon
+                    // Restore → outline-success
                     $('#categories-table .restore-category')
                         .addClass('btn-outline-success btn-action mx-1')
                         .removeClass('btn-success btn-circle');
 
-                    // Consistent Force Delete icon
+                    // Force delete → outline-danger
                     $('#categories-table .force-delete-category')
                         .addClass('btn-outline-danger btn-action mx-1')
                         .removeClass('btn-danger btn-circle');
 
-                    // Wrap category icons in styled box
+                    // Disabled force delete
+                    $('#categories-table .btn-secondary[disabled]')
+                        .addClass('btn-action mx-1')
+                        .removeClass('btn-circle');
+
+                    // Wrap icons in styled box
                     $('#categories-table tbody td:nth-child(2)').each(function () {
                         var $td = $(this);
                         if ($td.find('.category-icon-box').length === 0) {
@@ -169,7 +272,26 @@
                 }
             });
 
-            // Delete Category (soft)
+            // Filters change
+            $('#parentFilter, #statusFilter, #sortFilter').on('change', function () {
+                currentParent = $('#parentFilter').val();
+                currentStatus = $('#statusFilter').val();
+                currentSort   = $('#sortFilter').val();
+                table.draw();
+            });
+
+            // Reset
+            $('#resetFilters').on('click', function () {
+                $('#parentFilter').val('');
+                $('#statusFilter').val('all');
+                $('#sortFilter').val('latest');
+                currentParent = '';
+                currentStatus = 'all';
+                currentSort   = 'latest';
+                table.search('').draw();
+            });
+
+            // Delete Category (Move to Trash)
             $('body').on('click', '.delete-category', function () {
                 var url = $(this).data('url');
                 Swal.fire({
@@ -187,7 +309,7 @@
                             url: url,
                             success: function () {
                                 table.draw();
-                                Swal.fire('Trashed!', 'Category has been moved to trash.', 'success');
+                                Swal.fire('Trashed!', 'Category moved to trash.', 'success');
                             },
                             error: function () {
                                 Swal.fire('Error!', 'Something went wrong.', 'error');
@@ -205,7 +327,7 @@
                     url: url,
                     success: function () {
                         table.draw();
-                        Swal.fire('Restored!', 'Category has been restored successfully.', 'success');
+                        Swal.fire('Restored!', 'Category has been restored.', 'success');
                     },
                     error: function () {
                         Swal.fire('Error!', 'Something went wrong.', 'error');
@@ -231,14 +353,14 @@
                             url: url,
                             success: function () {
                                 table.draw();
-                                Swal.fire('Deleted!', 'Category has been permanently deleted.', 'success');
+                                Swal.fire('Deleted!', 'Category permanently deleted.', 'success');
                             },
                             error: function (xhr) {
-                                var errorMsg = 'Something went wrong.';
+                                var msg = 'Something went wrong.';
                                 if (xhr.responseJSON && xhr.responseJSON.error) {
-                                    errorMsg = xhr.responseJSON.error;
+                                    msg = xhr.responseJSON.error;
                                 }
-                                Swal.fire('Error!', errorMsg, 'error');
+                                Swal.fire('Error!', msg, 'error');
                             }
                         });
                     }

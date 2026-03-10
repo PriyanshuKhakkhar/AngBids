@@ -225,10 +225,11 @@
                     lengthMenu: "_MENU_ entries per page",
                     info: "Showing _START_ to _END_ of _TOTAL_ auctions"
                 },
+                dom: "<'row mb-3'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>rt<'row mt-3'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-muted text-center'},
                     {data: 'image', name: 'image', orderable: false, searchable: false, className: 'text-center'},
-                    {data: 'title', name: 'title', className: 'font-weight-bold text-dark'},
+                    {data: 'title', name: 'title'},
                     {data: 'category', name: 'category.name'},
                     {data: 'user', name: 'user.name'},
                     {data: 'current_price', name: 'current_price', className: 'text-right'},

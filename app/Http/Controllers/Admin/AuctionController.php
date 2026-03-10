@@ -32,9 +32,14 @@ class AuctionController extends Controller
                 ->addIndexColumn()
 
                 ->editColumn('title', function ($row) {
-                    return '<span title="'.e($row->title).'">'
-                        . Str::limit($row->title, 30)
-                        . '</span>';
+                    $html = '<div class="d-flex flex-column">';
+                    $html .= '<span class="font-weight-bold text-dark mb-1" title="'.e($row->title).'">' . Str::limit($row->title, 40) . '</span>';
+                    if (!empty($row->description)) {
+                        $desc = strip_tags($row->description);
+                        $html .= '<span class="text-muted small text-truncate" style="max-width:250px;" title="'.e($desc).'">' . Str::limit($desc, 50) . '</span>';
+                    }
+                    $html .= '</div>';
+                    return $html;
                 })
 
                 ->addColumn('user', function ($row) {

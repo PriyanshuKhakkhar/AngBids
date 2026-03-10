@@ -178,13 +178,13 @@
                     <a href="mailto:{{ $contact->email }}" class="btn btn-success btn-block mb-2">
                         <i class="fas fa-reply"></i> Reply via Email
                     </a>
-                    <!-- Soft Delete Button -->
+                    <!-- Move to Trash Button -->
                     <button type="button" class="btn btn-danger btn-block delete-contact" 
                         data-url="{{ route('admin.contacts.destroy', $contact->id) }}">
-                        <i class="fas fa-trash"></i> Soft Delete Message
+                        <i class="fas fa-trash"></i> Move to Trash
                     </button>
                     <small class="text-muted d-block mt-2">
-                        <i class="fas fa-info-circle"></i> Soft deleted messages can be restored later
+                        <i class="fas fa-info-circle"></i> Trashed messages can be restored later
                     </small>
                 @endif
             </div>
@@ -244,13 +244,13 @@
         $('.delete-contact').on('click', function () {
             var url = $(this).data('url');
             Swal.fire({
-                title: 'Soft Delete Message?',
-                text: "This message will be soft deleted and can be restored later.",
+                title: 'Move to Trash?',
+                text: "This message will be moved to trash and can be restored later.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, soft delete it!'
+                confirmButtonColor: '#e74a3b',
+                cancelButtonColor: '#858796',
+                confirmButtonText: 'Yes, trash it!'
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -259,8 +259,8 @@
                         success: function (data) {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Soft Deleted!',
-                                text: 'Contact message has been soft deleted. You can restore it later if needed.',
+                                title: 'Moved to Trash!',
+                                text: 'Message moved to trash. You can restore it later if needed.',
                                 timer: 2000,
                                 showConfirmButton: false
                             }).then(() => {
