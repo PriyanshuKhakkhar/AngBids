@@ -16,7 +16,6 @@
         .filter-control {
             border-radius: 0.5rem;
             border: 1px solid #e2e8f0;
-            padding: 0.55rem 1rem;
             font-size: 0.9rem;
             color: #4a5568;
             background-color: #f8fafc;
@@ -113,7 +112,7 @@
     <div class="card shadow-sm border-0 mb-4 rounded-lg" style="border-left: 4px solid #4e73df !important;">
         <div class="card-body p-4">
             <div class="row align-items-end">
-                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 mb-3">
+                <div class="col-xl-2 col-lg-2 col-md-4 col-sm-6 mb-3">
                     <label for="categoryFilter" class="filter-label"><i class="fas fa-tags mr-1"></i> Category</label>
                     <select id="categoryFilter" class="custom-select filter-control w-100">
                         <option value="" selected>All Categories</option>
@@ -139,7 +138,7 @@
                     </select>
                 </div>
 
-                <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+                <div class="col-xl-2 col-lg-2 col-md-4 col-sm-6 mb-3">
                     <label for="sortFilter" class="filter-label"><i class="fas fa-sort-amount-down-alt mr-1"></i> Sort By</label>
                     <select id="sortFilter" class="custom-select filter-control w-100">
                         <option value="latest" selected>Latest</option>
@@ -149,11 +148,15 @@
                     </select>
                 </div>
                 
-                <div class="col-xl-3 col-lg-2 col-md-6 col-sm-6 mb-3">
-                    <label for="dateFilter" class="filter-label"><i class="far fa-calendar-alt mr-1"></i> Added Date</label>
-                    <input type="date" id="dateFilter" class="form-control filter-control w-100">
+                <div class="col-xl-2 col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <label for="startDateFilter" class="filter-label"><i class="far fa-calendar-alt mr-1"></i> Start Date</label>
+                    <input type="date" id="startDateFilter" class="form-control filter-control w-100">
                 </div>
-                <div class="col-xl-2 col-lg-2 col-md-6 col-sm-12 mb-3">
+                <div class="col-xl-2 col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <label for="endDateFilter" class="filter-label"><i class="far fa-calendar-alt mr-1"></i> End Date</label>
+                    <input type="date" id="endDateFilter" class="form-control filter-control w-100">
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 mb-3">
                     <button type="button" class="btn-reset-filter w-100" id="resetFilters" style="height: calc(1.5em + .75rem + 2px);">
                         <i class="fas fa-sync-alt mr-2 text-primary"></i> Reset Search
                     </button>
@@ -206,7 +209,8 @@
             var currentStatus = 'all';
             var currentCategory = '';
             var currentSort = 'latest';
-            var currentDate = '';
+            var currentStartDate = '';
+            var currentEndDate = '';
 
             var table = $('#auctions-table').DataTable({
                 processing: true,
@@ -217,7 +221,8 @@
                         d.status = currentStatus;
                         d.category = currentCategory;
                         d.sort = currentSort;
-                        d.date = currentDate;
+                        d.start_date = currentStartDate;
+                        d.end_date = currentEndDate;
                     }
                 },
                 language: {
@@ -251,11 +256,12 @@
             });
 
             // Filters Change Handler
-            $('#statusFilter, #categoryFilter, #sortFilter, #dateFilter').on('change', function() {
+            $('#statusFilter, #categoryFilter, #sortFilter, #startDateFilter, #endDateFilter').on('change', function() {
                 currentStatus = $('#statusFilter').val();
                 currentCategory = $('#categoryFilter').val();
                 currentSort = $('#sortFilter').val();
-                currentDate = $('#dateFilter').val();
+                currentStartDate = $('#startDateFilter').val();
+                currentEndDate = $('#endDateFilter').val();
                 table.draw();
             });
 
@@ -264,12 +270,14 @@
                 $('#statusFilter').val('all');
                 $('#categoryFilter').val('');
                 $('#sortFilter').val('latest');
-                $('#dateFilter').val('');
+                $('#startDateFilter').val('');
+                $('#endDateFilter').val('');
                 
                 currentStatus = 'all';
                 currentCategory = '';
                 currentSort = 'latest';
-                currentDate = '';
+                currentStartDate = '';
+                currentEndDate = '';
                 
                 // Clear datatables search
                 table.search('').draw();

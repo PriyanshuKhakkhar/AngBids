@@ -50,8 +50,12 @@ class UserController extends Controller
                 }
             }
 
-            if ($request->filled('date')) {
-                $query->whereDate('users.created_at', $request->date);
+            if ($request->filled('start_date')) {
+                $query->whereDate('users.created_at', '>=', $request->start_date);
+            }
+
+            if ($request->filled('end_date')) {
+                $query->whereDate('users.created_at', '<=', $request->end_date);
             }
 
             return DataTables::of($query)

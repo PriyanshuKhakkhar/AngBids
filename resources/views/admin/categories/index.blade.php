@@ -16,7 +16,6 @@
         .filter-control {
             border-radius: 0.5rem;
             border: 1px solid #e2e8f0;
-            padding: 0.55rem 1rem;
             font-size: 0.9rem;
             color: #4a5568;
             background-color: #f8fafc;
@@ -125,7 +124,7 @@
             <div class="row align-items-end">
 
                 <!-- Parent Category -->
-                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-3">
+                <div class="col-xl-2 col-lg-2 col-md-4 col-sm-6 mb-3">
                     <label for="parentFilter" class="filter-label"><i class="fas fa-folder mr-1"></i> Parent Category</label>
                     <select id="parentFilter" class="custom-select filter-control w-100">
                         <option value="">All Categories</option>
@@ -136,7 +135,7 @@
                 </div>
 
                 <!-- Status -->
-                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-3">
+                <div class="col-xl-2 col-lg-2 col-md-4 col-sm-6 mb-3">
                     <label for="statusFilter" class="filter-label"><i class="fas fa-circle-notch mr-1"></i> Status</label>
                     <select id="statusFilter" class="custom-select filter-control w-100">
                         <option value="all" selected>All Statuses</option>
@@ -146,7 +145,7 @@
                 </div>
 
                 <!-- Sort -->
-                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-3">
+                <div class="col-xl-2 col-lg-2 col-md-4 col-sm-6 mb-3">
                     <label for="sortFilter" class="filter-label"><i class="fas fa-sort-amount-down-alt mr-1"></i> Sort By</label>
                     <select id="sortFilter" class="custom-select filter-control w-100">
                         <option value="latest" selected>Latest Added</option>
@@ -156,9 +155,18 @@
                     </select>
                 </div>
 
+                <div class="col-xl-2 col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <label for="startDateFilter" class="filter-label"><i class="far fa-calendar-alt mr-1"></i> Start Date</label>
+                    <input type="date" id="startDateFilter" class="form-control filter-control w-100">
+                </div>
+                
+                <div class="col-xl-2 col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <label for="endDateFilter" class="filter-label"><i class="far fa-calendar-alt mr-1"></i> End Date</label>
+                    <input type="date" id="endDateFilter" class="form-control filter-control w-100">
+                </div>
+
                 <!-- Reset -->
-                <div class="col-xl-2 col-lg-2 col-md-6 col-sm-12 mb-3">
-                    <label class="filter-label" style="visibility: hidden;">Reset</label>
+                <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 mb-3">
                     <button type="button" class="btn-reset-filter w-100" id="resetFilters" style="height: calc(1.5em + .75rem + 2px);">
                         <i class="fas fa-sync-alt mr-2 text-primary"></i> Reset Search
                     </button>
@@ -208,6 +216,8 @@
             var currentParent = '';
             var currentStatus = 'all';
             var currentSort   = 'latest';
+            var currentStartDate = '';
+            var currentEndDate = '';
 
             var table = $('#categories-table').DataTable({
                 processing: true,
@@ -218,6 +228,8 @@
                         d.parent = currentParent;
                         d.status = currentStatus;
                         d.sort   = currentSort;
+                        d.start_date = currentStartDate;
+                        d.end_date = currentEndDate;
                     }
                 },
                 language: {
@@ -273,10 +285,12 @@
             });
 
             // Filters change
-            $('#parentFilter, #statusFilter, #sortFilter').on('change', function () {
+            $('#parentFilter, #statusFilter, #sortFilter, #startDateFilter, #endDateFilter').on('change', function () {
                 currentParent = $('#parentFilter').val();
                 currentStatus = $('#statusFilter').val();
                 currentSort   = $('#sortFilter').val();
+                currentStartDate = $('#startDateFilter').val();
+                currentEndDate = $('#endDateFilter').val();
                 table.draw();
             });
 
@@ -285,9 +299,14 @@
                 $('#parentFilter').val('');
                 $('#statusFilter').val('all');
                 $('#sortFilter').val('latest');
+                $('#startDateFilter').val('');
+                $('#endDateFilter').val('');
+                
                 currentParent = '';
                 currentStatus = 'all';
                 currentSort   = 'latest';
+                currentStartDate = '';
+                currentEndDate = '';
                 table.search('').draw();
             });
 

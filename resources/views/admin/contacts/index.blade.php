@@ -199,11 +199,18 @@
                 </div>
 
                 <!-- Date Filter -->
-                <div class="col-xl-3 col-lg-3 col-md-5 col-sm-6 mb-3">
-                    <label for="dateFilter" class="filter-label">
-                        <i class="far fa-calendar-alt mr-1 text-primary"></i> Date Received
+                <div class="col-xl-2 col-lg-2 col-md-5 col-sm-6 mb-3">
+                    <label for="startDateFilter" class="filter-label">
+                        <i class="far fa-calendar-alt mr-1 text-primary"></i> Start Date
                     </label>
-                    <input type="date" id="dateFilter" class="form-control filter-control w-100">
+                    <input type="date" id="startDateFilter" class="form-control filter-control w-100">
+                </div>
+                
+                <div class="col-xl-2 col-lg-2 col-md-5 col-sm-6 mb-3">
+                    <label for="endDateFilter" class="filter-label">
+                        <i class="far fa-calendar-alt mr-1 text-primary"></i> End Date
+                    </label>
+                    <input type="date" id="endDateFilter" class="form-control filter-control w-100">
                 </div>
 
                 <!-- Reset -->
@@ -260,7 +267,8 @@
 
             var currentStatus = 'all';
             var currentSort   = 'latest';
-            var currentDate   = '';
+            var currentStartDate = '';
+            var currentEndDate = '';
 
             var table = $('#contacts-table').DataTable({
                 processing: true,
@@ -270,7 +278,8 @@
                     data: function (d) {
                         d.status = currentStatus;
                         d.sort   = currentSort;
-                        d.date   = currentDate;
+                        d.start_date = currentStartDate;
+                        d.end_date   = currentEndDate;
                     }
                 },
                 language: {
@@ -308,13 +317,11 @@
             });
 
             // Filters
-            $('#statusFilter, #sortFilter').on('change', function () {
+            $('#statusFilter, #sortFilter, #startDateFilter, #endDateFilter').on('change', function () {
                 currentStatus = $('#statusFilter').val();
                 currentSort   = $('#sortFilter').val();
-                table.draw();
-            });
-            $('#dateFilter').on('change', function () {
-                currentDate = $(this).val();
+                currentStartDate = $('#startDateFilter').val();
+                currentEndDate = $('#endDateFilter').val();
                 table.draw();
             });
 
@@ -322,10 +329,13 @@
             $('#resetFilters').on('click', function () {
                 $('#statusFilter').val('all');
                 $('#sortFilter').val('latest');
-                $('#dateFilter').val('');
+                $('#startDateFilter').val('');
+                $('#endDateFilter').val('');
+                
                 currentStatus = 'all';
                 currentSort   = 'latest';
-                currentDate   = '';
+                currentStartDate = '';
+                currentEndDate = '';
                 table.search('').draw();
             });
 

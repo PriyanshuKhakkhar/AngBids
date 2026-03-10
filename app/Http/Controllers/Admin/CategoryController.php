@@ -41,6 +41,14 @@ class CategoryController extends Controller
                 $data->whereNotNull('deleted_at');
             }
 
+            // Date filtering
+            if ($request->filled('start_date')) {
+                $data->whereDate('created_at', '>=', $request->start_date);
+            }
+            if ($request->filled('end_date')) {
+                $data->whereDate('created_at', '<=', $request->end_date);
+            }
+
             // Sort
             match ($sort) {
                 'oldest'    => $data->oldest(),
