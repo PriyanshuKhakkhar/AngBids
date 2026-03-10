@@ -35,6 +35,7 @@
     </li>
 
     <!-- Nav Item - Users -->
+    <li class="nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.users.index') }}">
             <i class="fas fa-fw fa-users"></i>
             <span>Manage Users</span></a>
@@ -43,7 +44,7 @@
     <!-- Nav Item - KYC Verification -->
     <li class="nav-item {{ request()->routeIs('admin.kyc.*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.kyc.index') }}">
-            <i class="fas fa-fw fa-id-check"></i>
+            <i class="fas fa-fw fa-user-shield"></i>
             <span>KYC Verification</span></a>
     </li>
 
