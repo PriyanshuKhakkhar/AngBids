@@ -6,6 +6,10 @@
 <style>
     .stat-card {
         transition: transform 0.2s, box-shadow 0.2s;
+        border-radius: 10px;
+        border-right: none;
+        border-top: none;
+        border-bottom: none;
     }
     .stat-card:hover {
         transform: translateY(-5px);
@@ -16,10 +20,31 @@
         height: 300px;
     }
     .quick-action-btn {
-        transition: all 0.2s;
+        transition: all 0.2s ease-in-out;
+        border-radius: 10px;
+        padding: 1.5rem 1rem;
+        border: 1px solid transparent;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none !important;
+        color: #fff !important;
     }
     .quick-action-btn:hover {
-        transform: scale(1.05);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        filter: brightness(1.05);
+    }
+    /* Simple clean card style for dashboard */
+    .dashboard-card {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.08);
+    }
+    .dashboard-card .card-header {
+        background-color: #fff;
+        border-bottom: 1px solid #f1f2f6;
+        border-radius: 12px 12px 0 0 !important;
     }
 </style>
 @endpush
@@ -207,7 +232,7 @@
     <div class="row">
         <!-- Auction Status Chart -->
         <div class="col-xl-6 col-lg-6">
-            <div class="card shadow mb-4">
+            <div class="card dashboard-card mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">
                         <i class="fas fa-chart-pie mr-2"></i>Auctions by Status
@@ -223,7 +248,7 @@
 
         <!-- Monthly Auctions Chart -->
         <div class="col-xl-6 col-lg-6">
-            <div class="card shadow mb-4">
+            <div class="card dashboard-card mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">
                         <i class="fas fa-chart-line mr-2"></i>Auctions Trend (Last 6 Months)
@@ -242,7 +267,7 @@
     <div class="row">
         <!-- Recent Auctions -->
         <div class="col-xl-6 col-lg-6">
-            <div class="card shadow mb-4">
+            <div class="card dashboard-card mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">
                         <i class="fas fa-list mr-2"></i>Recent Auctions
@@ -270,8 +295,8 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="badge badge-primary badge-sm">
-                                                    {{ $auction->category->name ?? 'N/A' }}
+                                                <span class="text-secondary" style="font-weight: 500; font-size: 0.85rem;">
+                                                    <i class="fas fa-tag fa-sm text-gray-400 mr-1"></i>{{ $auction->category->name ?? 'N/A' }}
                                                 </span>
                                             </td>
                                             <td>
@@ -309,7 +334,7 @@
 
         <!-- Recent Users -->
         <div class="col-xl-6 col-lg-6">
-            <div class="card shadow mb-4">
+            <div class="card dashboard-card mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">
                         <i class="fas fa-user-friends mr-2"></i>Recent Users
@@ -357,7 +382,7 @@
     <!-- Quick Actions -->
     <div class="row">
         <div class="col-12">
-            <div class="card shadow mb-4">
+            <div class="card dashboard-card mb-4">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
                         <i class="fas fa-bolt mr-2"></i>Quick Actions
@@ -366,29 +391,29 @@
                 <div class="card-body">
                     <div class="row text-center">
                         <div class="col-md-3 mb-3">
-                            <a href="{{ route('admin.auctions.index') }}" class="btn btn-primary btn-block quick-action-btn">
+                            <a href="{{ route('admin.auctions.index') }}" class="btn btn-primary btn-block quick-action-btn shadow-sm">
                                 <i class="fas fa-gavel fa-2x mb-2"></i>
-                                <div>Manage Auctions</div>
+                                <div class="font-weight-bold">Manage Auctions</div>
                             </a>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <a href="{{ route('admin.users.index') }}" class="btn btn-info btn-block quick-action-btn">
+                            <a href="{{ route('admin.users.index') }}" class="btn btn-info btn-block quick-action-btn shadow-sm">
                                 <i class="fas fa-users fa-2x mb-2"></i>
-                                <div>Manage Users</div>
+                                <div class="font-weight-bold">Manage Users</div>
                             </a>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <a href="{{ route('admin.categories.index') }}" class="btn btn-warning btn-block quick-action-btn">
+                            <a href="{{ route('admin.categories.index') }}" class="btn btn-warning btn-block quick-action-btn shadow-sm">
                                 <i class="fas fa-tags fa-2x mb-2"></i>
-                                <div>Manage Categories</div>
+                                <div class="font-weight-bold">Manage Categories</div>
                             </a>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <a href="{{ route('admin.contacts.index') }}" class="btn btn-success btn-block quick-action-btn">
+                            <a href="{{ route('admin.contacts.index') }}" class="btn btn-success btn-block quick-action-btn shadow-sm position-relative">
                                 <i class="fas fa-envelope fa-2x mb-2"></i>
-                                <div>View Contacts</div>
+                                <div class="font-weight-bold">View Contacts</div>
                                 @if($stats['unread_contacts'] > 0)
-                                    <span class="badge badge-danger">{{ $stats['unread_contacts'] }}</span>
+                                    <span class="badge badge-danger position-absolute" style="top: -5px; right: -5px; border: 2px solid #fff;">{{ $stats['unread_contacts'] }}</span>
                                 @endif
                             </a>
                         </div>
