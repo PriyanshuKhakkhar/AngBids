@@ -117,4 +117,14 @@ class User extends Authenticatable
                       ->whereRaw('amount = (SELECT MAX(amount) FROM bids WHERE auction_id = auctions.id)');
             })->count();
     }
+
+    public function kyc()
+    {
+        return $this->hasOne(Kyc::class);
+    }
+
+    public function isKycApproved(): bool
+    {
+        return $this->kyc && $this->kyc->status === 'approved';
+    }
 }

@@ -98,6 +98,10 @@ class AuctionController extends Controller
             ];
         });
 
+        if (!auth()->user()->isKycApproved()) {
+            return redirect()->route('user.kyc.form')->with('error', 'You must complete your Identity Verification (KYC) before you can create an auction.');
+        }
+
         return view('website.auctions.create', compact('categories', 'categoryTree'));
     }
 

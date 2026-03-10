@@ -35,10 +35,16 @@
     </li>
 
     <!-- Nav Item - Users -->
-    <li class="nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.users.index') }}">
             <i class="fas fa-fw fa-users"></i>
             <span>Manage Users</span></a>
+    </li>
+
+    <!-- Nav Item - KYC Verification -->
+    <li class="nav-item {{ request()->routeIs('admin.kyc.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.kyc.index') }}">
+            <i class="fas fa-fw fa-id-check"></i>
+            <span>KYC Verification</span></a>
     </li>
 
     <!-- Divider -->

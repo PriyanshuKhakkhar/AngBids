@@ -12,8 +12,8 @@ use App\Http\Controllers\Auth\SocialController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\UserDashboardController;
 use App\Http\Controllers\User\WatchlistController;
-use App\Http\Controllers\User\BidController;
 use App\Http\Controllers\User\NotificationController;
+use App\Http\Controllers\User\KycController;
 
 // Admin Controllers
 use App\Http\Controllers\Admin\DashboardController;
@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\ContactController;
+use App\Http\Controllers\Admin\AdminKycController;
 
 // Public Website Routes
 Route::get('/', [WebsiteController::class, 'index'])->name('home');
@@ -83,6 +84,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read_all');
         Route::delete('/notifications/clear-all', [NotificationController::class, 'clearAll'])->name('notifications.clear_all');
         Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+
+        // KYC Routes
+        Route::get('/kyc', [KycController::class, 'showForm'])->name('kyc.form');
+        Route::post('/kyc/submit', [KycController::class, 'submitKyc'])->name('kyc.submit');
+        Route::get('/kyc/status', [KycController::class, 'showStatus'])->name('kyc.status');
     });
 });
 
@@ -139,6 +145,12 @@ Route::middleware(['auth', 'role:admin|super admin'])
 
         // Blank Page
         Route::get('/blank', [DashboardController::class, 'blank'])->name('blank');
+
+        // KYC Management
+        Route::get('/kyc', [AdminKycController::class, 'index'])->name('kyc.index');
+        Route::get('/kyc/{id}', [AdminKycController::class, 'show'])->name('kyc.show');
+        Route::post('/kyc/{id}/approve', [AdminKycController::class, 'approve'])->name('kyc.approve');
+        Route::post('/kyc/{id}/reject', [AdminKycController::class, 'reject'])->name('kyc.reject');
     });
 
 //  Google Social Login Routes
