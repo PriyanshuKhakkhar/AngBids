@@ -14,6 +14,7 @@ use App\Http\Controllers\User\UserDashboardController;
 use App\Http\Controllers\User\WatchlistController;
 use App\Http\Controllers\User\NotificationController;
 use App\Http\Controllers\User\KycController;
+use App\Http\Controllers\User\BidController;
 
 // Admin Controllers
 use App\Http\Controllers\Admin\DashboardController;

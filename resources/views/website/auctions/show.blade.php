@@ -186,6 +186,17 @@
                         <!-- Bid Form / Login -->
                         @if(!$isClosed)
                         @auth
+                            @if(!auth()->user()->isKycApproved())
+                                <div class="alert alert-warning border-0 shadow-sm mb-3 rounded-3 small">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-2 text-warning fs-5"></i>
+                                        <div>
+                                            <strong>Identity Verification Required!</strong><br>
+                                            You must <a href="{{ route('user.kyc.form') }}" class="fw-bold text-decoration-none">Complete KYC</a> to participate in this auction.
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                             <div id="bid-status-container" class="mb-2"></div>
                              <!-- Winner Status Badge -->
                             @php
