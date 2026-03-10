@@ -41,6 +41,13 @@
             <span>Manage Users</span></a>
     </li>
 
+    <!-- Nav Item - KYC Verification -->
+    <li class="nav-item {{ request()->routeIs('admin.kyc.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.kyc.index') }}">
+            <i class="fas fa-fw fa-user-shield"></i>
+            <span>KYC Verification</span></a>
+    </li>
+
     <!-- Divider -->
     <hr class="sidebar-divider">
 

@@ -25,6 +25,15 @@ class BidController extends Controller
     {
         try {
             $user = auth()->user();
+
+            if (!$user->isKycApproved()) {
+                $message = 'You must complete your Identity Verification (KYC) before you can place a bid.';
+                if ($request->wantsJson() || $request->ajax()) {
+                    return response()->json(['status' => 'error', 'message' => $message], 403);
+                }
+                return redirect()->route('user.kyc.form')->with('error', $message);
+            }
+
             $result = $this->bidService->placeBid($auction, $request->validated(), $user);
 
                 $auction = $auction->fresh();
