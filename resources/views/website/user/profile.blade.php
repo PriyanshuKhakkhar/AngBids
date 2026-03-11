@@ -178,6 +178,57 @@
         </div>
 
         <div class="card card-elite p-4 mt-4 shadow-sm border-light">
+            <h6 class="text-primary fw-bold mb-3">Identity Verification</h6>
+            
+            @if(auth()->user()->isAdmin() || auth()->user()->isSuperAdmin())
+                <div class="alert alert-info py-2 px-3 border-0 small mb-0">
+                    <i class="fas fa-shield-alt me-2"></i> Administrative accounts are automatically verified for system operations.
+                </div>
+            @else
+                @php $kyc = auth()->user()->kyc; @endphp
+                
+                @if($kyc)
+                    @if($kyc->status === 'approved')
+                        <div class="text-center py-2">
+                            <div class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-4 py-2 mb-3">
+                                <i class="fas fa-check-circle me-1"></i> Account Verified
+                            </div>
+                            <p class="text-muted small mb-0">Your identity has been verified. You have full access to all features.</p>
+                        </div>
+                    @elseif($kyc->status === 'pending')
+                        <div class="text-center py-2">
+                            <div class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-4 py-2 mb-3">
+                                <i class="fas fa-clock me-1"></i> Verification Pending
+                            </div>
+                            <p class="text-muted small mb-0">Your documents are under review. This usually takes 24-48 hours.</p>
+                            <a href="{{ route('user.kyc.status') }}" class="btn btn-link btn-sm text-primary text-decoration-none mt-2">View Submission</a>
+                        </div>
+                    @elseif($kyc->status === 'rejected')
+                        <div class="text-center py-2">
+                            <div class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-4 py-2 mb-3">
+                                <i class="fas fa-times-circle me-1"></i> Verification Rejected
+                            </div>
+                            @if($kyc->rejection_reason)
+                                <div class="alert alert-danger bg-danger bg-opacity-10 border-0 small text-start mb-3">
+                                    <strong>Reason:</strong> {{ $kyc->rejection_reason }}
+                                </div>
+                            @endif
+                            <a href="{{ route('user.kyc.form') }}" class="btn btn-primary btn-sm rounded-pill px-4 w-100">Re-submit Documents</a>
+                        </div>
+                    @endif
+                @else
+                    <div class="text-center py-2">
+                        <div class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-4 py-2 mb-3">
+                            <i class="fas fa-id-card me-1"></i> Not Verified
+                        </div>
+                        <p class="text-muted small mb-3">To place bids or create auctions, you must verify your identity.</p>
+                        <a href="{{ route('user.kyc.form') }}" class="btn btn-primary btn-sm rounded-pill px-4 w-100">Start Verification</a>
+                    </div>
+                @endif
+            @endif
+        </div>
+
+        <div class="card card-elite p-4 mt-4 shadow-sm border-light">
             <h6 class="text-primary fw-bold mb-3">Account Statistics</h6>
             <div class="d-flex justify-content-between mb-2">
                 <span class="text-dark small">Member Since</span>
@@ -189,7 +240,7 @@
             </div>
             <div class="d-flex justify-content-between">
                 <span class="text-dark small">Items Won</span>
-                <span class="text-success small fw-bold">0</span>
+                <span class="text-success small fw-bold">{{ auth()->user()->getWonAuctionsCount() }}</span>
             </div>
         </div>
     </div>

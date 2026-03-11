@@ -14,7 +14,7 @@ class KycController extends Controller
     {
         $user = Auth::user();
         if ($user->kyc) {
-            return redirect()->route('user.kyc.status');
+            return redirect()->route('user.profile')->with('info', 'Your KYC request is already being processed.');
         }
 
         return view('website.user.kyc_form');
@@ -54,7 +54,7 @@ class KycController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->route('user.kyc.status')->with('success', 'KYC submitted successfully and is pending verification.');
+        return redirect()->route('user.profile')->with('success', 'KYC submitted successfully and is pending verification.');
     }
 
     // Show KYC Status

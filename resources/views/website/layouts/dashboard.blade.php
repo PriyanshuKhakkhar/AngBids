@@ -76,10 +76,7 @@
                    class="sidebar-link rounded mb-1 {{ request()->routeIs('user.profile') ? 'active' : '' }}">
                     <i class="fas fa-fw fa-cog me-2"></i> Profile
                 </a>
-                <a href="{{ route('user.kyc.form') }}" 
-                   class="sidebar-link rounded mb-1 {{ request()->routeIs('user.kyc.*') ? 'active' : '' }}">
-                    <i class="fas fa-fw fa-id-card me-2"></i> Identity Verification
-                </a>
+
                 
                 <div class="mt-5">
                     <form method="POST" action="{{ route('logout') }}">
