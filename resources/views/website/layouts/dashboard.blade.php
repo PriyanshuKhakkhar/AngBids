@@ -110,24 +110,26 @@
                 <div class="container-fluid d-flex justify-content-between">
                     <div class="h5 mb-0 text-gray-800 d-none d-md-inline-block">
                         Welcome back, <span class="fw-bold text-primary">{{ auth()->user()->username }}</span>
-                        @if(auth()->user()->kyc)
-                            @if(auth()->user()->isKycApproved())
-                                <span class="badge bg-success-subtle text-success border border-success ms-2 small rounded-pill">
-                                    <i class="fas fa-check-circle me-1"></i> Verified
-                                </span>
-                            @elseif(auth()->user()->kyc->status == 'pending')
-                                <span class="badge bg-warning-subtle text-warning border border-warning ms-2 small rounded-pill">
-                                    <i class="fas fa-clock me-1"></i> KYC Pending
-                                </span>
-                            @elseif(auth()->user()->kyc->status == 'rejected')
-                                <a href="{{ route('user.kyc.form') }}" class="badge bg-danger-subtle text-danger border border-danger ms-2 small rounded-pill text-decoration-none">
-                                    <i class="fas fa-times-circle me-1"></i> KYC Rejected - Re-submit
+                        @if(!auth()->user()->isAdmin() && !auth()->user()->isSuperAdmin())
+                            @if(auth()->user()->kyc)
+                                @if(auth()->user()->isKycApproved())
+                                    <span class="badge bg-success-subtle text-success border border-success ms-2 small rounded-pill">
+                                        <i class="fas fa-check-circle me-1"></i> Verified
+                                    </span>
+                                @elseif(auth()->user()->kyc->status == 'pending')
+                                    <span class="badge bg-warning-subtle text-warning border border-warning ms-2 small rounded-pill">
+                                        <i class="fas fa-clock me-1"></i> KYC Pending
+                                    </span>
+                                @elseif(auth()->user()->kyc->status == 'rejected')
+                                    <a href="{{ route('user.kyc.form') }}" class="badge bg-danger-subtle text-danger border border-danger ms-2 small rounded-pill text-decoration-none">
+                                        <i class="fas fa-times-circle me-1"></i> KYC Rejected - Re-submit
+                                    </a>
+                                @endif
+                            @else
+                                <a href="{{ route('user.kyc.form') }}" class="badge bg-light text-muted border ms-2 small rounded-pill text-decoration-none">
+                                    <i class="fas fa-id-card me-1"></i> Verify Identity
                                 </a>
                             @endif
-                        @else
-                            <a href="{{ route('user.kyc.form') }}" class="badge bg-light text-muted border ms-2 small rounded-pill text-decoration-none">
-                                <i class="fas fa-id-card me-1"></i> Verify Identity
-                            </a>
                         @endif
                     </div>
 

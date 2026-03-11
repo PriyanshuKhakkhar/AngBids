@@ -125,6 +125,11 @@ class User extends Authenticatable
 
     public function isKycApproved(): bool
     {
+        // Admins and Super Admins are exempt from KYC verification
+        if ($this->isAdmin() || $this->isSuperAdmin()) {
+            return true;
+        }
+
         return $this->kyc && $this->kyc->status === 'approved';
     }
 }
