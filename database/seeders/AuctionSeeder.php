@@ -6,6 +6,8 @@ use App\Models\Auction;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Faker\Factory as Faker;
 
 class AuctionSeeder extends Seeder
 {
@@ -14,58 +16,77 @@ class AuctionSeeder extends Seeder
      */
     public function run(): void
     {
-        $admin = User::where('email', 'admin@larabids.com')->first();
-        $superAdmin = User::where('email', 'superadmin@larabids.com')->first();
+        // 1. Clear old data to prevent duplication
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('bids')->truncate();
+        DB::table('watchlists')->truncate();
+        DB::table('auction_images')->truncate();
+        Auction::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        if (!$admin || !$superAdmin) {
+        // 2. Fetch required relationships
+        $users = User::all();
+        $categories = \App\Models\Category::active()->get();
+
+        if ($users->isEmpty() || $categories->isEmpty()) {
             return;
         }
 
-        $categories = \App\Models\Category::active()->get();
-
-        $priceRanges = [
-            'electronics' => [500, 3000],
-            'watches' => [1000, 15000],
-            'vintage-cars' => [20000, 250000],
-            'jewelry' => [800, 12000],
-            'art' => [200, 5000],
-            'default' => [100, 5000]
-        ];
+        $faker = Faker::create();
 
         $images = [
-            'electronics' => 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800',
-            'watches' => 'https://images.unsplash.com/photo-1524338198850-8a2ff63aaceb?auto=format&fit=crop&w=800',
-            'vintage-cars' => 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=800',
-            'jewelry' => 'https://images.unsplash.com/photo-1535633302743-20914fd267d5?auto=format&fit=crop&w=800',
-            'art' => 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=800',
-            'default' => 'https://images.unsplash.com/photo-1513584684374-8bdb74ea9ce1?auto=format&fit=crop&w=800'
+            'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800',
+            'https://images.unsplash.com/photo-1524338198850-8a2ff63aaceb?auto=format&fit=crop&w=800',
+            'https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=800',
+            'https://images.unsplash.com/photo-1535633302743-20914fd267d5?auto=format&fit=crop&w=800',
+            'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=800',
+            'https://images.unsplash.com/photo-1513584684374-8bdb74ea9ce1?auto=format&fit=crop&w=800'
         ];
 
-        foreach ($categories as $category) {
-            $count = rand(3, 5);
+        // 3. Generate exactly 100 auctions with different timeframes and statuses
+        for ($i = 1; $i <= 100; $i++) {
             
-            // Determine parent slug for style/image selection
-            $parent = $category->parent ?? $category;
-            $parentSlug = $parent->slug;
-            
-            $range = $priceRanges[$parentSlug] ?? $priceRanges['default'];
-            $image = $images[$parentSlug] ?? $images['default'];
+            // Mix: 40 Live, 30 Closed/Past, 30 Upcoming/Future
+            if ($i <= 40) {
+                // Live Auctions (Active, started in past, ends in future)
+                $status = 'active';
+                $start = Carbon::now()->subDays(rand(1, 5));
+                $end = Carbon::now()->addDays(rand(2, 12));
+            } elseif ($i <= 70) {
+                // Past/Closed Auctions (Closed status, ended in past)
+                $status = 'closed';
+                $start = Carbon::now()->subDays(rand(10, 20));
+                $end = Carbon::now()->subDays(rand(1, 8));
+            } else {
+                // Future/Upcoming Auctions (Active status, starts in future)
+                $status = 'active';
+                $start = Carbon::now()->addDays(rand(1, 10));
+                $end = Carbon::now()->addDays(rand(12, 25));
+            }
 
-            for ($i = 1; $i <= $count; $i++) {
-                $price = rand($range[0], $range[1]);
-                $title = "Premium " . ($category->parent ? $category->name . " " : "") . $parent->name . " Model #" . rand(100, 999);
-                
-                Auction::create([
-                    'user_id' => rand(0, 1) ? $admin->id : $superAdmin->id,
-                    'category_id' => $category->id,
-                    'title' => $title,
-                    'description' => "This is a premium listing for a $title. It belongs to the " . ($category->parent ? $category->parent->name . ' > ' : '') . $category->name . " category. High value and authenticated quality.",
-                    'starting_price' => $price,
-                    'current_price' => $price + (rand(5, 50) * 10),
-                    'image' => $image,
-                    'start_time' => Carbon::now(),
-                    'end_time' => Carbon::now()->addDays(rand(3, 14)),
-                    'status' => 'active',
+            $cat = $categories->random();
+            $user = $users->random();
+            $price = rand(500, 20000);
+
+            $auction = Auction::create([
+                'user_id'       => $user->id,
+                'category_id'   => $cat->id,
+                'title'         => ucwords($faker->catchPhrase) . " #" . rand(100, 9999),
+                'description'   => $faker->paragraph(4) . " High value and authenticated quality guarantee. Item is sold as is.",
+                'starting_price'=> $price,
+                'current_price' => $price + (rand(1, 20) * 50),
+                'image'         => $images[array_rand($images)],
+                'start_time'    => $start,
+                'end_time'      => $end,
+                'status'        => $status,
+            ]);
+
+            // Add 3 random gallery images
+            $galleryKeys = array_rand($images, 3);
+            foreach ($galleryKeys as $index => $key) {
+                $auction->images()->create([
+                    'image_path' => $images[$key],
+                    'sort_order' => $index,
                 ]);
             }
         }

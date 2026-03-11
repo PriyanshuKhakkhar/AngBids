@@ -103,6 +103,7 @@ Route::middleware('auth:sanctum')->group(function () {
             // Auction Management
             Route::apiResource('_auctions', AdminAuctionController::class);
             // User Management
+            Route::post('_users/send-otp', [AdminUserController::class, 'sendOtp']);
             Route::apiResource('_users', AdminUserController::class);
             // Contact Management
             Route::apiResource('_contacts', AdminContactController::class);

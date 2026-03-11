@@ -227,7 +227,7 @@
                 },
                 language: {
                     searchPlaceholder: "Search records...",
-                    lengthMenu: "_MENU_ entries per page",
+                    lengthMenu: "Entries per page: _MENU_",
                     info: "Showing _START_ to _END_ of _TOTAL_ auctions"
                 },
                 dom: "<'row mb-3'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>rt<'row mt-3'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",

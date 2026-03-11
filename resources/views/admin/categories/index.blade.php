@@ -234,7 +234,7 @@
                 },
                 language: {
                     searchPlaceholder: "Search records...",
-                    lengthMenu: "Show _MENU_ entries",
+                    lengthMenu: "Entries per page: _MENU_",
                     info: "Showing _START_ to _END_ of _TOTAL_ categories"
                 },
                 pageLength: -1,

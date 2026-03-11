@@ -15,16 +15,25 @@ class ContactController extends Controller
     // List All Contacts
     public function index(Request $request)
     {
-        $query = Contact::withTrashed()->latest();
+        $query = Contact::withTrashed();
 
         // Status Filter
-        if ($request->has('status')) {
-            $status = $request->status;
-            if ($status === 'trashed') {
-                $query->onlyTrashed();
-            } elseif ($status !== 'all' && !empty($status)) {
-                 $query->where('status', $status);
-            }
+        $status = $request->get('status', 'all');
+        $sort   = $request->get('sort', 'latest');
+
+        if ($status === 'deleted') {
+            $query->whereNotNull('deleted_at');
+        } elseif ($status !== 'all') {
+            $query->where('status', $status)->whereNull('deleted_at');
+        }
+
+        // Date filter
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->get('start_date'));
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->get('end_date'));
         }
 
         // Search Filter
@@ -43,6 +52,9 @@ class ContactController extends Controller
                 });
             }
         }
+
+        // Sort
+        $query->orderBy('created_at', $sort === 'oldest' ? 'asc' : 'desc');
 
         $contacts = $query->paginate(10);
 
@@ -104,6 +116,10 @@ class ContactController extends Controller
             'admin_notes' => $request->admin_notes,
         ];
         
+        if ($request->status === 'replied') {
+            $data['replied_by'] = auth()->id();
+        }
+
         $contact->update($data);
         
         if ($request->status === 'replied') {
@@ -138,6 +154,9 @@ class ContactController extends Controller
                 'message' => 'Contact not found'
             ], 404);
         }
+
+        $contact->deleted_by = auth()->id();
+        $contact->save();
 
         $contact->delete();
 

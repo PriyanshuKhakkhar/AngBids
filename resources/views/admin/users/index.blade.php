@@ -212,7 +212,7 @@
             },
             language: {
                 searchPlaceholder: "Search records...",
-                lengthMenu: "_MENU_ entries per page",
+                lengthMenu: "Entries per page: _MENU_",
                 info: "Showing _START_ to _END_ of _TOTAL_ users"
             },
             columns: [

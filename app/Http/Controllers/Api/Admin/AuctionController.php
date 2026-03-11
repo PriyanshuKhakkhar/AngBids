@@ -33,6 +33,10 @@ class AuctionController extends Controller
                 $query->where(function($q) use ($search) {
                     $q->where('title', 'like', "%{$search}%")
                       ->orWhere('description', 'like', "%{$search}%")
+                      ->orWhere('cancellation_reason', 'like', "%{$search}%")
+                      ->orWhereHas('user', function($u) use ($search) {
+                          $u->where('name', 'like', "%{$search}%");
+                      })
                       ->orWhereHas('category', function($cat) use ($search) {
                           $cat->where('name', 'like', "%{$search}%");
                       });

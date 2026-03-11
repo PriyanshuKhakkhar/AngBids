@@ -10,7 +10,7 @@
         <div class="row g-4">
             
             <!-- Sidebar Filters -->
-            <div class="col-lg-3">
+            <div class="col-md-4 col-lg-3">
                 <div class="sidebar-sticky-area">
                     <div class="card border-0 shadow-sm rounded-4 mb-3 p-4 filter-sidebar">
                         <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
@@ -126,7 +126,7 @@
             </div>
 
             <!-- Auction Grid -->
-            <div class="col-lg-9">
+            <div class="col-md-8 col-lg-9">
                 <!-- Sorting Bar (Sticky under header) -->
                 <div class="sticky-top bg-white py-3 mb-3 shadow-sm rounded-4 px-3" style="top: 85px; z-index: 9; margin-top: -5px;">
                     <div class="d-flex justify-content-between align-items-center">
@@ -172,7 +172,7 @@
 
                 <div class="row g-4">
                     @forelse($auctions as $auction)
-                    <div class="col-md-6 col-xl-4 animate-item" data-aos="fade-up">
+                    <div class="col-md-6 col-xl-4">
                         <div class="card card-elite h-100 position-relative shadow-sm border-0 rounded-4 overflow-hidden bg-white hover-shadow-lg transition-all">
                             <a href="{{ route('auctions.show', $auction->id) }}" class="stretched-link"></a>
                             <!-- Image Section -->

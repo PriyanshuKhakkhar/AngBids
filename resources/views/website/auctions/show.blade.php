@@ -11,7 +11,7 @@
     if ($mainPath) $galleryImages->push($mainPath);
     
     foreach ($auction->images as $img) {
-        $path = asset('storage/' . $img->image_path);
+        $path = str_starts_with($img->image_path, 'http') ? $img->image_path : asset('storage/' . $img->image_path);
         if (!$galleryImages->contains($path)) {
             $galleryImages->push($path);
         }
