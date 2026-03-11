@@ -107,14 +107,6 @@
                         </div>
                         <a href="#" class="hibid-contact-btn">Contact</a>
                     </div>
-                    @if($auction->user->location)
-                        <div class="hibid-seller-location">
-                            <i class="fas fa-map-marker-alt me-2"></i>{{ $auction->user->location }}
-                        </div>
-                    @endif
-                    @if($auction->user->bio)
-                        <p class="hibid-seller-bio">{{ Str::limit($auction->user->bio, 80) }}</p>
-                    @endif
                 </div>
             </div>
 
@@ -1126,17 +1118,6 @@
         white-space: nowrap;
     }
     .hibid-contact-btn:hover { border-color: #4e73df; color: #4e73df; }
-    .hibid-seller-location {
-        font-size: 0.8rem;
-        color: #6c757d;
-        border-top: 1px solid #f0f2f5;
-        padding-top: 10px;
-    }
-    .hibid-seller-bio {
-        font-size: 0.8rem;
-        color: #888;
-        margin: 6px 0 0;
-    }
 
     /* === Keep old related/accordion styles === */
     .premium-accordion .accordion-item {
