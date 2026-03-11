@@ -149,6 +149,7 @@ Route::middleware(['auth', 'role:admin|super admin'])
 
         // KYC Management
         Route::get('/kyc', [AdminKycController::class, 'index'])->name('kyc.index');
+        Route::get('/kyc/data', [AdminKycController::class, 'data'])->name('kyc.data');
         Route::get('/kyc/{id}', [AdminKycController::class, 'show'])->name('kyc.show');
         Route::post('/kyc/{id}/approve', [AdminKycController::class, 'approve'])->name('kyc.approve');
         Route::post('/kyc/{id}/reject', [AdminKycController::class, 'reject'])->name('kyc.reject');
