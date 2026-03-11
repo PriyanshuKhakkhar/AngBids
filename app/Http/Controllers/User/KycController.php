@@ -13,7 +13,9 @@ class KycController extends Controller
     public function showForm()
     {
         $user = Auth::user();
-        if ($user->kyc) {
+        
+        // Block if KYC is already approved or pending
+        if ($user->kyc && $user->kyc->status !== 'rejected') {
             return redirect()->route('user.profile')->with('info', 'Your KYC request is already being processed.');
         }
 
@@ -24,8 +26,10 @@ class KycController extends Controller
     public function submitKyc(Request $request)
     {
         $user = Auth::user();
+        $existingKyc = $user->kyc;
         
-        if ($user->kyc) {
+        // Block if KYC is already approved or pending
+        if ($existingKyc && $existingKyc->status !== 'rejected') {
             return redirect()->back()->with('error', 'You have already submitted a KYC request.');
         }
 
@@ -42,17 +46,41 @@ class KycController extends Controller
         $idDocumentPath = $request->file('id_document')->store('kyc/documents', 'public');
         $selfieImagePath = $request->file('selfie_image')->store('kyc/selfies', 'public');
 
-        Kyc::create([
-            'user_id' => $user->id,
-            'full_name' => $request->full_name,
-            'date_of_birth' => $request->date_of_birth,
-            'address' => $request->address,
-            'id_type' => $request->id_type,
-            'id_number' => $request->id_number,
-            'id_document' => $idDocumentPath,
-            'selfie_image' => $selfieImagePath,
-            'status' => 'pending',
-        ]);
+        if ($existingKyc && $existingKyc->status === 'rejected') {
+            // Delete old files
+            if ($existingKyc->id_document) {
+                Storage::disk('public')->delete($existingKyc->id_document);
+            }
+            if ($existingKyc->selfie_image) {
+                Storage::disk('public')->delete($existingKyc->selfie_image);
+            }
+
+            // Update existing record
+            $existingKyc->update([
+                'full_name' => $request->full_name,
+                'date_of_birth' => $request->date_of_birth,
+                'address' => $request->address,
+                'id_type' => $request->id_type,
+                'id_number' => $request->id_number,
+                'id_document' => $idDocumentPath,
+                'selfie_image' => $selfieImagePath,
+                'status' => 'pending',
+                'admin_note' => null, // Clear previous rejection reason
+            ]);
+        } else {
+            // Create new record
+            Kyc::create([
+                'user_id' => $user->id,
+                'full_name' => $request->full_name,
+                'date_of_birth' => $request->date_of_birth,
+                'address' => $request->address,
+                'id_type' => $request->id_type,
+                'id_number' => $request->id_number,
+                'id_document' => $idDocumentPath,
+                'selfie_image' => $selfieImagePath,
+                'status' => 'pending',
+            ]);
+        }
 
         return redirect()->route('user.profile')->with('success', 'KYC submitted successfully and is pending verification.');
     }
