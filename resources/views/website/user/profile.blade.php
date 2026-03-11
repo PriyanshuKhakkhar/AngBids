@@ -2,250 +2,385 @@
 
 @section('title', 'Profile Settings | LaraBids')
 
+@push('styles')
+<style>
+    .card-profile {
+        border: 1px solid rgba(0,0,0,.05);
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,.03);
+        margin-bottom: 24px;
+        background-color: #fff;
+    }
+    .card-profile-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid rgba(0,0,0,.05);
+        border-radius: 12px 12px 0 0;
+        padding: 16px 24px;
+        font-weight: 600;
+        color: #333;
+    }
+    .card-profile-body {
+        padding: 24px;
+    }
+    .avatar-wrapper {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+    .avatar-image {
+        width: 130px;
+        height: 130px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid #fff;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    }
+    .avatar-upload-trigger {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background-color: #0d6efd;
+        color: white;
+        border: 2px solid white;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .avatar-upload-trigger:hover {
+        background-color: #0b5ed7;
+    }
+    .form-label {
+        font-weight: 500;
+        color: #495057;
+        font-size: 0.9rem;
+    }
+    .form-control {
+        border-radius: 0.35rem;
+        border: 1px solid #d1d3e2;
+        padding: 0.4rem 0.75rem;
+    }
+    .form-control:focus {
+        border-color: #bac8f3;
+        box-shadow: none;
+        outline: 0;
+    }
+    .input-group-text {
+        background-color: #eaecf4;
+        border: 1px solid #d1d3e2;
+        color: #6e707e;
+        border-radius: 0.35rem 0 0 0.35rem;
+        border-right: 0;
+    }
+    input.form-control {
+        border-radius: 0 0.35rem 0.35rem 0;
+    }
+    input.form-control:not(.input-group > input) {
+        border-radius: 0.35rem;
+    }
+    .btn-primary {
+        padding: 0.5rem 1.5rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    .btn-primary:active {
+        transform: translateY(1px);
+    }
+    .btn-outline-primary, .btn-outline-danger {
+        border-radius: 6px !important;
+        font-weight: 500;
+    }
+    .stat-item {
+        text-align: center;
+        padding: 12px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+    }
+    .stat-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #0d6efd;
+        margin-bottom: 2px;
+    }
+    .stat-label {
+        font-size: 0.75rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+</style>
+@endpush
+
 @section('content')
 
-<h2 class="h3 text-dark fw-bold mb-4">Profile Settings</h2>
+<div class="mb-4">
+    <h3 class="fw-bold text-dark mb-1">Profile Settings</h3>
+    <p class="text-muted">Manage your personal information, avatar, and security.</p>
+</div>
 
 <div class="row g-4">
-    <div class="col-lg-8">
-        <div class="card card-elite p-4 shadow-sm border-light">
-            <h5 class="text-primary fw-bold mb-4">Personal Information</h5>
-            
-            @if (session('status') === 'profile-updated')
-                <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
-                    Profile updated successfully.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
-            @if (session('status') === 'avatar-deleted')
-                <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
-                    Profile picture removed successfully.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
-            <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data">
-                @csrf
-                @method('patch')
-
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label for="name" class="form-label text-dark fw-bold small">Full Name</label>
-                        <input type="text" class="form-control form-control-elite @error('name') is-invalid @enderror" id="name" name="name" 
-                            value="{{ old('name', auth()->user()->name) }}" required>
-                        @error('name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="col-md-6">
-                        <label for="username" class="form-label text-dark fw-bold small">Username</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-secondary-subtle border-light text-muted small">@</span>
-                            <input type="text" class="form-control form-control-elite @error('username') is-invalid @enderror" id="username" name="username" 
-                                value="{{ old('username', auth()->user()->username) }}" required placeholder="your_handle">
-                        </div>
-                        @error('username')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="col-md-6">
-                        <label for="email" class="form-label text-dark fw-bold small">Email Address</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-secondary-subtle border-light"><i class="fas fa-lock text-muted small"></i></span>
-                            <input type="email" class="form-control form-control-elite bg-secondary-subtle border-light text-muted" id="email" 
-                                value="{{ auth()->user()->email }}" readonly disabled style="cursor: not-allowed;">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="phone" class="form-label text-dark fw-bold small">Phone Number</label>
-                        <input type="tel" class="form-control form-control-elite @error('phone') is-invalid @enderror" id="phone" name="phone" 
-                            value="{{ old('phone', auth()->user()->phone) }}" placeholder="+1 (555) 123-4567">
-                        @error('phone')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="col-md-6">
-                        <label for="location" class="form-label text-dark fw-bold small">Location</label>
-                        <input type="text" class="form-control form-control-elite @error('location') is-invalid @enderror" id="location" name="location" 
-                            value="{{ old('location', auth()->user()->location) }}" placeholder="City, Country">
-                        @error('location')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="col-12">
-                        <label for="bio" class="form-label text-dark fw-bold small">Bio</label>
-                        <textarea class="form-control form-control-elite @error('bio') is-invalid @enderror" id="bio" name="bio" rows="3" 
-                            placeholder="Tell us a bit about yourself...">{{ old('bio', auth()->user()->bio) }}</textarea>
-                        @error('bio')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="col-12 d-none">
-                        <input type="file" id="avatar-input" name="avatar" accept="image/*">
-                    </div>
-                    <div class="col-12">
-                        <button type="submit" class="btn btn-primary px-4">Save Changes</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        @if(is_null(auth()->user()->google_id))
-        <div class="card card-elite p-4 mt-4 shadow-sm border-light">
-            <h5 class="text-primary fw-bold mb-4">Change Password</h5>
-
-            @if (session('status') === 'password-updated')
-                <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
-                    Password updated successfully.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
-            <form method="post" action="{{ route('password.update') }}">
-                @csrf
-                @method('put')
-
-                <div class="row g-3">
-                    <div class="col-12">
-                        <label for="update_password_current_password" class="form-label text-dark fw-bold small">Current Password</label>
-                        <input type="password" class="form-control form-control-elite @error('current_password', 'updatePassword') is-invalid @enderror" 
-                            id="update_password_current_password" name="current_password" autocomplete="current-password">
-                        @error('current_password', 'updatePassword')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="col-md-6">
-                        <label for="update_password_password" class="form-label text-dark fw-bold small">New Password</label>
-                        <input type="password" class="form-control form-control-elite @error('password', 'updatePassword') is-invalid @enderror" 
-                            id="update_password_password" name="password" autocomplete="new-password">
-                        @error('password', 'updatePassword')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="col-md-6">
-                        <label for="update_password_password_confirmation" class="form-label text-dark fw-bold small">Confirm Password</label>
-                        <input type="password" class="form-control form-control-elite @error('password_confirmation', 'updatePassword') is-invalid @enderror" 
-                            id="update_password_password_confirmation" name="password_confirmation" autocomplete="new-password">
-                        @error('password_confirmation', 'updatePassword')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="col-12">
-                        <button type="submit" class="btn btn-primary px-4">Update Password</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-        @else
-        <div class="card card-elite p-4 mt-4 shadow-sm border-light bg-light">
-            <div class="d-flex align-items-center mb-0">
-                <i class="fab fa-google fa-2x text-danger me-3"></i>
-                <div>
-                    <h5 class="text-dark fw-bold mb-1">Google Account</h5>
-                    <p class="text-muted small mb-0">You are logged in using Google. Password changes are managed by your Google account.</p>
-                </div>
-            </div>
-        </div>
-        @endif
-    </div>
-
+    <!-- Left Column: Profile Summary & Stats -->
     <div class="col-lg-4">
-        <div class="card card-elite p-4 text-center shadow-sm border-light">
-            <div class="position-relative d-inline-block mx-auto mb-3">
-                <img src="{{ auth()->user()->avatar_url }}"
-                    class="rounded-circle border border-light shadow-sm" width="120" height="120" style="object-fit: cover;" alt="Avatar" id="avatar-preview">
-                <label for="avatar-input" class="btn btn-sm btn-primary rounded-circle position-absolute bottom-0 end-0 p-2" style="cursor: pointer;">
-                    <i class="bi bi-camera"></i>
+        <!-- Avatar Card -->
+        <div class="card-profile text-center pt-4 pb-4">
+            <div class="avatar-wrapper">
+                <img src="{{ auth()->user()->avatar_url }}" class="avatar-image" alt="User Avatar" id="avatar-preview">
+                <label for="avatar-input" class="avatar-upload-trigger" title="Upload new avatar">
+                    <i class="fas fa-camera fa-sm"></i>
                 </label>
             </div>
-            <h5 class="text-dark fw-bold mb-0">{{ auth()->user()->username }}</h5>
-            <p class="text-secondary small mb-3">{{ auth()->user()->email }}</p>
-            <div class="d-flex flex-column gap-2 align-items-center">
-                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3 w-75" onclick="document.getElementById('avatar-input').click()">Change Avatar</button>
-                
+            <h5 class="fw-bold mb-1">{{ auth()->user()->name }}</h5>
+            <p class="text-muted small mb-3">{{ '@' . auth()->user()->username }}</p>
+
+            <div class="d-flex justify-content-center gap-2 mb-4 px-4">
+                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill w-100" onclick="document.getElementById('avatar-input').click()">
+                    Change Photo
+                </button>
                 @if(auth()->user()->avatar)
-                    <form action="{{ route('profile.avatar.destroy') }}" method="POST" onsubmit="return confirm('Are you sure you want to remove your profile picture?')">
+                    <form action="{{ route('profile.avatar.destroy') }}" method="POST" onsubmit="return confirm('Are you sure you want to remove your photo?')">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-link text-danger text-decoration-none small p-0 fw-bold">Delete Avatar</button>
+                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3" title="Remove Photo">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </form>
                 @endif
             </div>
-            @error('avatar')
-                <div class="text-danger small mt-2">{{ $message }}</div>
-            @enderror
-        </div>
 
-        <div class="card card-elite p-4 mt-4 shadow-sm border-light">
-            <h6 class="text-primary fw-bold mb-3">Identity Verification</h6>
-            
-            @if(auth()->user()->isAdmin() || auth()->user()->isSuperAdmin())
-                <div class="alert alert-info py-2 px-3 border-0 small mb-0">
-                    <i class="fas fa-shield-alt me-2"></i> Administrative accounts are automatically verified for system operations.
-                </div>
-            @else
-                @php $kyc = auth()->user()->kyc; @endphp
-                
-                @if($kyc)
-                    @if($kyc->status === 'approved')
-                        <div class="text-center py-2">
-                            <div class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-4 py-2 mb-3">
-                                <i class="fas fa-check-circle me-1"></i> Account Verified
-                            </div>
-                            <p class="text-muted small mb-0">Your identity has been verified. You have full access to all features.</p>
-                        </div>
-                    @elseif($kyc->status === 'pending')
-                        <div class="text-center py-2">
-                            <div class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-4 py-2 mb-3">
-                                <i class="fas fa-clock me-1"></i> Verification Pending
-                            </div>
-                            <p class="text-muted small mb-0">Your documents are under review. This usually takes 24-48 hours.</p>
-                            <a href="{{ route('user.kyc.status') }}" class="btn btn-link btn-sm text-primary text-decoration-none mt-2">View Submission</a>
-                        </div>
-                    @elseif($kyc->status === 'rejected')
-                        <div class="text-center py-2">
-                            <div class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-4 py-2 mb-3">
-                                <i class="fas fa-times-circle me-1"></i> Verification Rejected
-                            </div>
-                            @if($kyc->rejection_reason)
-                                <div class="alert alert-danger bg-danger bg-opacity-10 border-0 small text-start mb-3">
-                                    <strong>Reason:</strong> {{ $kyc->rejection_reason }}
-                                </div>
-                            @endif
-                            <a href="{{ route('user.kyc.form') }}" class="btn btn-primary btn-sm rounded-pill px-4 w-100">Re-submit Documents</a>
-                        </div>
-                    @endif
-                @else
-                    <div class="text-center py-2">
-                        <div class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-4 py-2 mb-3">
-                            <i class="fas fa-id-card me-1"></i> Not Verified
-                        </div>
-                        <p class="text-muted small mb-3">To place bids or create auctions, you must verify your identity.</p>
-                        <a href="{{ route('user.kyc.form') }}" class="btn btn-primary btn-sm rounded-pill px-4 w-100">Start Verification</a>
+            <div class="row px-4 g-2">
+                <div class="col-6">
+                    <div class="stat-item">
+                        <div class="stat-value">{{ auth()->user()->bids()->count() }}</div>
+                        <div class="stat-label">Total Bids</div>
                     </div>
-                @endif
-            @endif
+                </div>
+                <div class="col-6">
+                    <div class="stat-item">
+                        <div class="stat-value text-success">{{ auth()->user()->getWonAuctionsCount() }}</div>
+                        <div class="stat-label">Wins</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="card card-elite p-4 mt-4 shadow-sm border-light">
-            <h6 class="text-primary fw-bold mb-3">Account Statistics</h6>
-            <div class="d-flex justify-content-between mb-2">
-                <span class="text-dark small">Member Since</span>
-                <span class="text-primary small fw-bold">{{ auth()->user()->created_at->format('M Y') }}</span>
+        <!-- Verification Status Card -->
+        <div class="card-profile">
+            <div class="card-profile-header">
+                <i class="fas fa-shield-alt text-primary me-2"></i> Identity Verification
             </div>
-            <div class="d-flex justify-content-between mb-2">
-                <span class="text-dark small">Total Bids</span>
-                <span class="text-primary small fw-bold">{{ auth()->user()->bids()->count() }}</span>
-            </div>
-            <div class="d-flex justify-content-between">
-                <span class="text-dark small">Items Won</span>
-                <span class="text-success small fw-bold">{{ auth()->user()->getWonAuctionsCount() }}</span>
+            <div class="card-profile-body">
+                @if(auth()->user()->isAdmin() || auth()->user()->isSuperAdmin())
+                    <div class="d-flex align-items-center">
+                        <div class="me-3 fs-3 text-info"><i class="fas fa-user-shield"></i></div>
+                        <div>
+                            <h6 class="fw-bold mb-1 text-info">Administrator</h6>
+                            <p class="mb-0 small text-muted">System actions are fully authorized.</p>
+                        </div>
+                    </div>
+                @else
+                    @php $kyc = auth()->user()->kyc; @endphp
+                    
+                    @if($kyc && $kyc->status === 'approved')
+                        <div class="d-flex align-items-center">
+                            <div class="me-3 fs-3 text-success"><i class="fas fa-check-circle"></i></div>
+                            <div>
+                                <h6 class="fw-bold mb-1 text-success">Verified User</h6>
+                                <p class="mb-0 small text-muted">You can bid and create auctions.</p>
+                            </div>
+                        </div>
+                    @elseif($kyc && $kyc->status === 'pending')
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3 fs-3 text-warning"><i class="fas fa-clock"></i></div>
+                            <div>
+                                <h6 class="fw-bold mb-1 text-warning">Review Pending</h6>
+                                <p class="mb-0 small text-muted">Your documents are being checked.</p>
+                            </div>
+                        </div>
+                        <a href="{{ route('user.kyc.status') }}" class="btn btn-sm btn-outline-warning w-100">Check Status</a>
+                    @elseif($kyc && $kyc->status === 'rejected')
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3 fs-3 text-danger"><i class="fas fa-times-circle"></i></div>
+                            <div>
+                                <h6 class="fw-bold mb-1 text-danger">Verification Failed</h6>
+                                <p class="mb-0 small text-muted">Please check remarks and re-submit.</p>
+                            </div>
+                        </div>
+                        <a href="{{ route('user.kyc.form') }}" class="btn btn-sm btn-danger w-100">Re-submit Documents</a>
+                    @else
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3 fs-3 text-secondary"><i class="fas fa-id-card"></i></div>
+                            <div>
+                                <h6 class="fw-bold mb-1 text-dark">Not Verified</h6>
+                                <p class="mb-0 small text-muted">Verify your identity to place bids.</p>
+                            </div>
+                        </div>
+                        <a href="{{ route('user.kyc.form') }}" class="btn btn-sm btn-primary w-100">Start Verification</a>
+                    @endif
+                @endif
             </div>
         </div>
     </div>
+
+    <!-- Right Column: Settings Forms -->
+    <div class="col-lg-8">
+        <!-- Personal Information -->
+        <div class="card-profile">
+            <div class="card-profile-header">
+                <i class="fas fa-user-edit text-primary me-2"></i> Personal Details
+            </div>
+            <div class="card-profile-body">
+                @if (session('status') === 'profile-updated')
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        Profile details updated successfully.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+                @if (session('status') === 'avatar-deleted')
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        Profile photo removed successfully.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data">
+                    @csrf
+                    @method('patch')
+                    <input type="file" id="avatar-input" name="avatar" accept="image/*" class="d-none">
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" 
+                                value="{{ old('name', auth()->user()->name) }}" placeholder="Enter your full name" required>
+                            @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="username" class="form-label">Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-at"></i></span>
+                                <input type="text" class="form-control @error('username') is-invalid @enderror" id="username" name="username" 
+                                    value="{{ old('username', auth()->user()->username) }}" placeholder="your_handle" required>
+                            </div>
+                            @error('username')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                <input type="email" class="form-control bg-light text-muted" id="email" 
+                                    value="{{ auth()->user()->email }}" disabled readonly>
+                            </div>
+                            <small class="text-muted"><i class="fas fa-info-circle me-1"></i> Cannot be changed</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
+                                <input type="tel" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" 
+                                    value="{{ old('phone', auth()->user()->phone) }}" placeholder="Enter phone number">
+                            </div>
+                            @error('phone')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="col-12">
+                            <label for="location" class="form-label">Location</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                <input type="text" class="form-control @error('location') is-invalid @enderror" id="location" name="location" 
+                                    value="{{ old('location', auth()->user()->location) }}" placeholder="City, Country">
+                            </div>
+                            @error('location')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="col-12">
+                            <label for="bio" class="form-label">Bio / About Me</label>
+                            <textarea class="form-control @error('bio') is-invalid @enderror" id="bio" name="bio" rows="3" 
+                                placeholder="Write something about yourself...">{{ old('bio', auth()->user()->bio) }}</textarea>
+                            @error('bio')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="col-12 mt-4 text-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Security / Password -->
+        @if(is_null(auth()->user()->google_id))
+        <div class="card-profile">
+            <div class="card-profile-header">
+                <i class="fas fa-lock text-primary me-2"></i> Security Settings
+            </div>
+            <div class="card-profile-body">
+                @if (session('status') === 'password-updated')
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        Password has been changed successfully.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                <form method="post" action="{{ route('password.update') }}">
+                    @csrf
+                    @method('put')
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="update_password_current_password" class="form-label">Current Password</label>
+                            <input type="password" class="form-control @error('current_password', 'updatePassword') is-invalid @enderror" 
+                                id="update_password_current_password" name="current_password" placeholder="Enter current password" autocomplete="current-password">
+                            @error('current_password', 'updatePassword')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="update_password_password" class="form-label">New Password</label>
+                            <input type="password" class="form-control @error('password', 'updatePassword') is-invalid @enderror" 
+                                id="update_password_password" name="password" placeholder="Enter new password" autocomplete="new-password">
+                            @error('password', 'updatePassword')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="update_password_password_confirmation" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control @error('password_confirmation', 'updatePassword') is-invalid @enderror" 
+                                id="update_password_password_confirmation" name="password_confirmation" placeholder="Confirm new password" autocomplete="new-password">
+                            @error('password_confirmation', 'updatePassword')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-12 mt-4 text-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-key me-1"></i> Update Password
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        @endif
+
+    </div>
 </div>
 
+@endsection
+
+@push('scripts')
 <script>
     document.getElementById('avatar-input').onchange = function (evt) {
         const [file] = this.files
@@ -254,6 +389,4 @@
         }
     }
 </script>
-
-
-@endsection
+@endpush

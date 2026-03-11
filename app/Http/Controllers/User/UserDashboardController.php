@@ -53,53 +53,45 @@ class UserDashboardController extends Controller
                     $auction = $bid->auction;
                     $image = $auction->image ? asset('storage/' . $auction->image) : 'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120';
                     $title = e($auction->title);
+                    if(strlen($title) > 45) {
+                        $title = substr($title, 0, 45) . '...';
+                    }
+                    
                     return '
                         <div class="d-flex align-items-center">
                             <div class="position-relative me-3">
-                                <img src="'.$image.'" class="rounded-3 shadow-sm border" width="55" height="55" style="object-fit: cover;" onerror="this.src=\'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120\'">
+                                <img src="'.$image.'" class="rounded border" width="50" height="50" style="object-fit: cover;" onerror="this.src=\'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120\'">
                             </div>
-                            <div>
-                                <div class="text-dark fw-bold mb-0 text-truncate" style="max-width: 220px;" title="'.$title.'">'.$title.'</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">ID: #'.str_pad($auction->id, 5, '0', STR_PAD_LEFT).'</div>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold text-dark mb-1 d-inline-block" style="max-width:350px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="'.e($auction->title).'">'.$title.'</span>
+                                <span class="text-muted small">ID: #'.str_pad($auction->id, 5, '0', STR_PAD_LEFT).'</span>
                             </div>
                         </div>';
                 })
                 ->addColumn('my_bid', function($bid) {
-                    return '<span class="fw-bold text-dark">₹'.number_format($bid->amount, 2).'</span>';
+                    return '₹'.number_format($bid->amount, 2);
                 })
                 ->addColumn('current_price', function($bid) {
-                    return '<span class="text-primary fw-bold">₹'.number_format($bid->auction->current_price, 2).'</span>';
+                    return '₹'.number_format($bid->auction->current_price, 2);
                 })
                 ->addColumn('status', function($bid) {
-                    $auction = $bid->auction;
-                    $status = $auction->status_label;
-                    $config = [
-                        'Live'          => ['color' => 'success', 'icon' => 'fa-circle-play', 'bg' => 'success'],
-                        'Starting Soon' => ['color' => 'info',    'icon' => 'fa-clock',       'bg' => 'info'],
-                        'Ended'         => ['color' => 'danger',  'icon' => 'fa-circle-stop', 'bg' => 'danger'],
-                        'Pending'       => ['color' => 'warning', 'icon' => 'fa-hourglass-start', 'bg' => 'warning'],
-                        'Closed'        => ['color' => 'secondary','icon' => 'fa-lock',        'bg' => 'secondary'],
-                        'Cancelled'     => ['color' => 'dark',     'icon' => 'fa-ban',         'bg' => 'dark'],
-                    ];
-
-                    $style = $config[$status] ?? ['color' => 'secondary', 'icon' => 'fa-question-circle', 'bg' => 'secondary'];
-                    
-                    return '<span class="badge bg-'.$style['bg'].' bg-opacity-10 text-'.$style['color'].' border border-'.$style['color'].' border-opacity-25 rounded-pill px-3 py-2 fw-semibold shadow-sm" style="font-size: 0.75rem; min-width: 100px;">
-                                <i class="fas '.$style['icon'].' me-1 small"></i> '.$status.'
-                            </span>';
+                    $status = $bid->auction->status_label;
+                    $bg = match($status) {
+                        'Live' => 'success', 'Starting Soon' => 'info', 'Ended' => 'danger',
+                        'Pending' => 'warning text-dark', 'Closed' => 'secondary', 'Cancelled' => 'dark', default => 'secondary'
+                    };
+                    return '<span class="badge bg-'.$bg.'">'.$status.'</span>';
                 })
                 ->addColumn('time_left', function($bid) {
                     $auction = $bid->auction;
                     if ($auction->status === 'active' && $auction->end_time->isFuture()) {
-                        return '<span class="text-secondary small fw-medium">'. $auction->end_time->diffForHumans(null, true) .' left</span>';
+                        return $auction->end_time->diffForHumans(null, true);
                     }
-                    return '<span class="text-muted small">Ended</span>';
+                    return 'Ended';
                 })
                 ->addColumn('action', function($bid) {
                     $url = route('auctions.show', $bid->auction->id);
-                    return '<div class="text-end">
-                                <a href="'.$url.'" class="btn btn-icon-elite btn-outline-primary btn-sm rounded-circle" title="View Listing"><i class="fas fa-eye"></i></a>
-                            </div>';
+                    return '<a href="'.$url.'" class="btn btn-outline-info btn-sm text-info bg-white" title="View"><i class="fas fa-eye"></i></a>';
                 })
                 ->rawColumns(['item', 'my_bid', 'current_price', 'status', 'time_left', 'action'])
                 ->make(true);
@@ -126,63 +118,43 @@ class UserDashboardController extends Controller
                 ->addColumn('item', function($auction) {
                     $image = $auction->image ? (str_starts_with($auction->image, 'http') ? $auction->image : asset('storage/' . $auction->image)) : 'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120';
                     $title = e($auction->title);
+                    if(strlen($title) > 45) {
+                        $title = substr($title, 0, 45) . '...';
+                    }
                     $date = $auction->created_at->format('M d, Y');
                     return '
                         <div class="d-flex align-items-center">
                             <div class="position-relative me-3">
-                                <img src="'.$image.'" class="rounded-3 shadow-sm border" width="55" height="55" style="object-fit: cover;" onerror="this.src=\'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120\'">
+                                <img src="'.$image.'" class="rounded border" width="50" height="50" style="object-fit: cover;" onerror="this.src=\'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120\'">
                             </div>
-                            <div>
-                                <div class="text-dark fw-bold mb-0 text-truncate" style="max-width: 220px;" title="'.$title.'">'.$title.'</div>
-                                <div class="text-muted" style="font-size: 0.75rem;"><i class="far fa-calendar-alt me-1"></i> Listed on '.$date.'</div>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold text-dark mb-1 d-inline-block" style="max-width:350px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="'.e($auction->title).'">'.$title.'</span>
+                                <span class="text-muted small"><i class="far fa-calendar-alt me-1"></i> Listed on '.$date.'</span>
                             </div>
                         </div>';
                 })
                 ->editColumn('status', function($auction) {
                     $status = $auction->status_label;
-                    $config = [
-                        'Live'          => ['color' => 'success', 'icon' => 'fa-circle-play', 'bg' => 'success'],
-                        'Starting Soon' => ['color' => 'info',    'icon' => 'fa-clock',       'bg' => 'info'],
-                        'Ended'         => ['color' => 'danger',  'icon' => 'fa-circle-stop', 'bg' => 'danger'],
-                        'Pending'       => ['color' => 'warning', 'icon' => 'fa-hourglass-start', 'bg' => 'warning'],
-                        'Closed'        => ['color' => 'secondary','icon' => 'fa-lock',        'bg' => 'secondary'],
-                        'Cancelled'     => ['color' => 'dark',     'icon' => 'fa-ban',         'bg' => 'dark'],
-                    ];
-
-                    $style = $config[$status] ?? ['color' => 'secondary', 'icon' => 'fa-question-circle', 'bg' => 'secondary'];
-                    
-                    return '<span class="badge bg-'.$style['bg'].' bg-opacity-10 text-'.$style['color'].' border border-'.$style['color'].' border-opacity-25 rounded-pill px-3 py-2 fw-semibold shadow-sm" style="font-size: 0.75rem; min-width: 100px;">
-                                <i class="fas '.$style['icon'].' me-1 small"></i> '.$status.'
-                            </span>';
+                    $bg = match($status) {
+                        'Live' => 'success', 'Starting Soon' => 'info', 'Ended' => 'danger',
+                        'Pending' => 'warning text-dark', 'Closed' => 'secondary', 'Cancelled' => 'dark', default => 'secondary'
+                    };
+                    return '<span class="badge bg-'.$bg.'">'.$status.'</span>';
                 })
                 ->addColumn('price', function($auction) {
-                    return '<div>
-                                <div class="text-primary fw-bolder fs-6">₹'.number_format($auction->current_price).'</div>
-                                <div class="text-muted x-small" style="font-size: 0.7rem;">Current Bid</div>
-                            </div>';
+                    return '₹'.number_format($auction->current_price, 2);
                 })
                 ->addColumn('winner', function($auction) {
                     $highestBid = $auction->highestBid();
                     if ($highestBid && $highestBid->user) {
-                        $username = e($highestBid->user->username);
-                        $avatar = $highestBid->user->avatar_url;
-                        return '
-                            <div class="d-flex align-items-center">
-                                <img src="'.$avatar.'" class="rounded-circle border border-2 border-white shadow-sm" width="28" height="28" alt="'.$username.'">
-                                <span class="ms-2 small fw-bold text-dark">@'.$username.'</span>
-                            </div>';
+                        return e($highestBid->user->name);
                     }
-                    return '<span class="badge bg-light text-muted border rounded-pill px-3 py-1 fw-medium" style="font-size: 0.7rem;">Fixed Price/No Bids</span>';
+                    return 'N/A';
                 })
                 ->addColumn('bids', function($auction) {
-                    $count = $auction->bids->count();
-                    return '<div class="text-center">
-                                <div class="fw-bold text-dark">'.$count.'</div>
-                                <div class="text-muted" style="font-size: 0.7rem;">Total Bids</div>
-                            </div>';
+                    return $auction->bids->count();
                 })
                 ->addColumn('action', function($auction) {
-                    $status = $auction->status_label;
                     $isWithin24Hours = $auction->created_at && $auction->created_at->diffInHours(now()) <= 24;
                     $canEdit = $auction->end_time->isFuture() && (
                         $auction->status === 'active' || 
@@ -192,11 +164,13 @@ class UserDashboardController extends Controller
                     $viewUrl = route('auctions.show', $auction->id);
                     $editUrl = route('auctions.edit', $auction->id);
                     
-                    return '<div class="d-flex justify-content-end gap-2">
-                                <a href="'.$viewUrl.'" class="btn btn-icon-elite btn-outline-primary btn-sm rounded-circle" title="View Listing"><i class="fas fa-eye"></i></a>
-                                '.($canEdit ? '<a href="'.$editUrl.'" class="btn btn-icon-elite btn-outline-warning btn-sm rounded-circle" title="Edit Listing"><i class="fas fa-edit"></i></a>' : '').'
-                                <button type="button" onclick="confirmDelete('.$auction->id.')" class="btn btn-icon-elite btn-outline-danger btn-sm rounded-circle" title="Delete Listing"><i class="fas fa-trash-alt"></i></button>
-                            </div>';
+                    $html = '<a href="'.$viewUrl.'" class="btn btn-outline-info btn-sm text-info border-info bg-white me-1" title="View"><i class="fas fa-eye"></i></a>';
+                    if($canEdit) {
+                        $html .= '<a href="'.$editUrl.'" class="btn btn-outline-primary btn-sm text-primary border-primary bg-white me-1" title="Edit"><i class="fas fa-edit"></i></a>';
+                    }
+                    $html .= '<button type="button" onclick="confirmDelete('.$auction->id.')" class="btn btn-outline-danger btn-sm text-danger border-danger bg-white" title="Delete"><i class="fas fa-trash"></i></button>';
+                    
+                    return '<div class="text-nowrap">'.$html.'</div>';
                 })
                 ->rawColumns(['item', 'status', 'price', 'winner', 'bids', 'action'])
                 ->make(true);
@@ -230,34 +204,32 @@ class UserDashboardController extends Controller
                 ->addColumn('item', function($auction) {
                     $image = $auction->image ? (str_starts_with($auction->image, 'http') ? $auction->image : asset('storage/' . $auction->image)) : 'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120';
                     $title = e($auction->title);
+                    if(strlen($title) > 45) {
+                        $title = substr($title, 0, 45) . '...';
+                    }
                     return '
                         <div class="d-flex align-items-center">
                             <div class="position-relative me-3">
-                                <img src="'.$image.'" class="rounded-3 shadow-sm border" width="55" height="55" style="object-fit: cover;" onerror="this.src=\'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120\'">
+                                <img src="'.$image.'" class="rounded border" width="50" height="50" style="object-fit: cover;" onerror="this.src=\'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120\'">
                             </div>
-                            <div>
-                                <div class="text-dark fw-bold mb-0 text-truncate" style="max-width: 220px;" title="'.$title.'">'.$title.'</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">ID: #'.str_pad($auction->id, 5, '0', STR_PAD_LEFT).'</div>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold text-dark mb-1 d-inline-block" style="max-width:350px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="'.e($auction->title).'">'.$title.'</span>
+                                <span class="text-muted small">ID: #'.str_pad($auction->id, 5, '0', STR_PAD_LEFT).'</span>
                             </div>
                         </div>';
                 })
                 ->addColumn('winning_bid', function($auction) {
-                    return '<span class="fw-bold text-dark">₹'.number_format($auction->current_price, 2).'</span>';
+                    return '₹'.number_format($auction->current_price, 2);
                 })
                 ->addColumn('won_date', function($auction) {
-                    return '<span class="text-secondary small">'. $auction->end_time->format('M d, Y') .'</span>';
+                    return $auction->end_time->format('M d, Y');
                 })
                 ->addColumn('payment_status', function($auction) {
-                    // This can be expanded if you have a payment status in DB
-                    return '<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 fw-semibold shadow-sm" style="font-size: 0.75rem;">
-                                <i class="fas fa-check-circle me-1 small"></i> Won
-                            </span>';
+                    return '<span class="badge bg-success">Won</span>';
                 })
                 ->addColumn('action', function($auction) {
                     $url = route('auctions.show', $auction->id);
-                    return '<div class="text-end">
-                                <a href="'.$url.'" class="btn btn-icon-elite btn-outline-primary btn-sm rounded-circle" title="View Listing"><i class="fas fa-eye"></i></a>
-                            </div>';
+                    return '<a href="'.$url.'" class="btn btn-outline-info btn-sm text-info bg-white" title="View"><i class="fas fa-eye"></i></a>';
                 })
                 ->rawColumns(['item', 'winning_bid', 'won_date', 'payment_status', 'action'])
                 ->make(true);
@@ -286,41 +258,41 @@ class UserDashboardController extends Controller
                     $auction = $item->auction;
                     $image = $auction->image ? (str_starts_with($auction->image, 'http') ? $auction->image : asset('storage/' . $auction->image)) : 'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120';
                     $title = e($auction->title);
+                    if(strlen($title) > 45) {
+                        $title = substr($title, 0, 45) . '...';
+                    }
                     $seller = e($auction->user->name ?? 'Unknown');
                     return '
                         <div class="d-flex align-items-center">
                             <div class="position-relative me-3">
-                                <img src="'.$image.'" class="rounded-3 shadow-sm border" width="55" height="55" style="object-fit: cover;" onerror="this.src=\'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120\'">
+                                <img src="'.$image.'" class="rounded border" width="50" height="50" style="object-fit: cover;" onerror="this.src=\'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120\'">
                             </div>
-                            <div>
-                                <div class="text-dark fw-bold mb-0 text-truncate" style="max-width: 220px;" title="'.$title.'">'.$title.'</div>
-                                <div class="text-muted" style="font-size: 0.75rem;"><i class="fas fa-user me-1"></i> '.$seller.'</div>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold text-dark mb-1 d-inline-block" style="max-width:350px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="'.e($auction->title).'">'.$title.'</span>
+                                <span class="text-muted small"><i class="fas fa-user me-1"></i> '.$seller.'</span>
                             </div>
                         </div>';
                 })
                 ->addColumn('category', function($item) {
-                    $catName = $item->auction->category->name ?? 'N/A';
-                    return '<span class="badge bg-light text-secondary border rounded-pill px-3 py-1 fw-medium" style="font-size: 0.7rem;">'.e($catName).'</span>';
+                    return $item->auction->category->name ?? 'N/A';
                 })
                 ->addColumn('price', function($item) {
-                    return '<span class="fw-bold text-primary">₹'.number_format($item->auction->current_price, 2).'</span>';
+                    return '₹'.number_format($item->auction->current_price, 2);
                 })
                 ->addColumn('end_time', function($item) {
-                    return '<div class="text-muted small">
-                                <i class="far fa-clock me-1"></i>'.$item->auction->end_time->format('M d, Y H:i').'
-                            </div>';
+                    return $item->auction->end_time->format('M d, Y H:i');
                 })
                 ->addColumn('action', function($item) {
                     $viewUrl = route('auctions.show', $item->auction_id);
                     $toggleUrl = route('user.watchlist.toggle', $item->auction_id);
                     $csrf = csrf_field();
                     
-                    return '<div class="d-flex justify-content-end gap-2">
-                                <a href="'.$viewUrl.'" class="btn btn-icon-elite btn-outline-primary btn-sm rounded-circle" title="View Listing"><i class="fas fa-eye"></i></a>
+                    return '<div class="text-nowrap">
+                                <a href="'.$viewUrl.'" class="btn btn-outline-info btn-sm text-info border-info bg-white me-1" title="View"><i class="fas fa-eye"></i></a>
                                 <form action="'.$toggleUrl.'" method="POST" class="d-inline">
                                     '.$csrf.'
-                                    <button type="submit" class="btn btn-icon-elite btn-outline-danger btn-sm rounded-circle" title="Remove from Watchlist">
-                                        <i class="fas fa-heart"></i>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm text-danger border-danger bg-white" title="Remove">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
                             </div>';

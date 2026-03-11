@@ -175,15 +175,15 @@
                 <table class="table table-hover border-bottom" id="auctions-table" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th width="30">Id</th>
-                            <th width="60" class="text-center">Image</th>
-                            <th>Title & Details</th>
-                            <th>Category</th>
-                            <th>Seller</th>
-                            <th class="text-right">Current Bid</th>
-                            <th class="text-center">Status</th>
-                            <th>End Time</th>
-                            <th width="150" class="text-center text-nowrap">Action</th>
+                            <th width="50" class="text-center text-nowrap">Id</th>
+                            <th width="70" class="text-center text-nowrap">Image</th>
+                            <th class="text-nowrap" style="min-width: 350px;">Title & Details</th>
+                            <th class="text-nowrap">Category</th>
+                            <th class="text-nowrap">Seller</th>
+                            <th class="text-right text-nowrap">Current Bid</th>
+                            <th class="text-center text-nowrap">Status</th>
+                            <th class="text-nowrap">End Time</th>
+                            <th width="120" class="text-center text-nowrap">Action</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -215,6 +215,7 @@
             var table = $('#auctions-table').DataTable({
                 processing: true,
                 serverSide: true,
+                order: [], // Disable default sorting
                 ajax: {
                     url: "{{ route('admin.auctions.index') }}",
                     data: function (d) {

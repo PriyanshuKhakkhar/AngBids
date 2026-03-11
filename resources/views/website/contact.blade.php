@@ -287,10 +287,13 @@
                 text: "Please login to submit your support request.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#4e73df',
-                cancelButtonColor: '#858796',
                 confirmButtonText: 'Login Now',
-                cancelButtonText: 'Close'
+                cancelButtonText: 'Close',
+                customClass: {
+                    confirmButton: 'btn btn-primary',
+                    cancelButton: 'btn btn-secondary ms-3'
+                },
+                buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.href = "{{ route('login') }}";

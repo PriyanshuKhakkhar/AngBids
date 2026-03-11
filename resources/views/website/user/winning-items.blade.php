@@ -18,20 +18,23 @@
 </div>
 
 <!-- Winning Items Table -->
-<div class="card card-elite border-0 shadow-sm overflow-hidden" style="border-radius: 1.25rem;">
+<div class="card shadow-sm border-0 rounded-lg">
+    <div class="card-header py-3 bg-white border-bottom d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 fw-bold text-dark"><i class="fas fa-list-ul me-2 text-primary"></i>Winning Items Directory</h6>
+    </div>
     <div class="card-body p-0">
-        <div class="table-responsive p-4">
-            <table class="table table-hover align-middle mb-0 w-100" id="winningItemsTable" style="border-collapse: separate; border-spacing: 0 12px;">
+        <div class="table-responsive px-3 py-4">
+            <table class="table table-hover border-bottom w-100" id="winningItemsTable" cellspacing="0">
                 <thead>
-                    <tr class="text-muted small text-uppercase fw-bold opacity-75">
-                        <th class="border-0 ps-3">Item</th>
-                        <th class="border-0">Winning Bid</th>
-                        <th class="border-0">Won Date</th>
-                        <th class="border-0">Status</th>
-                        <th class="border-0 text-end pe-3">Action</th>
+                    <tr>
+                        <th class="text-nowrap" style="min-width: 350px;">Item</th>
+                        <th class="text-nowrap text-center">Winning Bid</th>
+                        <th class="text-nowrap text-center">Won Date</th>
+                        <th class="text-nowrap text-center">Status</th>
+                        <th width="100" class="text-center text-nowrap">Action</th>
                     </tr>
                 </thead>
-                <tbody class="border-0">
+                <tbody>
                     {{-- Data injected via DataTables --}}
                 </tbody>
             </table>
@@ -42,46 +45,21 @@
 @push('styles')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 <style>
-    /* Premium Table Styling */
-    #winningItemsTable tbody tr {
-        background-color: #fff;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-        transition: all 0.2s ease;
-        border-radius: 1rem;
+    /* Admin Matching Table Styling */
+    .table th {
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        color: #64748b;
+        font-weight: 700;
+        border-bottom-width: 2px !important;
+        background-color: #f8fafc;
     }
-    #winningItemsTable tbody tr:hover {
-        background-color: #fbfcfe;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    .table td {
+        vertical-align: middle;
+        color: #475569;
+        font-size: 0.9rem;
     }
-    #winningItemsTable td {
-        padding: 1.25rem 0.75rem;
-        border-top: 1px solid #f1f5f9 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
-    }
-    #winningItemsTable td:first-child {
-        border-left: 1px solid #f1f5f9 !important;
-        border-top-left-radius: 1rem;
-        border-bottom-left-radius: 1rem;
-        padding-left: 1.5rem;
-    }
-    #winningItemsTable td:last-child {
-        border-right: 1px solid #f1f5f9 !important;
-        border-top-right-radius: 1rem;
-        border-bottom-right-radius: 1rem;
-        padding-right: 1.5rem;
-    }
-    
-    .btn-icon-elite {
-        width: 36px;
-        height: 36px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-        padding: 0;
-    }
-    .btn-icon-elite:hover { transform: scale(1.1); }
 
     .dataTables_wrapper .dataTables_length,
     .dataTables_wrapper .dataTables_filter {

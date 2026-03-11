@@ -33,10 +33,20 @@ class AuctionController extends Controller
 
                 ->editColumn('title', function ($row) {
                     $html = '<div class="d-flex flex-column">';
-                    $html .= '<span class="font-weight-bold text-dark mb-1" title="'.e($row->title).'">' . Str::limit($row->title, 40) . '</span>';
+                    
+                    $title = e($row->title);
+                    if(strlen($title) > 45) {
+                        $title = substr($title, 0, 45) . '...';
+                    }
+
+                    $html .= '<span class="font-weight-bold text-dark mb-1 d-inline-block" style="max-width:350px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="'.e($row->title).'">' . $title . '</span>';
+                    
                     if (!empty($row->description)) {
                         $desc = strip_tags($row->description);
-                        $html .= '<span class="text-muted small text-truncate" style="max-width:250px;" title="'.e($desc).'">' . Str::limit($desc, 50) . '</span>';
+                        if(strlen($desc) > 55) {
+                            $desc = substr($desc, 0, 55) . '...';
+                        }
+                        $html .= '<span class="text-muted small d-inline-block" style="max-width:350px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="'.e(strip_tags($row->description)).'">' . $desc . '</span>';
                     }
                     $html .= '</div>';
                     return $html;

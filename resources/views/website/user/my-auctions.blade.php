@@ -21,21 +21,24 @@
 </div>
 
 <!-- Auctions List -->
-<div class="card card-elite border-0 shadow-sm overflow-hidden" style="border-radius: 1.25rem;">
+<div class="card shadow-sm border-0 rounded-lg">
+    <div class="card-header py-3 bg-white border-bottom d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 fw-bold text-dark"><i class="fas fa-list-ul me-2 text-primary"></i>My Auctions Directory</h6>
+    </div>
     <div class="card-body p-0">
-        <div class="table-responsive p-4">
-            <table class="table table-hover align-middle mb-0 w-100" id="myAuctionsTable" style="border-collapse: separate; border-spacing: 0 12px;">
+        <div class="table-responsive px-3 py-4">
+            <table class="table table-hover border-bottom w-100" id="myAuctionsTable" cellspacing="0">
                 <thead>
-                    <tr class="text-muted small text-uppercase fw-bold opacity-75">
-                        <th class="border-0 ps-3">Item Details</th>
-                        <th class="border-0">Status</th>
-                        <th class="border-0">Price</th>
-                        <th class="border-0">Winner</th>
-                        <th class="border-0 text-center">Stats</th>
-                        <th class="border-0 text-end pe-3">Actions</th>
+                    <tr>
+                        <th class="text-nowrap" style="min-width: 350px;">Item Details</th>
+                        <th class="text-nowrap text-center">Status</th>
+                        <th class="text-nowrap">Price</th>
+                        <th class="text-nowrap">Winner</th>
+                        <th class="text-center text-nowrap">Stats</th>
+                        <th width="100" class="text-center text-nowrap">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="border-0">
+                <tbody>
                     {{-- Data injected via DataTables --}}
                 </tbody>
             </table>
@@ -52,50 +55,21 @@
 @push('styles')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 <style>
-    /* Premium Table Styling */
-    #myAuctionsTable tbody tr {
-        background-color: #fff;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-        transition: all 0.2s ease;
-        border-radius: 1rem;
+    /* Admin Matching Table Styling */
+    .table th {
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        color: #64748b;
+        font-weight: 700;
+        border-bottom-width: 2px !important;
+        background-color: #f8fafc;
     }
-    #myAuctionsTable tbody tr:hover {
-        background-color: #fbfcfe;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    .table td {
+        vertical-align: middle;
+        color: #475569;
+        font-size: 0.9rem;
     }
-    #myAuctionsTable td {
-        padding: 1.25rem 0.75rem;
-        border-top: 1px solid #f1f5f9 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
-    }
-    #myAuctionsTable td:first-child {
-        border-left: 1px solid #f1f5f9 !important;
-        border-top-left-radius: 1rem;
-        border-bottom-left-radius: 1rem;
-        padding-left: 1.5rem;
-    }
-    #myAuctionsTable td:last-child {
-        border-right: 1px solid #f1f5f9 !important;
-        border-top-right-radius: 1rem;
-        border-bottom-right-radius: 1rem;
-        padding-right: 1.5rem;
-    }
-    
-    /* Button Elite Styling */
-    .btn-icon-elite {
-        width: 36px;
-        height: 36px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-        padding: 0;
-    }
-    .btn-icon-elite:hover {
-        transform: scale(1.1);
-    }
-
     /* DataTable Overrides */
     .dataTables_wrapper .dataTables_length,
     .dataTables_wrapper .dataTables_filter {
@@ -182,15 +156,10 @@ $(document).ready(function() {
             text: "This action cannot be undone. All bids will be lost!",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#ef4444',
-            cancelButtonColor: '#64748b',
-            confirmButtonText: 'Yes, Delete it',
-            cancelButtonText: 'Cancel',
-            reverseButtons: true,
-            borderRadius: '1rem',
+            confirmButtonText: 'Yes, delete it!',
             customClass: {
-                confirmButton: 'btn btn-danger px-4 py-2 rounded-pill fw-bold',
-                cancelButton: 'btn btn-light px-4 py-2 rounded-pill fw-bold ms-2'
+                confirmButton: 'btn btn-danger',
+                cancelButton: 'btn btn-secondary ms-3'
             },
             buttonsStyling: false
         }).then((result) => {
