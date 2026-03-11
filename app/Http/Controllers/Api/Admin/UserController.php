@@ -18,7 +18,7 @@ class UserController extends Controller
      //Display a listing of the resource
     public function index(Request $request)
     {
-        $query = User::withTrashed()->with('roles')->latest();
+        $query = User::withTrashed()->with('roles');
 
         // Apply filters if needed, similar to DataTables search logic could be added here
         if ($request->has('search')) {
@@ -40,17 +40,46 @@ class UserController extends Controller
         
         if ($request->has('role')) {
             $role = $request->role;
-            if($role != 'all'){
-                 $query->role($role);
+            if ($role === 'user_only') {
+                $query->where(function($q) {
+                    $q->doesntHave('roles')
+                      ->orWhereHas('roles', function($roleQuery) {
+                          $roleQuery->where('name', 'user');
+                      });
+                });
+            } elseif ($role === 'super-admin') {
+                $query->whereHas('roles', function($q) {
+                    $q->whereIn('name', ['super-admin', 'super admin', 'Super Admin']);
+                });
+            } elseif ($role != 'all') {
+                $query->role($role);
             }
         }
        
-        if ($request->has('status')) {
-             if ($request->status == 'trashed') {
+        if ($request->has('status') && $request->status !== 'all') {
+             if ($request->status == 'deleted') {
                  $query->onlyTrashed();
              } elseif ($request->status == 'active') {
                  $query->withoutTrashed();
              }
+        }
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        if ($request->filled('sort')) {
+            if ($request->sort === 'oldest') {
+                $query->orderBy('created_at', 'asc');
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+        } else {
+            $query->orderBy('created_at', 'desc');
         }
 
         $users = $query->paginate(10);
@@ -61,6 +90,24 @@ class UserController extends Controller
         ]);
     }
 
+    public function sendOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|unique:users,email'
+        ]);
+
+        $email = strtolower(trim($request->email));
+        $otp = rand(100000, 999999);
+        
+        \Illuminate\Support\Facades\Cache::put('admin_create_user_otp_' . $email, $otp, now()->addMinutes(10));
+
+        \App\Jobs\SendOtpEmailJob::dispatch($email, $otp);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'OTP sent successfully to ' . $email
+        ]);
+    }
     
      // Store a newly created resource in storage.
      
@@ -80,9 +127,11 @@ class UserController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name'     => 'required|string|min:2|max:255',
+            'username' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_-]+$/', 'unique:users,username'],
             'email'    => 'required|email|max:255|unique:users,email',
             'password' => ['required', 'confirmed', 'min:8', Rules\Password::defaults()],
             'role'     => 'required|exists:roles,name',
+            'otp'      => 'required|string|size:6',
         ]);
 
         if ($validator->fails()) {
@@ -97,10 +146,30 @@ class UserController extends Controller
             
             $validated = $validator->validated();
 
+            $emailVerifiedAt = null;
+
+            if (!empty($validated['otp'])) {
+                $cacheKey = 'admin_create_user_otp_' . strtolower(trim($validated['email']));
+                $cachedOtp = \Illuminate\Support\Facades\Cache::get($cacheKey);
+                
+                if ($cachedOtp && $cachedOtp == $validated['otp']) {
+                    $emailVerifiedAt = now();
+                    \Illuminate\Support\Facades\Cache::forget($cacheKey);
+                } else {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Invalid OTP provided for the email. User not created.'
+                    ], 422);
+                }
+            }
+
             $user = User::create([
                 'name'     => trim($validated['name']),
+                'username' => strtolower(trim($validated['username'])),
                 'email'    => strtolower(trim($validated['email'])),
                 'password' => Hash::make($validated['password']),
+                'email_verified_at' => $emailVerifiedAt,
+                'created_by' => auth()->id(),
             ]);
 
             $user->assignRole($validated['role']);
@@ -187,6 +256,7 @@ class UserController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name'  => 'required|string|min:2|max:255',
+            'username' => 'required|string|alpha_dash|max:255|unique:users,username,' . $user->id,
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
             'role'  => 'sometimes|exists:roles,name',
             'password' => ['nullable', 'confirmed', 'min:8', Rules\Password::defaults()],
@@ -206,6 +276,7 @@ class UserController extends Controller
 
             $user->update([
                 'name'  => trim($validated['name']),
+                'username' => strtolower(trim($validated['username'])),
                 'email' => strtolower(trim($validated['email'])),
             ]);
 

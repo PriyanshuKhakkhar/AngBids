@@ -13,10 +13,42 @@ class CategoryController extends Controller
     // All Categories
     public function index(Request $request)
     {
+        $parent   = $request->get('parent', '');
+        $type     = $request->get('type', 'all');    // all | top | sub
+        $status   = $request->get('status', 'all'); // all | active | trashed
+        $sort     = $request->get('sort', 'latest'); // latest | oldest | name_asc | name_desc
+
         $query = Category::withTrashed()
             ->with(['parent'])
-            ->withCount('auctions')
-            ->latest();
+            ->withCount('auctions');
+
+        // Parent filter
+        if ($parent !== '') {
+            $query->where('parent_id', $parent);
+        }
+
+        // Type filter
+        if ($type === 'top') {
+            $query->whereNull('parent_id');
+        } elseif ($type === 'sub') {
+            $query->whereNotNull('parent_id');
+        }
+
+        // Status filter
+        if ($status === 'active') {
+            $query->whereNull('deleted_at');
+        } elseif ($status === 'trashed') {
+            $query->whereNotNull('deleted_at');
+        }
+
+        // Date filtering
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
         if ($request->has('search')) {
             $search = trim($request->search);
             if (!empty($search)) {
@@ -29,6 +61,14 @@ class CategoryController extends Controller
                 });
             }
         }
+
+        // Sort
+        match ($sort) {
+            'oldest'    => $query->oldest(),
+            'name_asc'  => $query->orderBy('name', 'asc'),
+            'name_desc' => $query->orderBy('name', 'desc'),
+            default     => $query->latest(),
+        };
 
         $categories = $query->get();
 

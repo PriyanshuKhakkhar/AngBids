@@ -57,7 +57,7 @@
 
         <div class="row g-4">
             @foreach($auctions as $index => $auction)
-            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ ($index + 1) * 100 }}">
+            <div class="col-md-6 col-lg-3">
                 <div class="card card-elite h-100 position-relative shadow-sm border-0 rounded-4 overflow-hidden bg-white hover-shadow-lg transition-all">
                     <!-- Image Section -->
                     <div class="position-relative overflow-hidden" style="height: 180px;">
