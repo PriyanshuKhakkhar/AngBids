@@ -10,25 +10,23 @@ use Exception;
 
 class AuctionRegistrationController extends Controller
 {
-    /**
-     * Register the user for a specific auction.
-     */
+    //register user for an auction
     public function register(Auction $auction)
     {
         try {
             $user = auth()->user();
 
-            // 1. Check if KYC is approved
+            // Check if KYC is approved
             if (!$user->isKycApproved()) {
                 return redirect()->route('user.kyc.form')->with('error', 'You must complete your Identity Verification (KYC) before you can register for an auction.');
             }
 
-            // 2. Check if already registered
+            // Check if already registered
             if ($user->isRegisteredFor($auction)) {
                 return redirect()->back()->with('warning', 'You are already registered for this auction.');
             }
 
-            // 3. Register the user
+            // Register the user
             AuctionRegistration::create([
                 'user_id' => $user->id,
                 'auction_id' => $auction->id,
