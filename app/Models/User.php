@@ -123,6 +123,21 @@ class User extends Authenticatable
         return $this->hasOne(Kyc::class);
     }
 
+    public function auctionRegistrations()
+    {
+        return $this->hasMany(AuctionRegistration::class);
+    }
+
+    public function registeredAuctions()
+    {
+        return $this->belongsToMany(Auction::class, 'auction_registrations', 'user_id', 'auction_id');
+    }
+
+    public function isRegisteredFor(Auction $auction): bool
+    {
+        return $this->registeredAuctions()->where('auction_id', $auction->id)->exists();
+    }
+
     public function isKycApproved(): bool
     {
         // Admins and Super Admins are exempt from KYC verification

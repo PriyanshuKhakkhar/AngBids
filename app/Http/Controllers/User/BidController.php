@@ -34,6 +34,14 @@ class BidController extends Controller
                 return redirect()->route('user.kyc.form')->with('error', $message);
             }
 
+            if (!$user->isRegisteredFor($auction)) {
+                $message = 'You must register for this auction before you can place a bid.';
+                if ($request->wantsJson() || $request->ajax()) {
+                    return response()->json(['status' => 'error', 'message' => $message], 403);
+                }
+                return redirect()->back()->with('error', $message);
+            }
+
             $result = $this->bidService->placeBid($auction, $request->validated(), $user);
 
                 $auction = $auction->fresh();

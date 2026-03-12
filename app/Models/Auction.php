@@ -164,4 +164,14 @@ class Auction extends Model
     {
         return $this->hasMany(AutoBids::class, 'auction_id');
     }
+
+    public function registrations()
+    {
+        return $this->hasMany(AuctionRegistration::class);
+    }
+
+    public function registeredUsers()
+    {
+        return $this->belongsToMany(User::class, 'auction_registrations');
+    }
 }

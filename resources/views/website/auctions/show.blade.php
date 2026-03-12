@@ -173,9 +173,7 @@
                                 <span class="hibid-bid-label">Max Bid Increment</span>
                                 <span class="hibid-bid-value hibid-bid-value--danger">₹{{ number_format(\App\Models\Auction::MAX_INCREMENT_ALLOWED, 2) }}</span>
                             </div>
-                        </div>
-
-                        <!-- Bid Form / Login -->
+                                           <!-- Bid Form / Login / Registration -->
                         @if(!$isClosed)
                         @auth
                             @if(!auth()->user()->isKycApproved())
@@ -188,129 +186,150 @@
                                         </div>
                                     </div>
                                 </div>
-                            @endif
-                            <div id="bid-status-container" class="mb-2"></div>
-                             <!-- Winner Status Badge -->
-                            @php
-                                $highestBid = $auction->bids()->first();
-                                $isWinning = ($highestBid && (int)$highestBid->user_id === (int)auth()->id());
-                                $userProxy = $auction->autoBids()->where('user_id', auth()->id())->where('active', true)->first();
-                            @endphp
-
-                            <div class="mb-3" id="winner-status-badge" data-user-id="{{ auth()->id() }}">
-                                @if($isWinning)
-                                    <div class="badge bg-success py-2 px-3 rounded-pill w-100 hibid-pulse mb-2">
-                                        <i class="fas fa-check-circle me-1"></i> You are the highest bidder!
-                                    </div>
-                                @elseif($highestBid)
-                                    <div class="badge bg-danger py-2 px-3 rounded-pill w-100 mb-2">
-                                        <i class="fas fa-times-circle me-1"></i> Someone has outbid you!
-                                    </div>
-                                @endif
-                            </div>
-                                @if($userProxy)
-                                    <div class="card border-primary-subtle bg-primary-subtle bg-opacity-10 border-dashed rounded-3 p-2 text-center mb-2">
-                                        <div class="small text-primary fw-bold">
-                                            <i class="fas fa-robot me-1"></i> Your Auto-Bid Limit: 
-                                            <span class="fs-6">₹{{ number_format($userProxy->max_bid_amount, 2) }}</span>
+                            @elseif(!auth()->user()->isRegisteredFor($auction))
+                                <div class="registration-prompt mb-4 p-4 border rounded-3 text-center bg-light">
+                                    <div class="mb-3">
+                                        <div class="registration-icon-wrap mb-2">
+                                            <i class="fas fa-id-card-alt fa-2x text-primary opacity-50"></i>
                                         </div>
+                                        <h5 class="fw-bold mb-1">Join this Auction</h5>
+                                        <p class="text-muted small mb-0">Register now to unlock bidding permissions for this item.</p>
                                     </div>
-                                @endif
-                            @if(session('success'))
-                                <div class="alert alert-success alert-dismissible fade show mb-3 rounded-3" role="alert">
-                                    {{ session('success') }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    <form action="{{ route('user.auctions.register', $auction->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-pill shadow-sm transition-all">
+                                            Register for Auction <i class="fas fa-arrow-right ms-2"></i>
+                                        </button>
+                                    </form>
+                                    <div class="mt-3 small text-muted">
+                                        <i class="fas fa-check-circle text-success me-1"></i> KYC Verified
+                                    </div>
                                 </div>
-                            @endif
-                            @if(session('error'))
-                                <div class="alert alert-danger alert-dismissible fade show mb-3 rounded-3" role="alert">
-                                    {{ session('error') }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                            @endif
-                            @if(session('warning'))
-                                <div class="alert alert-warning alert-dismissible fade show mb-3 rounded-3" role="alert">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>{{ session('warning') }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                            @endif
+                            @else
+                                <div id="bid-status-container" class="mb-2"></div>
+                                 <!-- Winner Status Badge -->
+                                @php
+                                    $highestBid = $auction->bids()->first();
+                                    $isWinning = ($highestBid && (int)$highestBid->user_id === (int)auth()->id());
+                                    $userProxy = $auction->autoBids()->where('user_id', auth()->id())->where('active', true)->first();
+                                @endphp
 
-                            <form action="{{ route('auctions.bid', $auction->id) }}" method="POST" class="mb-3" id="place-bid-form">
-                                @csrf
+                                <div class="mb-3" id="winner-status-badge" data-user-id="{{ auth()->id() }}">
+                                    @if($isWinning)
+                                        <div class="badge bg-success py-2 px-3 rounded-pill w-100 hibid-pulse mb-2">
+                                            <i class="fas fa-check-circle me-1"></i> You are the highest bidder!
+                                        </div>
+                                    @elseif($highestBid)
+                                        <div class="badge bg-danger py-2 px-3 rounded-pill w-100 mb-2">
+                                            <i class="fas fa-times-circle me-1"></i> Someone has outbid you!
+                                        </div>
+                                    @endif
+                                </div>
+                                    @if($userProxy)
+                                        <div class="card border-primary-subtle bg-primary-subtle bg-opacity-10 border-dashed rounded-3 p-2 text-center mb-2">
+                                            <div class="small text-primary fw-bold">
+                                                <i class="fas fa-robot me-1"></i> Your Auto-Bid Limit: 
+                                                <span class="fs-6">₹{{ number_format($userProxy->max_bid_amount, 2) }}</span>
+                                            </div>
+                                        </div>
+                                    @endif
                                 
-                                <!-- Bid Tabs -->
-                                <ul class="nav nav-pills nav-justified hibid-bid-tabs mb-3" id="bidTab" role="tablist">
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link active" id="quick-bid-tab" data-bs-toggle="pill" data-bs-target="#quick-bid" type="button" role="tab">Quick Bid</button>
-                                    </li>
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="auto-bid-tab" data-bs-toggle="pill" data-bs-target="#auto-bid" type="button" role="tab">Auto Bid (Proxy)</button>
-                                    </li>
-                                </ul>
+                                @if(session('success'))
+                                    <div class="alert alert-success alert-dismissible fade show mb-3 rounded-3" role="alert">
+                                        {{ session('success') }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                @endif
+                                @if(session('error'))
+                                    <div class="alert alert-danger alert-dismissible fade show mb-3 rounded-3" role="alert">
+                                        {{ session('error') }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                @endif
+                                @if(session('warning'))
+                                    <div class="alert alert-warning alert-dismissible fade show mb-3 rounded-3" role="alert">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>{{ session('warning') }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                @endif
 
-                                <div class="tab-content" id="bidTabContent">
-                                    <!-- Quick Bid Pane -->
-                                    <div class="tab-pane fade show active" id="quick-bid" role="tabpanel">
-                                        <div class="hibid-increment-header">
-                                            <label class="hibid-increment-label">YOUR BID INCREMENT (₹)</label>
-                                            <span class="hibid-min-badge">Min: ₹{{ number_format($auction->min_increment ?? 100.00, 2) }}</span>
+                                <form action="{{ route('auctions.bid', $auction->id) }}" method="POST" class="mb-3" id="place-bid-form">
+                                    @csrf
+                                    
+                                    <!-- Bid Tabs -->
+                                    <ul class="nav nav-pills nav-justified hibid-bid-tabs mb-3" id="bidTab" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link active" id="quick-bid-tab" data-bs-toggle="pill" data-bs-target="#quick-bid" type="button" role="tab">Quick Bid</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="auto-bid-tab" data-bs-toggle="pill" data-bs-target="#auto-bid" type="button" role="tab">Auto Bid (Proxy)</button>
+                                        </li>
+                                    </ul>
+
+                                    <div class="tab-content" id="bidTabContent">
+                                        <!-- Quick Bid Pane -->
+                                        <div class="tab-pane fade show active" id="quick-bid" role="tabpanel">
+                                            <div class="hibid-increment-header">
+                                                <label class="hibid-increment-label">YOUR BID INCREMENT (₹)</label>
+                                                <span class="hibid-min-badge">Min: ₹{{ number_format($auction->min_increment ?? 100.00, 2) }}</span>
+                                            </div>
+
+                                            <div class="hibid-input-wrap">
+                                                <span class="hibid-input-prefix">₹</span>
+                                                <input type="number" name="increment" id="bid-increment"
+                                                    class="hibid-bid-input"
+                                                    placeholder="{{ number_format($auction->min_increment ?? 100.00, 2, '.', '') }}"
+                                                    value="{{ old('increment') }}"
+                                                    min="{{ $auction->min_increment ?? 100.00 }}" step="0.01"
+                                                    max="{{ \App\Models\Auction::MAX_INCREMENT_ALLOWED }}">
+                                            </div>
+
+                                            <!-- Shortcut Buttons -->
+                                            <div class="hibid-shortcuts mb-2">
+                                                @foreach([100, 300, 500, 700, 1000] as $amount)
+                                                    <button type="button" class="hibid-shortcut-btn bid-shortcut" data-amount="{{ $amount }}">+₹{{ $amount }}</button>
+                                                @endforeach
+                                            </div>
                                         </div>
- 
-                                        <div class="hibid-input-wrap">
-                                            <span class="hibid-input-prefix">₹</span>
-                                            <input type="number" name="increment" id="bid-increment"
-                                                class="hibid-bid-input"
-                                                placeholder="{{ number_format($auction->min_increment ?? 100.00, 2, '.', '') }}"
-                                                value="{{ old('increment') }}"
-                                                min="{{ $auction->min_increment ?? 100.00 }}" step="0.01"
-                                                max="{{ \App\Models\Auction::MAX_INCREMENT_ALLOWED }}">
-                                        </div>
- 
-                                        <!-- Shortcut Buttons -->
-                                        <div class="hibid-shortcuts mb-2">
-                                            @foreach([100, 300, 500, 700, 1000] as $amount)
-                                                <button type="button" class="hibid-shortcut-btn bid-shortcut" data-amount="{{ $amount }}">+₹{{ $amount }}</button>
-                                            @endforeach
+
+                                        <!-- Auto Bid Pane -->
+                                        <div class="tab-pane fade" id="auto-bid" role="tabpanel">
+                                            <div class="hibid-increment-header">
+                                                <label class="hibid-increment-label">MAXIMUM BID AMOUNT (₹)</label>
+                                                <span class="hibid-min-badge">Min: ₹{{ number_format($auction->current_price + ($auction->min_increment ?? 100.00), 2) }}</span>
+                                            </div>
+
+                                            <div class="hibid-input-wrap">
+                                                <span class="hibid-input-prefix">₹</span>
+                                                <input type="number" name="max_bid_amount" id="max-bid-amount"
+                                                    class="hibid-bid-input"
+                                                    placeholder="Enter your maximum limit"
+                                                    value="{{ old('max_bid_amount') }}"
+                                                    min="{{ $auction->current_price + ($auction->min_increment ?? 100.00) }}" step="0.01">
+                                            </div>
+                                            <p class="text-muted small mb-2"><i class="fas fa-robot me-1"></i> We'll bid for you up to this limit.</p>
                                         </div>
                                     </div>
- 
-                                    <!-- Auto Bid Pane -->
-                                    <div class="tab-pane fade" id="auto-bid" role="tabpanel">
-                                        <div class="hibid-increment-header">
-                                            <label class="hibid-increment-label">MAXIMUM BID AMOUNT (₹)</label>
-                                            <span class="hibid-min-badge">Min: ₹{{ number_format($auction->current_price + ($auction->min_increment ?? 100.00), 2) }}</span>
-                                        </div>
- 
-                                        <div class="hibid-input-wrap">
-                                            <span class="hibid-input-prefix">₹</span>
-                                            <input type="number" name="max_bid_amount" id="max-bid-amount"
-                                                class="hibid-bid-input"
-                                                placeholder="Enter your maximum limit"
-                                                value="{{ old('max_bid_amount') }}"
-                                                min="{{ $auction->current_price + ($auction->min_increment ?? 100.00) }}" step="0.01">
-                                        </div>
-                                        <p class="text-muted small mb-2"><i class="fas fa-robot me-1"></i> We'll bid for you up to this limit.</p>
+
+                                    <div id="bid-feedback-area" class="mb-2">
+                                        @error('increment')
+                                            <div class="alert alert-danger py-2 px-3 rounded-3 small border-0 shadow-sm">
+                                                <i class="fas fa-exclamation-circle me-2"></i>{{ $message }}
+                                            </div>
+                                        @enderror
+                                        @error('max_bid_amount')
+                                            <div class="alert alert-danger py-2 px-3 rounded-3 small border-0 shadow-sm">
+                                                <i class="fas fa-exclamation-circle me-2"></i>{{ $message }}
+                                            </div>
+                                        @enderror
                                     </div>
-                                </div>
+                                    <div class="bid-feedback-total"></div>
 
-                                <div id="bid-feedback-area" class="mb-2">
-                                    @error('increment')
-                                        <div class="alert alert-danger py-2 px-3 rounded-3 small border-0 shadow-sm">
-                                            <i class="fas fa-exclamation-circle me-2"></i>{{ $message }}
-                                        </div>
-                                    @enderror
-                                    @error('max_bid_amount')
-                                        <div class="alert alert-danger py-2 px-3 rounded-3 small border-0 shadow-sm">
-                                            <i class="fas fa-exclamation-circle me-2"></i>{{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-                                <div class="bid-feedback-total"></div>
-
-                                <button type="submit" class="hibid-place-bid-btn mt-2">
-                                    Place Bid Now <i class="fas fa-gavel ms-2"></i>
-                                </button>
-                            </form>
+                                    <button type="submit" class="hibid-place-bid-btn mt-2">
+                                        Place Bid Now <i class="fas fa-gavel ms-2"></i>
+                                    </button>
+                                </form>
+                            @endif
                         @else
                             <div class="hibid-login-prompt">
                                 <i class="fas fa-info-circle me-2"></i>
@@ -809,6 +828,27 @@
         transition: background 0.2s;
     }
     .hibid-category-link:hover { background: #dde6fc; color: #3a5bbf; }
+
+    /* Registration Prompt Styles */
+    .registration-prompt {
+        background: #f8f9fa;
+        border: 2px dashed #dee2e6 !important;
+        transition: all 0.3s ease;
+    }
+    .registration-prompt:hover {
+        border-color: #4e73df !important;
+        background: #fff;
+    }
+    .registration-icon-wrap {
+        width: 60px;
+        height: 60px;
+        background: #e8f0fe;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
 
     /* Timer */
     .hibid-timer {
