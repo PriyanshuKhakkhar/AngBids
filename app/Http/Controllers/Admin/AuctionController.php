@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\Auction;
 use App\Services\AuctionService;
 use App\Http\Requests\Admin\CancelAuctionRequest;
-use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class AuctionController extends Controller

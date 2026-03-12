@@ -23,6 +23,8 @@ use App\Http\Controllers\Api\Admin\AuctionController as AdminAuctionController;
 use App\Http\Controllers\Api\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Api\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Api\Admin\KycController as AdminKycControllerApi;
+
 
 
 Route::post('/register', [RegisterController::class, 'register']);
@@ -107,6 +109,12 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::apiResource('_users', AdminUserController::class);
             // Contact Management
             Route::apiResource('_contacts', AdminContactController::class);
+
+            // KYC Management
+            Route::get('_kyc', [AdminKycControllerApi::class, 'index']);
+            Route::get('_kyc/{id}', [AdminKycControllerApi::class, 'show']);
+            Route::post('_kyc/{id}/status', [AdminKycControllerApi::class, 'updateStatus']);
+
 
             // Custom Category Actions
             Route::post('_categories/{id}/restore', [AdminCategoryController::class, 'restore']);

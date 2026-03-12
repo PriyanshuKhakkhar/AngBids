@@ -10,6 +10,16 @@
             </h1>
             <p class="text-muted small mt-1 mb-0">Review and manage user identity verification requests.</p>
         </div>
+        <div class="d-flex align-items-center">
+            <div class="d-none d-sm-inline-block shadow-sm px-4 py-2 bg-white rounded-pill border mr-3">
+                <span class="text-xs font-weight-bold text-uppercase text-muted mr-2">Pending:</span>
+                <span class="h5 mb-0 font-weight-bold text-warning">{{ number_format($pending_kycs) }}</span>
+            </div>
+            <div class="d-none d-sm-inline-block shadow-sm px-4 py-2 bg-white rounded-pill border">
+                <span class="text-xs font-weight-bold text-uppercase text-muted mr-2">Total:</span>
+                <span class="h5 mb-0 font-weight-bold text-primary">{{ number_format($total_kycs) }}</span>
+            </div>
+        </div>
     </div>
 
     @if(session('success'))
@@ -21,7 +31,49 @@
         </div>
     @endif
 
-    <div class="card shadow-sm border-0 rounded-lg">
+    <!-- Filters Section -->
+    <div class="card shadow-sm border-0 mb-4 rounded-lg" style="border-left: 4px solid #4e73df !important;">
+        <div class="card-body p-4">
+            <form id="filter-form">
+                <div class="row align-items-end">
+                    <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-3">
+                        <label for="status-filter" class="filter-label"><i class="fas fa-circle-notch mr-1"></i> Verification Status</label>
+                        <select id="status-filter" class="custom-select filter-control w-100">
+                            <option value="all">All Submissions</option>
+                            <option value="pending">Pending Review</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-3">
+                        <label for="id-type-filter" class="filter-label"><i class="fas fa-id-card mr-1"></i> ID Document Type</label>
+                        <select id="id-type-filter" class="custom-select filter-control w-100">
+                            <option value="all">All Doc Types</option>
+                            <option value="aadhaar">Aadhaar Card</option>
+                            <option value="pan">PAN Card</option>
+                            <option value="passport">Passport</option>
+                            <option value="driving_license">Driving License</option>
+                        </select>
+                    </div>
+                    <div class="col-xl-2 col-lg-2 col-md-4 col-sm-6 mb-3">
+                        <label for="start-date" class="filter-label"><i class="far fa-calendar-alt mr-1"></i> From Date</label>
+                        <input type="date" id="start-date" class="form-control filter-control w-100">
+                    </div>
+                    <div class="col-xl-2 col-lg-2 col-md-4 col-sm-6 mb-3">
+                        <label for="end-date" class="filter-label"><i class="far fa-calendar-alt mr-1"></i> To Date</label>
+                        <input type="date" id="end-date" class="form-control filter-control w-100">
+                    </div>
+                    <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 mb-3">
+                        <button type="button" class="btn-reset-filter w-100" id="reset-filters" style="height: calc(1.5em + .75rem + 2px);">
+                            <i class="fas fa-sync-alt mr-2 text-primary"></i> Reset
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-lg mt-4">
         <div class="card-header py-3 bg-white border-bottom d-flex flex-row align-items-center justify-content-between">
             <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-list-ul mr-2 text-primary"></i>KYC Submissions Monitoring</h6>
         </div>
@@ -50,6 +102,29 @@
 @push('styles')
     <link href="{{ asset('admin-assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
     <style>
+        .filter-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.4rem;
+            color: #4a5568;
+            font-weight: 700;
+        }
+        .filter-control {
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+            color: #4a5568;
+            background-color: #f8fafc;
+            transition: all 0.2s ease-in-out;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
+        }
+        .filter-control:focus {
+            border-color: #a3bffa;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+            outline: none;
+        }
         .table th {
             text-transform: uppercase;
             font-size: 0.75rem;
@@ -89,6 +164,21 @@
             border-color: #a3bffa;
             box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
         }
+        .btn-reset-filter {
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            background-color: #fff;
+            color: #4a5568;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .btn-reset-filter:hover {
+            background-color: #f1f5f9;
+            color: #1a202c;
+            border-color: #cbd5e0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
     </style>
 @endpush
 
@@ -98,10 +188,18 @@
 
     <script>
         $(document).ready(function() {
-            $('#kyc-table').DataTable({
+            var table = $('#kyc-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('admin.kyc.data') }}",
+                ajax: {
+                    url: "{{ route('admin.kyc.data') }}",
+                    data: function (d) {
+                        d.status = $('#status-filter').val();
+                        d.id_type = $('#id-type-filter').val();
+                        d.start_date = $('#start-date').val();
+                        d.end_date = $('#end-date').val();
+                    }
+                },
                 language: {
                     searchPlaceholder: "Search records...",
                     lengthMenu: "Entries per page: _MENU_",
@@ -123,6 +221,17 @@
                     $('.btn-info').removeClass('btn-info').addClass('btn-outline-info').html('<i class="fas fa-eye"></i>');
                     $('.btn-sm').addClass('btn-action mx-1');
                 }
+            });
+
+            // Trigger filters
+            $('#status-filter, #id-type-filter, #start-date, #end-date').on('change', function() {
+                table.draw();
+            });
+
+            // Reset filters
+            $('#reset-filters').on('click', function() {
+                $('#filter-form')[0].reset();
+                table.draw();
             });
         });
     </script>

@@ -11,15 +11,41 @@ class AdminKycController extends Controller
 {
     public function index()
     {
-        return view('admin.kyc.index');
+        $total_kycs = Kyc::count();
+        $pending_kycs = Kyc::where('status', 'pending')->count();
+        return view('admin.kyc.index', compact('total_kycs', 'pending_kycs'));
     }
 
-    public function data()
+    public function data(Request $request)
     {
         $kycs = Kyc::with('user')->select('kycs.*');
 
+        // Apply Status Filter
+        if ($request->filled('status') && $request->status !== 'all') {
+            $kycs->where('status', $request->status);
+        }
+
+        // Apply ID Type Filter
+        if ($request->filled('id_type') && $request->id_type !== 'all') {
+            $kycs->where('id_type', $request->id_type);
+        }
+
+        // Apply Date Range Filter
+        if ($request->filled('start_date')) {
+            $kycs->whereDate('created_at', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $kycs->whereDate('created_at', '<=', $request->end_date);
+        }
+
         return DataTables::of($kycs)
             ->addIndexColumn()
+            ->filterColumn('user', function($query, $keyword) {
+                $query->whereHas('user', function($q) use ($keyword) {
+                    $q->where('username', 'like', "%{$keyword}%")
+                      ->orWhere('email', 'like', "%{$keyword}%");
+                });
+            })
             ->addColumn('user', function ($kyc) {
                 return $kyc->user->username;
             })
