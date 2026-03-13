@@ -94,13 +94,16 @@
 @endpush
 
 @section('content')
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pt-2">
         <div>
-            <h1 class="h3 mb-0 text-gray-800 font-weight-bold">
-                <i class="fas fa-gavel text-primary mr-2"></i>Manage Auctions
-            </h1>
-            <p class="text-muted small mt-1 mb-0">Monitor, approve, and manage all marketplace listings.</p>
+            <h1 class="h3 text-dark fw-bold mb-0">Manage Auctions</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 small bg-transparent p-0">
+                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" class="text-decoration-none text-primary">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Manage Auctions</li>
+                </ol>
+            </nav>
         </div>
         <div class="d-none d-sm-inline-block shadow-sm px-4 py-2 bg-white rounded-pill border">
             <span class="text-xs font-weight-bold text-uppercase text-muted mr-2">Total Auctions:</span>
@@ -157,8 +160,8 @@
                     <input type="date" id="endDateFilter" class="form-control filter-control w-100">
                 </div>
                 <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 mb-3">
-                    <button type="button" class="btn-reset-filter w-100" id="resetFilters" style="height: calc(1.5em + .75rem + 2px);">
-                        <i class="fas fa-sync-alt mr-2 text-primary"></i> Reset Search
+                    <button type="button" class="btn btn-light border w-100 font-weight-bold" id="resetFilters" style="height: calc(1.5em + .75rem + 2px);">
+                        <i class="fas fa-sync-alt mr-1 text-primary"></i> <span class="text-primary">Reset</span>
                     </button>
                 </div>
             </div>

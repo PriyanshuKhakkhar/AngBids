@@ -47,13 +47,13 @@ class AuctionController extends Controller
             }
         }])->findOrFail($id);
 
-        // if auction is not active, only owner or admin can view
-        if ($auction->status !== 'active') {
+        // if auction is not active or closed, only owner or admin can view
+        if ($auction->status !== 'active' && $auction->status !== 'closed') {
             if (!auth()->check()) {
                 abort(404);
             }
 
-            // Only owner, admin, or super admin can view non-active auctions
+            // Only owner, admin, or super admin can view restricted auctions
             $user = auth()->user();
             if ($user->id !== $auction->user_id && $user->role !== 'admin' && $user->role !== 'super admin') {
                  abort(404);

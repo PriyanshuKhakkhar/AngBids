@@ -29,14 +29,11 @@
                 </a>
             </div>
 
-            <div class="px-3 mb-4">
+            <div class="px-3 mb-2">
                 <a href="{{ route('home') }}" class="btn btn-outline-light btn-sm w-100 rounded-pill opacity-75 hover-opacity-100 transition-all">
                     <i class="fas fa-arrow-left me-2"></i> Back to Website
                 </a>
             </div>
-
-            <hr class="sidebar-divider">
-
 
             <nav>
                 <div class="sidebar-heading">Core Dashboard</div>
@@ -45,8 +42,7 @@
                     <i class="fas fa-fw fa-tachometer-alt me-2"></i> Overview
                 </a>
                 
-                <hr class="sidebar-divider">
-                <div class="sidebar-heading">My Activity</div>
+                <div class="sidebar-heading mt-2">My Activity</div>
                 
                 <a href="{{ route('user.my-bids') }}" 
                    class="sidebar-link rounded mb-1 {{ request()->routeIs('user.my-bids') ? 'active' : '' }}">
@@ -69,8 +65,7 @@
                     <i class="fas fa-fw fa-bell me-2"></i> Notifications
                 </a>
                 
-                <hr class="sidebar-divider">
-                <div class="sidebar-heading">Settings</div>
+                <div class="sidebar-heading mt-2">Settings</div>
                 
                 <a href="{{ route('user.profile') }}" 
                    class="sidebar-link rounded mb-1 {{ request()->routeIs('user.profile') ? 'active' : '' }}">
@@ -78,7 +73,7 @@
                 </a>
 
                 
-                <div class="mt-5">
+                <div class="mt-1">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="sidebar-link rounded text-white opacity-50 w-100 border-0 bg-transparent text-start">

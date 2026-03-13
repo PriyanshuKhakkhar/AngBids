@@ -3,12 +3,16 @@
 @section('title', 'KYC Verifications - LaraBids')
 
 @section('content')
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pt-2">
         <div>
-            <h1 class="h3 mb-0 text-gray-800 font-weight-bold">
-                <i class="fas fa-id-card text-primary mr-2"></i>KYC Verifications
-            </h1>
-            <p class="text-muted small mt-1 mb-0">Review and manage user identity verification requests.</p>
+            <h1 class="h3 text-dark fw-bold mb-0">KYC Verifications</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 small bg-transparent p-0">
+                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" class="text-decoration-none text-primary">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">KYC Verifications</li>
+                </ol>
+            </nav>
         </div>
         <div class="d-flex align-items-center">
             <div class="d-none d-sm-inline-block shadow-sm px-4 py-2 bg-white rounded-pill border mr-3">
@@ -64,8 +68,8 @@
                         <input type="date" id="end-date" class="form-control filter-control w-100">
                     </div>
                     <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 mb-3">
-                        <button type="button" class="btn-reset-filter w-100" id="reset-filters" style="height: calc(1.5em + .75rem + 2px);">
-                            <i class="fas fa-sync-alt mr-2 text-primary"></i> Reset
+                        <button type="button" class="btn btn-light border w-100 font-weight-bold" id="reset-filters" style="height: calc(1.5em + .75rem + 2px);">
+                            <i class="fas fa-sync-alt mr-1 text-primary"></i> <span class="text-primary">Reset</span>
                         </button>
                     </div>
                 </div>

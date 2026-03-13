@@ -210,8 +210,8 @@
                                 @endphp
                                 
                                 @if($isClosed)
-                                    <div class="alert alert-light border py-1 mb-2 text-center small text-secondary fw-bold" style="font-size: 0.7rem;">
-                                        <i class="fas fa-lock me-1"></i> Auction Closed
+                                    <div class="alert alert-danger border-0 py-1 mb-2 text-center small fw-bold" style="font-size: 0.7rem; background: rgba(220, 53, 69, 0.1); color: #dc3545;">
+                                        <i class="fas fa-times-circle me-1"></i> Auction Closed
                                     </div>
                                 @elseif($isUpcoming)
                                     <div class="alert alert-info py-1 mb-2 text-center small border-0 fw-bold" style="font-size: 0.7rem;">
@@ -266,11 +266,11 @@
                                 
                                 <div class="mt-auto">
                                     <div class="d-flex justify-content-between align-items-center mb-2 pt-2 border-top">
-                                        <span class="text-xs text-secondary fw-bold text-uppercase">Current Bid</span>
+                                        <span class="text-xs text-secondary fw-bold text-uppercase">{{ $isClosed ? 'Final Bid' : 'Current Bid' }}</span>
                                         <span class="h6 mb-0 text-primary fw-bold">₹{{ number_format($auction->current_price, 2) }}</span>
                                     </div>
-                                    <div class="btn btn-primary w-100 py-2 rounded-pill fw-bold shadow-sm transition-all btn-hover-effect" style="font-size: 0.8rem;">
-                                        @if($isUpcoming) VIEW @else BID NOW @endif <i class="fas fa-gavel ms-1"></i>
+                                    <div class="btn {{ $isClosed ? 'btn-outline-secondary' : 'btn-primary' }} w-100 py-2 rounded-pill fw-bold shadow-sm transition-all btn-hover-effect" style="font-size: 0.8rem;">
+                                        @if($isClosed) CLOSED @elseif($isUpcoming) VIEW @else BID NOW @endif <i class="fas {{ $isClosed ? 'fa-lock' : 'fa-gavel' }} ms-1"></i>
                                     </div>
                                 </div>
                             </div>

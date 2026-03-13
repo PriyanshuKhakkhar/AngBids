@@ -7,9 +7,18 @@
 @endpush
 
 @section('content')
-    <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Payments & Transactions</h1>
-    <p class="mb-4">Track all successful auction sales, commissions, and payouts.</p>
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pt-2">
+        <div>
+            <h1 class="h3 text-dark fw-bold mb-0">Payments & Transactions</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 small bg-transparent p-0">
+                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" class="text-decoration-none text-primary">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Payments & Transactions</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">

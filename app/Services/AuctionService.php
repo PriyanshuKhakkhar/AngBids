@@ -11,6 +11,8 @@ use Illuminate\Http\UploadedFile;
 //Notifications
 use App\Notifications\AuctionCanceledNotification;
 use App\Notifications\AuctionApprovedNotification;
+use Illuminate\Support\Facades\DB;
+use App\Models\Category;
 
 class AuctionService
 {
@@ -54,7 +56,7 @@ class AuctionService
         // Category filter (Includes children products)
         if ($request->has('category')) {
             $categorySlug = $request->input('category');
-            $category = \App\Models\Category::where('slug', $categorySlug)->first();
+            $category = Category::where('slug', $categorySlug)->first();
 
             if ($category) {
                 // Get this category and all its nested children IDs using recursive helper
@@ -324,8 +326,10 @@ class AuctionService
         // 5. Ensure we have a primary image if some were deleted
         if (!$auction->image && $auction->images()->exists()) {
             $firstImage = $auction->images()->orderBy('sort_order')->first();
-            $firstImage->update(['is_primary' => true]);
-            $auction->update(['image' => $firstImage->image_path]);
+            if ($firstImage) {
+                $firstImage->update(['is_primary' => true]);
+                $auction->update(['image' => $firstImage?->image_path]);
+            }
         }
 
         return $auction->load(['user', 'category', 'images']);
@@ -395,14 +399,14 @@ class AuctionService
         
         // Remove existing select and only select aggregates
         $priceStats = $priceQuery
-            ->select(\DB::raw('MIN(current_price) as min_price, MAX(current_price) as max_price'))
+            ->select(DB::raw('MIN(current_price) as min_price, MAX(current_price) as max_price'))
             ->first();
 
         return [
             'total_results' => $totalResults,
             'price_range' => [
-                'min' => $priceStats->min_price ?? 0,
-                'max' => $priceStats->max_price ?? 0,
+                'min' => $priceStats?->min_price ?? 0,
+                'max' => $priceStats?->max_price ?? 0,
             ],
         ];
     }

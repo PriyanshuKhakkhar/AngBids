@@ -1049,36 +1049,55 @@
     .hibid-action-row {
         display: flex;
         gap: 10px;
+        align-items: stretch;
+    }
+    .watchlist-toggle-form {
+        flex: 1;
+        display: flex;
     }
     .hibid-watchlist-btn {
         flex: 1;
+        width: 100%;
         border: 2px solid #cbd5e0;
         background: #fff;
         color: #495057;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         font-weight: 600;
-        border-radius: 6px;
-        padding: 9px 16px;
+        border-radius: 8px;
+        padding: 10px 16px;
         cursor: pointer;
         text-align: center;
         text-decoration: none;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: border-color 0.2s, color 0.2s;
+        transition: all 0.2s ease;
+        line-height: 1;
     }
-    .hibid-watchlist-btn:hover { border-color: #4e73df; color: #4e73df; }
+    .hibid-watchlist-btn:hover { 
+        border-color: #4e73df; 
+        color: #4e73df;
+        background: #f8faff;
+    }
     .hibid-share-btn {
+        width: 46px;
         border: 2px solid #cbd5e0;
         background: #fff;
         color: #495057;
-        border-radius: 6px;
-        padding: 9px 16px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         cursor: pointer;
         font-size: 1rem;
-        transition: border-color 0.2s, color 0.2s;
+        transition: all 0.2s ease;
+        padding: 0;
     }
-    .hibid-share-btn:hover { border-color: #4e73df; color: #4e73df; }
+    .hibid-share-btn:hover { 
+        border-color: #4e73df; 
+        color: #4e73df;
+        background: #f8faff;
+    }
     
     /* Bidding Tabs Styles */
     .hibid-bid-tabs {

@@ -20,6 +20,43 @@
     </a>
 </div>
 
+<!-- Filters Section -->
+<div class="card shadow-sm border-0 mb-4 rounded-lg overflow-hidden">
+    <div class="card-body p-4">
+        <div class="row g-3 align-items-end">
+            <div class="col-xl-5 col-lg-5 col-md-4 col-sm-6">
+                <label for="categoryFilter" class="filter-label"><i class="fas fa-tags me-2"></i>Category</label>
+                <select id="categoryFilter" class="form-select filter-control">
+                    <option value="" selected>All Categories</option>
+                    @foreach($categories as $cat)
+                        <optgroup label="{{ $cat->name }}">
+                            <option value="{{ $cat->slug }}">{{ $cat->name }} (All)</option>
+                            @foreach($cat->children as $child)
+                                <option value="{{ $child->slug }}">&nbsp;&nbsp;&mdash; {{ $child->name }}</option>
+                            @endforeach
+                        </optgroup>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-xl-5 col-lg-5 col-md-4 col-sm-6">
+                <label for="sortFilter" class="filter-label"><i class="fas fa-sort-amount-down-alt me-2"></i>Sort By</label>
+                <select id="sortFilter" class="form-select filter-control">
+                    <option value="latest" selected>Recently Added</option>
+                    <option value="price_desc">Highest Price First</option>
+                    <option value="price_asc">Lowest Price First</option>
+                </select>
+            </div>
+            
+            <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 text-end">
+                <button type="button" class="btn btn-light border w-100" id="resetFilters" style="height: 42px;" title="Reset Filters">
+                    <i class="fas fa-sync-alt text-primary"></i> <span class="ms-1 text-primary fw-bold">Reset</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Watchlist Table -->
 <div class="card shadow-sm border-0 rounded-lg">
     <div class="card-header py-3 bg-white border-bottom d-flex flex-row align-items-center justify-content-between">
@@ -30,16 +67,14 @@
             <table class="table table-hover border-bottom w-100" id="watchlistTable" cellspacing="0">
                 <thead>
                     <tr>
-                        <th class="text-nowrap" style="min-width: 350px;">Item</th>
+                        <th class="text-nowrap" style="min-width: 320px;">Item Details</th>
                         <th class="text-nowrap text-center">Category</th>
                         <th class="text-nowrap text-center">Current Price</th>
                         <th class="text-nowrap text-center">End Time</th>
-                        <th width="100" class="text-center text-nowrap">Action</th>
+                        <th width="80" class="text-center text-nowrap">Action</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {{-- Data injected via DataTables --}}
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
     </div>
@@ -48,32 +83,48 @@
 @push('styles')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 <style>
-    /* Admin Matching Table Styling */
+    .filter-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+        color: #64748b;
+        font-weight: 700;
+        display: block;
+    }
+    .filter-control {
+        border-radius: 0.5rem;
+        border: 1px solid #e2e8f0;
+        font-size: 0.85rem;
+        padding: 0.6rem 0.75rem;
+        background-color: #f8fafc;
+        transition: all 0.2s;
+    }
+    .filter-control:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        background-color: #fff;
+    }
     .table th {
         text-transform: uppercase;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         letter-spacing: 0.05em;
         color: #64748b;
         font-weight: 700;
         border-bottom-width: 2px !important;
         background-color: #f8fafc;
+        padding: 1rem 0.75rem;
     }
     .table td {
         vertical-align: middle;
         color: #475569;
-        font-size: 0.9rem;
-    }
-
-    .dataTables_wrapper .dataTables_length,
-    .dataTables_wrapper .dataTables_filter {
-        margin-bottom: 1.5rem;
-        padding: 0 0.5rem;
+        font-size: 0.85rem;
+        padding: 1rem 0.75rem;
     }
     .dataTables_wrapper .dataTables_filter input {
-        border-radius: 2rem;
-        padding: 0.5rem 1.5rem;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
         border: 1px solid #e2e8f0;
-        min-width: 250px;
         background: #f8fafc;
     }
 </style>
@@ -86,25 +137,28 @@
 
 <script>
 $(document).ready(function() {
+    var currentCategory = '';
+    var currentSort = 'latest';
+
     var table = $('#watchlistTable').DataTable({
         processing: true,
         serverSide: true,
         responsive: true,
         ajax: {
             url: "{{ route('user.watchlist.data') }}",
-            type: "GET",
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            data: function (d) {
+                d.category = currentCategory;
+                d.sort = currentSort;
             }
         },
         columns: [
             { data: 'item', name: 'auction.title' },
-            { data: 'category', name: 'auction.category.name' },
-            { data: 'price', name: 'auction.current_price' },
-            { data: 'end_time', name: 'auction.end_time' },
-            { data: 'action', name: 'action', orderable: false, searchable: false }
+            { data: 'category', name: 'auction.category.name', className: 'text-center' },
+            { data: 'price', name: 'auction.current_price', className: 'text-center' },
+            { data: 'end_time', name: 'auction.end_time', className: 'text-center' },
+            { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
         ],
-        order: [[3, 'asc']], 
+        order: [], 
         language: {
             search: "_INPUT_",
             searchPlaceholder: "Search wishlist...",
@@ -112,16 +166,25 @@ $(document).ready(function() {
             paginate: {
                 previous: '<i class="fas fa-chevron-left"></i>',
                 next: '<i class="fas fa-chevron-right"></i>'
-            },
-            processing: '<div class="d-flex justify-content-center py-4"><div class="spinner-border text-primary" role="status"></div></div>'
+            }
         },
-        dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
-             "<'row'<'col-sm-12'tr>>" +
-             "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-        drawCallback: function() {
-            $('.pagination').addClass('pagination-sm justify-content-end mb-0 ps-0');
-            $('.page-item.active .page-link').css('border-radius', '0.5rem');
-        }
+        dom: "<'row mb-3'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>rt<'row mt-3'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+    });
+
+    $('#categoryFilter, #sortFilter').on('change', function() {
+        currentCategory = $('#categoryFilter').val();
+        currentSort = $('#sortFilter').val();
+        table.draw();
+    });
+
+    $('#resetFilters').on('click', function() {
+        $('#categoryFilter').val('');
+        $('#sortFilter').val('latest');
+        
+        currentCategory = '';
+        currentSort = 'latest';
+        
+        table.search('').draw();
     });
 });
 </script>

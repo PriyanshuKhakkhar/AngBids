@@ -27,17 +27,18 @@ class UserDashboardController extends Controller
     // My bids
     public function myBids()
     {
-        return view('website.user.my-bids');
+        $categories = \App\Models\Category::active()->whereNull('parent_id')->with('children')->get();
+        return view('website.user.my-bids', compact('categories'));
     }
 
     // My bids data for DataTables
-    public function myBidsData()
+    public function myBidsData(\Illuminate\Http\Request $request)
     {
         try {
             $user = auth()->user();
             
             // Get user's bids, unique by auction_id (showing their latest amount per auction)
-            $bids = \App\Models\Bid::where('user_id', $user->id)
+            $query = \App\Models\Bid::where('user_id', $user->id)
                 ->with(['auction.category'])
                 ->select('*')
                 ->whereIn('id', function($query) use ($user) {
@@ -45,31 +46,77 @@ class UserDashboardController extends Controller
                         ->from('bids')
                         ->where('user_id', $user->id)
                         ->groupBy('auction_id');
-                })
-                ->latest();
+                });
 
-            return datatables()->of($bids)
+            // Filters
+            if ($request->filled('category')) {
+                $query->whereHas('auction.category', function($q) use ($request) {
+                    $q->where('slug', $request->category);
+                });
+            }
+
+            if ($request->filled('status')) {
+                $status = $request->status;
+                $query->whereHas('auction', function($q) use ($status) {
+                    if ($status === 'live') {
+                        $q->where('status', 'active')
+                          ->where('start_time', '<=', now())
+                          ->where('end_time', '>', now());
+                    } elseif ($status === 'ended') {
+                        $q->where('end_time', '<=', now());
+                    } elseif ($status !== 'all') {
+                        $q->where('status', $status);
+                    }
+                });
+            }
+
+            if ($request->filled('start_date')) {
+                $query->whereDate('bids.created_at', '>=', $request->start_date);
+            }
+            if ($request->filled('end_date')) {
+                $query->whereDate('bids.created_at', '<=', $request->end_date);
+            }
+
+            // Search
+            if ($request->has('search') && isset($request->search['value'])) {
+                $keyword = $request->search['value'];
+                if (!empty($keyword)) {
+                    $query->whereHas('auction', function($q) use ($keyword) {
+                        $q->where('title', 'like', "%{$keyword}%");
+                    });
+                }
+            }
+
+            // Sort
+            $sort = $request->input('sort', 'latest');
+            match($sort) {
+                'price_asc' => $query->orderBy('amount', 'asc'),
+                'price_desc' => $query->orderBy('amount', 'desc'),
+                default => $query->latest(),
+            };
+
+            return datatables()->of($query)
                 ->addColumn('item', function($bid) {
                     $auction = $bid->auction;
-                    $image = $auction->image ? asset('storage/' . $auction->image) : 'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120';
+                    $image = $auction->image ? (str_starts_with($auction->image, 'http') ? $auction->image : asset('storage/' . $auction->image)) : 'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120';
                     $title = e($auction->title);
                     if(strlen($title) > 45) {
                         $title = substr($title, 0, 45) . '...';
                     }
                     
                     return '
-                        <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center text-nowrap">
                             <div class="position-relative me-3">
                                 <img src="'.$image.'" class="rounded border" width="50" height="50" style="object-fit: cover;" onerror="this.src=\'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120\'">
                             </div>
                             <div class="d-flex flex-column">
-                                <span class="fw-bold text-dark mb-1 d-inline-block" style="max-width:350px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="'.e($auction->title).'">'.$title.'</span>
+                                <span class="fw-bold text-dark mb-1 d-inline-block" style="max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="'.e($auction->title).'">'.$title.'</span>
                                 <span class="text-muted small">ID: #'.str_pad($auction->id, 5, '0', STR_PAD_LEFT).'</span>
                             </div>
                         </div>';
                 })
                 ->addColumn('my_bid', function($bid) {
-                    return '₹'.number_format($bid->amount, 2);
+                    return '<span class="fw-bold text-primary">₹'.number_format($bid->amount, 2).'</span>';
                 })
                 ->addColumn('current_price', function($bid) {
                     return '₹'.number_format($bid->auction->current_price, 2);
@@ -80,18 +127,18 @@ class UserDashboardController extends Controller
                         'Live' => 'success', 'Starting Soon' => 'info', 'Ended' => 'danger',
                         'Pending' => 'warning text-dark', 'Closed' => 'secondary', 'Cancelled' => 'dark', default => 'secondary'
                     };
-                    return '<span class="badge bg-'.$bg.'">'.$status.'</span>';
+                    return '<span class="badge rounded-pill bg-'.$bg.'">'.$status.'</span>';
                 })
                 ->addColumn('time_left', function($bid) {
                     $auction = $bid->auction;
                     if ($auction->status === 'active' && $auction->end_time->isFuture()) {
-                        return $auction->end_time->diffForHumans(null, true);
+                        return '<i class="far fa-clock me-1 text-primary"></i> ' . $auction->end_time->diffForHumans(null, true);
                     }
-                    return 'Ended';
+                    return '<span class="text-muted">Ended</span>';
                 })
                 ->addColumn('action', function($bid) {
                     $url = route('auctions.show', $bid->auction->id);
-                    return '<a href="'.$url.'" class="btn btn-outline-info btn-sm text-info bg-white" title="View"><i class="fas fa-eye"></i></a>';
+                    return '<a href="'.$url.'" class="btn btn-outline-primary btn-sm rounded-circle shadow-sm" title="View" style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center;"><i class="fas fa-eye"></i></a>';
                 })
                 ->rawColumns(['item', 'my_bid', 'current_price', 'status', 'time_left', 'action'])
                 ->make(true);
@@ -103,18 +150,65 @@ class UserDashboardController extends Controller
     // My auctions
     public function myAuctions()
     {
-        return view('website.user.my-auctions');
+        $categories = \App\Models\Category::active()->whereNull('parent_id')->with('children')->get();
+        return view('website.user.my-auctions', compact('categories'));
     }
 
     // My auctions data for DataTables
-    public function myAuctionsData()
+    public function myAuctionsData(\Illuminate\Http\Request $request)
     {
         try {
-            $auctions = \App\Models\Auction::where('user_id', auth()->id())
-                ->with(['category', 'bids.user'])
-                ->latest();
+            $query = \App\Models\Auction::where('user_id', auth()->id())
+                ->with(['category', 'bids.user']);
 
-            return datatables()->of($auctions)
+            // Filters
+            if ($request->filled('category')) {
+                $query->whereHas('category', function($q) use ($request) {
+                    $q->where('slug', $request->category);
+                });
+            }
+
+            if ($request->filled('status')) {
+                $status = $request->status;
+                if ($status === 'live') {
+                    $query->where('status', 'active')
+                          ->where('start_time', '<=', now())
+                          ->where('end_time', '>', now());
+                } elseif ($status === 'ended') {
+                    $query->where('end_time', '<=', now());
+                } elseif ($status !== 'all') {
+                    $query->where('status', $status);
+                }
+            }
+
+            if ($request->filled('start_date')) {
+                $query->whereDate('created_at', '>=', $request->start_date);
+            }
+            if ($request->filled('end_date')) {
+                $query->whereDate('created_at', '<=', $request->end_date);
+            }
+
+            // Search
+            if ($request->has('search') && isset($request->search['value'])) {
+                $keyword = $request->search['value'];
+                if (!empty($keyword)) {
+                    $query->where(function($q) use ($keyword) {
+                        $q->where('title', 'like', "%{$keyword}%")
+                          ->orWhere('description', 'like', "%{$keyword}%");
+                    });
+                }
+            }
+
+            // Sort
+            $sort = $request->input('sort', 'latest');
+            match($sort) {
+                'price_asc' => $query->orderBy('current_price', 'asc'),
+                'price_desc' => $query->orderBy('current_price', 'desc'),
+                'ending_soon' => $query->orderBy('end_time', 'asc'),
+                default => $query->latest(),
+            };
+
+            return datatables()->of($query)
                 ->addColumn('item', function($auction) {
                     $image = $auction->image ? (str_starts_with($auction->image, 'http') ? $auction->image : asset('storage/' . $auction->image)) : 'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120';
                     $title = e($auction->title);
@@ -123,12 +217,12 @@ class UserDashboardController extends Controller
                     }
                     $date = $auction->created_at->format('M d, Y');
                     return '
-                        <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center text-nowrap">
                             <div class="position-relative me-3">
                                 <img src="'.$image.'" class="rounded border" width="50" height="50" style="object-fit: cover;" onerror="this.src=\'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120\'">
                             </div>
                             <div class="d-flex flex-column">
-                                <span class="fw-bold text-dark mb-1 d-inline-block" style="max-width:350px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="'.e($auction->title).'">'.$title.'</span>
+                                <span class="fw-bold text-dark mb-1 d-inline-block" style="max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="'.e($auction->title).'">'.$title.'</span>
                                 <span class="text-muted small"><i class="far fa-calendar-alt me-1"></i> Listed on '.$date.'</span>
                             </div>
                         </div>';
@@ -139,20 +233,20 @@ class UserDashboardController extends Controller
                         'Live' => 'success', 'Starting Soon' => 'info', 'Ended' => 'danger',
                         'Pending' => 'warning text-dark', 'Closed' => 'secondary', 'Cancelled' => 'dark', default => 'secondary'
                     };
-                    return '<span class="badge bg-'.$bg.'">'.$status.'</span>';
+                    return '<span class="badge rounded-pill bg-'.$bg.'">'.$status.'</span>';
                 })
                 ->addColumn('price', function($auction) {
-                    return '₹'.number_format($auction->current_price, 2);
+                    return '<span class="fw-bold">₹'.number_format($auction->current_price, 2).'</span>';
                 })
                 ->addColumn('winner', function($auction) {
                     $highestBid = $auction->highestBid();
                     if ($highestBid && $highestBid->user) {
                         return e($highestBid->user->name);
                     }
-                    return 'N/A';
+                    return '<span class="text-muted italic small">No Bids</span>';
                 })
                 ->addColumn('bids', function($auction) {
-                    return $auction->bids->count();
+                    return '<span class="badge bg-light text-dark border">'.$auction->bids->count().'</span>';
                 })
                 ->addColumn('action', function($auction) {
                     $isWithin24Hours = $auction->created_at && $auction->created_at->diffInHours(now()) <= 24;
@@ -164,11 +258,11 @@ class UserDashboardController extends Controller
                     $viewUrl = route('auctions.show', $auction->id);
                     $editUrl = route('auctions.edit', $auction->id);
                     
-                    $html = '<a href="'.$viewUrl.'" class="btn btn-outline-info btn-sm text-info border-info bg-white me-1" title="View"><i class="fas fa-eye"></i></a>';
+                    $html = '<a href="'.$viewUrl.'" class="btn btn-outline-info btn-sm rounded-circle shadow-sm me-1" title="View" style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center;"><i class="fas fa-eye"></i></a>';
                     if($canEdit) {
-                        $html .= '<a href="'.$editUrl.'" class="btn btn-outline-primary btn-sm text-primary border-primary bg-white me-1" title="Edit"><i class="fas fa-edit"></i></a>';
+                        $html .= '<a href="'.$editUrl.'" class="btn btn-outline-primary btn-sm rounded-circle shadow-sm me-1" title="Edit" style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center;"><i class="fas fa-edit"></i></a>';
                     }
-                    $html .= '<button type="button" onclick="confirmDelete('.$auction->id.')" class="btn btn-outline-danger btn-sm text-danger border-danger bg-white" title="Delete"><i class="fas fa-trash"></i></button>';
+                    $html .= '<button type="button" onclick="confirmDelete('.$auction->id.')" class="btn btn-outline-danger btn-sm rounded-circle shadow-sm" title="Delete" style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center;"><i class="fas fa-trash"></i></button>';
                     
                     return '<div class="text-nowrap">'.$html.'</div>';
                 })
@@ -182,25 +276,55 @@ class UserDashboardController extends Controller
     // Winning items
     public function winningItems()
     {
-        return view('website.user.winning-items');
+        $categories = \App\Models\Category::active()->whereNull('parent_id')->with('children')->get();
+        return view('website.user.winning-items', compact('categories'));
     }
 
     // Winning items data for DataTables
-    public function winningItemsData()
+    public function winningItemsData(\Illuminate\Http\Request $request)
     {
         try {
             $user = auth()->user();
             
-            $auctions = \App\Models\Auction::where('end_time', '<=', now())
+            $query = \App\Models\Auction::where('end_time', '<=', now())
                 ->whereIn('status', ['active', 'closed'])
-                ->whereHas('bids', function ($query) use ($user) {
-                    $query->where('user_id', $user->id)
-                          ->whereRaw('amount = (SELECT MAX(amount) FROM bids WHERE auction_id = auctions.id)');
+                ->whereHas('bids', function ($q) use ($user) {
+                    $q->where('user_id', $user->id)
+                      ->whereRaw('amount = (SELECT MAX(amount) FROM bids WHERE auction_id = auctions.id)');
                 })
-                ->with(['category', 'user'])
-                ->latest();
+                ->with(['category', 'user']);
 
-            return datatables()->of($auctions)
+            // Filters
+            if ($request->filled('category')) {
+                $query->whereHas('category', function($q) use ($request) {
+                    $q->where('slug', $request->category);
+                });
+            }
+
+            if ($request->filled('start_date')) {
+                $query->whereDate('end_time', '>=', $request->start_date);
+            }
+            if ($request->filled('end_date')) {
+                $query->whereDate('end_time', '<=', $request->end_date);
+            }
+
+            // Search
+            if ($request->has('search') && isset($request->search['value'])) {
+                $keyword = $request->search['value'];
+                if (!empty($keyword)) {
+                    $query->where('title', 'like', "%{$keyword}%");
+                }
+            }
+
+            // Sort
+            $sort = $request->input('sort', 'latest');
+            match($sort) {
+                'price_asc' => $query->orderBy('current_price', 'asc'),
+                'price_desc' => $query->orderBy('current_price', 'desc'),
+                default => $query->latest('end_time'),
+            };
+
+            return datatables()->of($query)
                 ->addColumn('item', function($auction) {
                     $image = $auction->image ? (str_starts_with($auction->image, 'http') ? $auction->image : asset('storage/' . $auction->image)) : 'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120';
                     $title = e($auction->title);
@@ -208,28 +332,28 @@ class UserDashboardController extends Controller
                         $title = substr($title, 0, 45) . '...';
                     }
                     return '
-                        <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center text-nowrap">
                             <div class="position-relative me-3">
                                 <img src="'.$image.'" class="rounded border" width="50" height="50" style="object-fit: cover;" onerror="this.src=\'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120\'">
                             </div>
                             <div class="d-flex flex-column">
-                                <span class="fw-bold text-dark mb-1 d-inline-block" style="max-width:350px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="'.e($auction->title).'">'.$title.'</span>
+                                <span class="fw-bold text-dark mb-1 d-inline-block" style="max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="'.e($auction->title).'">'.$title.'</span>
                                 <span class="text-muted small">ID: #'.str_pad($auction->id, 5, '0', STR_PAD_LEFT).'</span>
                             </div>
                         </div>';
                 })
                 ->addColumn('winning_bid', function($auction) {
-                    return '₹'.number_format($auction->current_price, 2);
+                    return '<span class="fw-bold text-success">₹'.number_format($auction->current_price, 2).'</span>';
                 })
                 ->addColumn('won_date', function($auction) {
-                    return $auction->end_time->format('M d, Y');
+                    return '<span class="text-muted small">'.$auction->end_time->format('M d, Y').'</span>';
                 })
                 ->addColumn('payment_status', function($auction) {
-                    return '<span class="badge bg-success">Won</span>';
+                    return '<span class="badge rounded-pill bg-success-subtle text-success border border-success px-3">Won</span>';
                 })
                 ->addColumn('action', function($auction) {
                     $url = route('auctions.show', $auction->id);
-                    return '<a href="'.$url.'" class="btn btn-outline-info btn-sm text-info bg-white" title="View"><i class="fas fa-eye"></i></a>';
+                    return '<a href="'.$url.'" class="btn btn-outline-primary btn-sm rounded-circle shadow-sm" title="View" style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center;"><i class="fas fa-eye"></i></a>';
                 })
                 ->rawColumns(['item', 'winning_bid', 'won_date', 'payment_status', 'action'])
                 ->make(true);
@@ -241,19 +365,46 @@ class UserDashboardController extends Controller
     // Watchlist
     public function watchlist()
     {
-        return view('website.user.watchlist');
+        $categories = \App\Models\Category::active()->whereNull('parent_id')->with('children')->get();
+        return view('website.user.watchlist', compact('categories'));
     }
 
     // Watchlist data for DataTables
-    public function watchlistData()
+    public function watchlistData(\Illuminate\Http\Request $request)
     {
         try {
-            $watchlists = auth()->user()
+            $query = auth()->user()
                 ->watchlist()
-                ->with(['auction.category', 'auction.user'])
-                ->latest('watchlists.created_at');
+                ->with(['auction.category', 'auction.user']);
 
-            return datatables()->of($watchlists)
+            // Filters
+            if ($request->filled('category')) {
+                $query->whereHas('auction.category', function($q) use ($request) {
+                    $q->where('slug', $request->category);
+                });
+            }
+
+            // Search
+            if ($request->has('search') && isset($request->search['value'])) {
+                $keyword = $request->search['value'];
+                if (!empty($keyword)) {
+                    $query->whereHas('auction', function($q) use ($keyword) {
+                        $q->where('title', 'like', "%{$keyword}%");
+                    });
+                }
+            }
+
+            // Sort
+            $sort = $request->input('sort', 'latest');
+            if ($sort === 'price_asc' || $sort === 'price_desc') {
+                $query->join('auctions', 'watchlists.auction_id', '=', 'auctions.id')
+                      ->select('watchlists.*')
+                      ->orderBy('auctions.current_price', $sort === 'price_asc' ? 'asc' : 'desc');
+            } else {
+                $query->latest('watchlists.created_at');
+            }
+
+            return datatables()->of($query)
                 ->addColumn('item', function($item) {
                     $auction = $item->auction;
                     $image = $auction->image ? (str_starts_with($auction->image, 'http') ? $auction->image : asset('storage/' . $auction->image)) : 'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120';
@@ -263,24 +414,24 @@ class UserDashboardController extends Controller
                     }
                     $seller = e($auction->user->name ?? 'Unknown');
                     return '
-                        <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center text-nowrap">
                             <div class="position-relative me-3">
                                 <img src="'.$image.'" class="rounded border" width="50" height="50" style="object-fit: cover;" onerror="this.src=\'https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=120\'">
                             </div>
                             <div class="d-flex flex-column">
-                                <span class="fw-bold text-dark mb-1 d-inline-block" style="max-width:350px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="'.e($auction->title).'">'.$title.'</span>
+                                <span class="fw-bold text-dark mb-1 d-inline-block" style="max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="'.e($auction->title).'">'.$title.'</span>
                                 <span class="text-muted small"><i class="fas fa-user me-1"></i> '.$seller.'</span>
                             </div>
                         </div>';
                 })
                 ->addColumn('category', function($item) {
-                    return $item->auction->category->name ?? 'N/A';
+                    return '<span class="badge bg-light text-dark border">'.($item->auction->category->name ?? 'N/A').'</span>';
                 })
                 ->addColumn('price', function($item) {
-                    return '₹'.number_format($item->auction->current_price, 2);
+                    return '<span class="fw-bold">₹'.number_format($item->auction->current_price, 2).'</span>';
                 })
                 ->addColumn('end_time', function($item) {
-                    return $item->auction->end_time->format('M d, Y H:i');
+                    return '<span class="text-muted small">'.$item->auction->end_time->format('M d, Y H:i').'</span>';
                 })
                 ->addColumn('action', function($item) {
                     $viewUrl = route('auctions.show', $item->auction_id);
@@ -288,10 +439,10 @@ class UserDashboardController extends Controller
                     $csrf = csrf_field();
                     
                     return '<div class="text-nowrap">
-                                <a href="'.$viewUrl.'" class="btn btn-outline-info btn-sm text-info border-info bg-white me-1" title="View"><i class="fas fa-eye"></i></a>
+                                <a href="'.$viewUrl.'" class="btn btn-outline-info btn-sm rounded-circle shadow-sm me-1" title="View" style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center;"><i class="fas fa-eye"></i></a>
                                 <form action="'.$toggleUrl.'" method="POST" class="d-inline">
                                     '.$csrf.'
-                                    <button type="submit" class="btn btn-outline-danger btn-sm text-danger border-danger bg-white" title="Remove">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle shadow-sm" title="Remove" style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center;">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
