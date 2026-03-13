@@ -51,16 +51,18 @@
         
         {{-- Alerts --}}
         @if(session('success'))
-            <div class="alert alert-success border-0 shadow-sm mb-4">
+            <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4">
                 <i class="fas fa-check-circle me-2"></i>
                 {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
 
         @if(session('error'))
-            <div class="alert alert-danger border-0 shadow-sm mb-4">
+            <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4">
                 <i class="fas fa-times-circle me-2"></i>
                 {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
 
@@ -68,7 +70,7 @@
             
             <!-- LEFT COLUMN: Contact Information -->
             <div class="col-lg-5">
-                <div class="card border-0 shadow-lg rounded-4 h-100 overflow-hidden text-white" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);">
+                <div class="card border-0 shadow-sm rounded-3 h-100 overflow-hidden text-white" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);">
                     <div class="card-body p-5 position-relative">
                         <!-- Background Pattern -->
                         <div class="position-absolute top-0 start-0 w-100 h-100" style="background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px; opacity: 0.3;"></div>
@@ -135,7 +137,7 @@
 
             <!-- RIGHT COLUMN: Contact Form -->
             <div class="col-lg-7">
-                <div class="card border-0 shadow-lg rounded-4 h-100 bg-white" data-aos="fade-left">
+                <div class="card border-0 shadow-sm rounded-3 h-100 bg-white" data-aos="fade-left">
                     <div class="card-body p-4 p-md-5">
 
                         <h2 class="fw-bold mb-2 text-dark">Send us a Message</h2>
@@ -328,9 +330,7 @@
     transition: transform 0.3s ease;
 }
 
-.contact-detail-item:hover .icon-box-white {
-    transform: scale(1.1);
-}
+/* Removed hover effect to match profile style */
 
 /* Social Buttons */
 .social-btn-white {
@@ -350,7 +350,6 @@
 .social-btn-white:hover {
     background: white;
     color: #4e73df;
-    transform: translateY(-3px);
 }
 
 /* Info Boxes in Contact Card */
@@ -362,10 +361,7 @@
     transition: all 0.3s ease;
 }
 
-.info-box-small:hover {
-    background: rgba(255,255,255,0.15);
-    transform: translateY(-3px);
-}
+/* Removed hover effect to match profile style */
 
 /* Form Controls */
 #contact-content .form-control {
@@ -379,9 +375,10 @@
 
 #contact-content .form-control:focus {
     background-color: #fff;
-    border-color: #4e73df; /* Blue border */
-    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25); /* Blue shadow */
-    color: #6e707e; /* Keep text neutral */
+    border-color: #bac8f3;
+    box-shadow: none;
+    outline: 0;
+    color: #6e707e;
 }
 
 /* Validation Error State Override */
@@ -409,7 +406,6 @@
 }
 
 #contact-content .btn-primary:hover {
-    transform: translateY(-3px);
     box-shadow: 0 10px 20px rgba(78, 115, 223, 0.4);
 }
 

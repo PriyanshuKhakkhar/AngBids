@@ -291,8 +291,8 @@
 
                 <!-- Pagination Footer -->
                 @if($auctions->hasPages())
-                <div class="mt-5 d-flex justify-content-center">
-                    {{ $auctions->links('pagination::bootstrap-5') }}
+                <div class="mt-5 pt-4 border-top">
+                    {{ $auctions->onEachSide(1)->links('pagination::bootstrap-5') }}
                 </div>
                 @endif
             </div>
@@ -697,6 +697,32 @@
     }
     .urgent-timer .border-light {
         border-color: rgba(220, 53, 69, 0.2) !important;
+    }
+    .urgent-timer .border-light {
+        border-color: rgba(220, 53, 69, 0.2) !important;
+    }
+
+    /* Standard Pagination Styling (To match My Auctions look) */
+    .pagination {
+        margin-bottom: 0;
+        gap: 2px;
+    }
+    .page-item .page-link {
+        border-radius: 6px !important;
+        color: #4e73df;
+        border: 1px solid #eaecf4;
+        padding: 8px 14px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    .page-item.active .page-link {
+        background-color: #4e73df;
+        border-color: #4e73df;
+        color: #fff;
+    }
+    .page-item.disabled .page-link {
+        color: #d1d3e2;
+        background-color: #f8f9fc;
     }
 </style>
 @endpush

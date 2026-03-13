@@ -175,5 +175,47 @@ document.addEventListener('DOMContentLoaded', () => {
         searchInput.addEventListener('input', handleSearchReset);
     }
 
+    // --- Auto-dismiss Alerts System ---
+    function setupAutoDismiss() {
+        // Function to dismiss a single alert
+        const dismissAlert = (alert) => {
+            if (alert.classList.contains('alert-permanent')) return;
+            
+            setTimeout(() => {
+                const closeBtn = alert.querySelector('.btn-close');
+                if (closeBtn) {
+                    closeBtn.click();
+                } else {
+                    alert.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-10px)';
+                    setTimeout(() => alert.remove(), 600);
+                }
+            }, 5000);
+        };
+
+        // 1. Process existing alerts
+        document.querySelectorAll('.alert').forEach(dismissAlert);
+
+        // 2. Observe for dynamically added alerts (AJAX responses)
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === 1) { // Element node
+                        if (node.classList.contains('alert')) {
+                            dismissAlert(node);
+                        } else {
+                            // Check children for alerts
+                            node.querySelectorAll('.alert').forEach(dismissAlert);
+                        }
+                    }
+                });
+            });
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+    setupAutoDismiss();
+
     console.log('LaraBids Elite System Initialized.');
 });
