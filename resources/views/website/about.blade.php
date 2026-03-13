@@ -9,9 +9,6 @@
     <div class="container" data-aos="fade-up">
         <div class="row align-items-center">
             <div class="col-lg-7 text-center text-lg-start mb-5 mb-lg-0">
-                <span class="badge bg-white text-primary fw-bold px-3 py-2 rounded-pill mb-3 shadow-sm">
-                    ✨ OUR STORY & MISSION
-                </span>
                 <h1 class="display-3 fw-bold mb-3">About <span class="text-white">LaraBids</span></h1>
                 <p class="lead opacity-75 pe-lg-5">
                     LaraBids is the premier online auction platform designed for high-value acquisitions and a seamless bidding experience for collectors worldwide.

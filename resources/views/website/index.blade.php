@@ -4,39 +4,99 @@
 
 @section('content')
 
-<!-- Hero -->
-<section class="hero-section text-white d-flex align-items-center">
-    <div class="container" data-aos="fade-up">
-        <div class="row align-items-center">
-            <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
-                <span class="badge bg-white text-primary fw-bold px-3 py-2 rounded-pill mb-3 shadow-sm">
-                    🚀 DISCOVER THE FUTURE OF AUCTIONS
-                </span>
-                <h1 class="display-2 fw-bold mb-4">LaraBids: Browse, <br><span class="text-white">Bid, and Win</span></h1>
-                <p class="lead mb-5 opacity-75 pe-lg-5">
-                    Join the premier community for high-value acquisitions. From rare collectibles to everyday electronics,
-                    experience the power of professional bidding.
-                </p>
-                <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3">
-                    <a href="{{ route('auctions.index') }}" class="btn btn-gold btn-lg px-5 py-3 rounded-pill shadow">Browse Live Bids</a>
-                    <a href="#how-it-works" class="btn btn-outline-gold btn-lg px-5 py-3 rounded-pill">Learn More</a>
+<!-- Hero Carousel -->
+<section id="heroCarousel" class="carousel slide hero-section" data-bs-ride="carousel">
+    <!-- Indicators -->
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+
+    <div class="carousel-inner">
+        <!-- Slide 1 (Original) -->
+        <div class="carousel-item active">
+            <div class="container h-100 d-flex align-items-center" data-aos="fade-up">
+                <div class="row align-items-center w-100">
+                    <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
+                        <h1 class="display-2 fw-bold mb-4">LaraBids: Browse, <br><span class="text-white">Bid, and Win</span></h1>
+                        <p class="lead mb-5 opacity-75 pe-lg-5">
+                            Join the premier community for high-value acquisitions. From rare collectibles to everyday electronics,
+                            experience the power of professional bidding.
+                        </p>
+                        <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3">
+                            <a href="{{ route('auctions.index') }}" class="btn btn-gold btn-lg px-5 py-3 rounded-pill shadow">Browse Live Bids</a>
+                            <a href="#how-it-works" class="btn btn-outline-gold btn-lg px-5 py-3 rounded-pill">Learn More</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 d-none d-lg-block">
+                        <div class="hero-illustration-wrapper ps-lg-5 text-center">
+                            <div class="hero-glow-blob"></div>
+                            <img src="{{ asset('assets/images/banner-3.png') }}" class="img-fluid" alt="LaraBids Premium Auctions" style="max-height: 500px; filter: drop-shadow(0 20px 50px rgba(0,0,0,0.3));">
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="hero-illustration-wrapper ps-lg-5 text-center">
-                    <!-- Glow blob for depth -->
-                    <div class="hero-glow-blob"></div>
-                    
-                    <!-- Template Banner -->
-                    <img src="{{ asset('assets/images/banner-3.png') }}" 
-                         class="img-fluid" 
-                         alt="LaraBids Premium Auctions"
-                         style="max-height: 500px; filter: drop-shadow(0 20px 50px rgba(0,0,0,0.3));">
+        </div>
 
+        <!-- Slide 2 -->
+        <div class="carousel-item">
+            <div class="container h-100 d-flex align-items-center">
+                <div class="row align-items-center w-100">
+                    <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
+                        <h2 class="display-2 fw-bold mb-4 text-white">Rare Treasures <br><span>Await You</span></h2>
+                        <p class="lead mb-5 opacity-75 pe-lg-5">
+                            Find unique items that aren't available anywhere else. Our verified sellers bring you the best in luxury and rarity.
+                        </p>
+                        <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3">
+                            <a href="{{ route('auctions.create') }}" class="btn btn-gold btn-lg px-5 py-3 rounded-pill shadow">Start Selling</a>
+                            <a href="{{ route('register') }}" class="btn btn-outline-gold btn-lg px-5 py-3 rounded-pill">Join Now</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 d-none d-lg-block">
+                        <div class="hero-illustration-wrapper ps-lg-5 text-center">
+                            <div class="hero-glow-blob" style="background: rgba(255, 215, 0, 0.2);"></div>
+                            <img src="{{ asset('assets/images/banner-2.png') }}" class="img-fluid" alt="LaraBids Rare Items" style="max-height: 500px; filter: drop-shadow(0 20px 50px rgba(0,0,0,0.3));">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="carousel-item">
+            <div class="container h-100 d-flex align-items-center">
+                <div class="row align-items-center w-100">
+                    <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
+                        <h2 class="display-2 fw-bold mb-4 text-white">Bid with <br><span>Confidence</span></h2>
+                        <p class="lead mb-5 opacity-75 pe-lg-5">
+                            Every bid is tracked and Every seller is verified. Experience the most transparent auction platform in India.
+                        </p>
+                        <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3">
+                            <a href="{{ route('about') }}" class="btn btn-gold btn-lg px-5 py-3 rounded-pill shadow">How it works</a>
+                            <a href="{{ route('contact') }}" class="btn btn-outline-gold btn-lg px-5 py-3 rounded-pill">Contact Us</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 d-none d-lg-block">
+                        <div class="hero-illustration-wrapper ps-lg-5 text-center">
+                            <div class="hero-glow-blob" style="background: rgba(0, 255, 127, 0.2);"></div>
+                            <img src="{{ asset('assets/images/banner-3.png') }}" class="img-fluid" alt="LaraBids Secure" style="max-height: 500px; filter: drop-shadow(0 20px 50px rgba(0,0,0,0.3));">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- Carousel Controls -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
 </section>
 
 
@@ -146,46 +206,94 @@
 <section class="py-5 bg-navy-shade">
     <div class="container py-lg-5">
         <div class="text-center mb-5" data-aos="fade-up">
-            <span class="badge-elite mb-2 d-inline-block">Watch This Space</span>
             <h2 class="display-4 fw-bold">Upcoming Auctions</h2>
         </div>
         <div class="row g-4">
-            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="card card-elite glass-panel border-0">
-                    <div class="p-4">
-                        <h5 class="text-primary mb-1">Modernism in Kyoto</h5>
-                        <p class="small text-secondary mb-3">Architectural Masterpiece Collection</p>
-                        <div class="d-flex align-items-center gap-2 mb-0">
-                            <i class="far fa-calendar text-primary"></i>
-                            <span class="small text-dark">Starts Feb 14, 2026</span>
+            @forelse($upcomingAuctions as $index => $upcoming)
+            <div class="col-md-6 col-lg-3">
+                <div class="card card-elite h-100 position-relative shadow-sm border-0 rounded-4 overflow-hidden bg-white hover-shadow-lg transition-all">
+                    <!-- Image Section -->
+                    <div class="position-relative overflow-hidden" style="height: 180px;">
+                        @if($upcoming->image)
+                            <img src="{{ str_starts_with($upcoming->image, 'http') ? $upcoming->image : asset('storage/' . $upcoming->image) }}" class="card-img-top h-100 object-fit-cover shadow-sm" alt="{{ $upcoming->title }}">
+                        @else
+                            <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=1200"
+                                class="card-img-top h-100 object-fit-cover shadow-sm" alt="{{ $upcoming->title }}">
+                        @endif
+                        <div class="position-absolute top-0 start-0 m-2" style="z-index: 2;">
+                            <span class="badge bg-gold text-dark shadow-sm" style="font-size: 0.7rem;">{{ $upcoming->category->name ?? 'Uncategorized' }}</span>
+                        </div>
+                        <div class="position-absolute top-0 end-0 m-2" style="z-index: 2;">
+                            <form action="{{ route('user.watchlist.toggle', $upcoming->id ?? 0) }}" method="POST" class="watchlist-toggle-form">
+                                @csrf
+                                <button type="submit" class="btn btn-white rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px);">
+                                    <i class="{{ $upcoming->watchlists->isNotEmpty() ? 'fas' : 'far' }} fa-heart text-danger" style="font-size: 0.8rem;"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Content Section -->
+                    <div class="card-body p-3 d-flex flex-column flex-grow-1">
+                        @php
+                            $now = \Carbon\Carbon::now();
+                            $startTime = \Carbon\Carbon::parse($upcoming->start_time);
+                            $diff = $now->diff($startTime);
+                        @endphp
+                        
+                        <div class="glass-timer text-center py-1 timer-val mb-2 shadow-none border" 
+                            data-days="{{ $diff->d }}" 
+                            data-hours="{{ $diff->h }}" 
+                            data-min="{{ $diff->i }}" 
+                            data-sec="{{ $diff->s }}">
+                            <div class="row g-0 px-2">
+                                <div class="col">
+                                    <div class="fw-bold fs-7" data-days>{{ sprintf('%02d', $diff->d) }}</div>
+                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">D</small>
+                                </div>
+                                <div class="col">
+                                    <div class="fw-bold fs-7" data-hours>{{ sprintf('%02d', $diff->h) }}</div>
+                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">H</small>
+                                </div>
+                                <div class="col">
+                                    <div class="fw-bold fs-7" data-min>{{ sprintf('%02d', $diff->i) }}</div>
+                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">M</small>
+                                </div>
+                                <div class="col">
+                                    <div class="fw-bold fs-7" data-sec>{{ sprintf('%02d', $diff->s) }}</div>
+                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">S</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 class="h6 mb-2 fw-bold text-dark text-truncate" title="{{ $upcoming->title }}">{{ $upcoming->title }}</h3>
+                        
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="{{ $upcoming->user->avatar_url }}" class="rounded-circle me-1" width="18" height="18" style="object-fit: cover;" alt="Seller">
+                            <span class="text-xs text-muted text-truncate">{{ $upcoming->user->name }}</span>
+                        </div>
+                        
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-2 pt-2 border-top">
+                                <span class="text-xs text-secondary fw-bold text-uppercase">Start Price</span>
+                                <span class="h6 mb-0 text-primary fw-bold">₹{{ number_format($upcoming->starting_price, 2) }}</span>
+                            </div>
+                            <a href="{{ route('auctions.show', $upcoming->id) }}" class="btn btn-primary w-100 py-2 rounded-pill fw-bold stretched-link shadow-sm transition-all" style="font-size: 0.8rem;">
+                                VIEW DETAILS <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="card card-elite glass-panel border-0">
-                    <div class="p-4">
-                        <h5 class="text-primary mb-1">The Heritage Chronos</h5>
-                        <p class="small text-secondary mb-3">50 Rare Timepieces from 1920-1950</p>
-                        <div class="d-flex align-items-center gap-2 mb-0">
-                            <i class="far fa-calendar text-primary"></i>
-                            <span class="small text-dark">Starts Mar 02, 2026</span>
-                        </div>
-                    </div>
+            @empty
+            <div class="col-12 text-center py-5">
+                <div class="opacity-50 mb-3">
+                    <i class="fas fa-calendar-times fa-3x text-secondary"></i>
                 </div>
+                <h5 class="text-secondary">No upcoming auctions scheduled yet.</h5>
+                <p class="small text-muted">Stay tuned for amazing deals!</p>
             </div>
-            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="card card-elite glass-panel border-0">
-                    <div class="p-4">
-                        <h5 class="text-primary mb-1">Abstract Expressionism</h5>
-                        <p class="small text-secondary mb-3">Post-War American Art Auction</p>
-                        <div class="d-flex align-items-center gap-2 mb-0">
-                            <i class="far fa-calendar text-primary"></i>
-                            <span class="small text-dark">Starts Mar 10, 2026</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @endforelse
         </div>
     </div>
 </section>
@@ -194,7 +302,6 @@
 <section id="how-it-works" class="py-5 bg-dark-elite">
     <div class="container py-lg-5">
         <div class="text-center mb-5" data-aos="fade-up">
-            <span class="badge-elite mb-2 d-inline-block">The Process</span>
             <h2 class="display-4 fw-bold text-white">How <span class="text-white">LaraBids</span> Works</h2>
         </div>
         <div class="row g-4 step-connector">
@@ -231,7 +338,6 @@
     <div class="container py-lg-5">
         <!-- Section Header -->
         <div class="text-center mb-5" data-aos="fade-up">
-            <span class="badge-elite mb-2 d-inline-block">Testimonials</span>
             <h2 class="display-4 fw-bold">What Our <span class="text-primary">Clients Say</span></h2>
             <p class="lead text-secondary mt-3">Hear from satisfied bidders and sellers in our community</p>
         </div>
@@ -297,9 +403,6 @@
         <div class="row align-items-center g-5">
             <div class="col-lg-6" data-aos="fade-right">
                 @guest
-                <span class="badge bg-white text-primary fw-bold px-3 py-2 rounded-pill mb-3 shadow-sm">
-                    🎯 START WINNING TODAY
-                </span>
                 <h2 class="display-4 fw-bold text-white mb-4">
                     Ready to Place Your First Bid?
                 </h2>
@@ -308,9 +411,6 @@
                     premium electronics, or unique treasures, your next win is just a bid away.
                 </p>
                 @else
-                <span class="badge bg-white text-primary fw-bold px-3 py-2 rounded-pill mb-3 shadow-sm">
-                    🎯 KEEP WINNING
-                </span>
                 <h2 class="display-4 fw-bold text-white mb-4">
                     Find Your Next Treasure
                 </h2>

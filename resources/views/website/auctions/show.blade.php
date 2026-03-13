@@ -344,7 +344,7 @@
                             <form action="{{ route('user.watchlist.toggle', $auction->id) }}" method="POST" class="flex-fill watchlist-toggle-form">
                                 @csrf
                                 <button type="submit" class="hibid-watchlist-btn">
-                                    <i class="{{ $auction->watchlists->isNotEmpty() ? 'fas' : 'far' }} fa-heart me-2"></i>Watchlist
+                                    <i class="{{ $auction->watchlists->isNotEmpty() ? 'fas text-danger' : 'far' }} fa-heart me-2"></i>Watchlist
                                 </button>
                             </form>
                             @else

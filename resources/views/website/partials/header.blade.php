@@ -119,13 +119,23 @@
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item text-dark small" href="{{ route('user.profile') }}">
-                                    <i class="fas fa-user-edit me-2 text-primary"></i> Profile
+                                <a class="dropdown-item text-dark small" href="{{ route('user.my-bids') }}">
+                                    <i class="fas fa-hand-holding-usd me-2 text-primary"></i> My Bids
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-dark small" href="{{ route('user.winning-items') }}">
+                                    <i class="fas fa-trophy me-2 text-primary"></i> Won Items
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item text-dark small" href="{{ route('user.watchlist') }}">
                                     <i class="fas fa-heart me-2 text-primary"></i> Watchlist
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-dark small" href="{{ route('user.profile') }}">
+                                    <i class="fas fa-user-edit me-2 text-primary"></i> Profile
                                 </a>
                             </li>
 

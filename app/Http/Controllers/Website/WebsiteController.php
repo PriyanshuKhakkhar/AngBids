@@ -13,7 +13,8 @@ class WebsiteController extends Controller
     // Home page
     public function index()
     {
-        $auctions = Auction::active()
+        // Live Auctions
+        $auctions = Auction::live()
             ->latestFirst()
             ->take(8)
             ->with(['user', 'category', 'watchlists' => function($q) {
@@ -25,9 +26,23 @@ class WebsiteController extends Controller
             }])
             ->get();
             
-        $testimonials = \App\Models\Testimonial::where('is_active', true)->get();
+        // Upcoming Auctions (Starts in the future)
+        $upcomingAuctions = Auction::where('status', 'active')
+            ->where('start_time', '>', now())
+            ->orderBy('start_time', 'asc')
+            ->take(4)
+            ->with(['user', 'category', 'watchlists' => function($q) {
+                if (auth()->check()) {
+                    $q->where('user_id', auth()->id());
+                } else {
+                    $q->whereRaw('1 = 0');
+                }
+            }])
+            ->get();
+            
+        $testimonials = \App\Models\Testimonial::where('is_active', true)->take(3)->get();
 
-        return view('website.index', compact('auctions', 'testimonials'));
+        return view('website.index', compact('auctions', 'upcomingAuctions', 'testimonials'));
     }
 
     // Dashboard redirect

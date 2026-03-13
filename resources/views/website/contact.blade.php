@@ -10,9 +10,6 @@
         <div class="row align-items-center">
 
             <div class="col-lg-7 text-center text-lg-start mb-5 mb-lg-0">
-                <span class="badge bg-white text-primary fw-semibold px-3 py-2 rounded-pill mb-3 shadow-sm">
-                    SUPPORT CENTER
-                </span>
 
                 <h1 class="display-4 fw-bold mb-3">
                     Contact <span class="text-white">LaraBids</span>

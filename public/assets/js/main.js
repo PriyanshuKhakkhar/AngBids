@@ -126,11 +126,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (data.status === 'added') {
                     icon.classList.remove('far');
-                    icon.classList.add('fas');
-                    // If it's a card icon, it already has text-danger usually, 
-                    // but for the detail page button we might want to handle text
+                    icon.classList.add('fas', 'text-danger');
                 } else if (data.status === 'removed') {
-                    icon.classList.remove('fas');
+                    icon.classList.remove('fas', 'text-danger');
                     icon.classList.add('far');
 
                     // If we are on the watchlist page, remove the row
@@ -180,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Function to dismiss a single alert
         const dismissAlert = (alert) => {
             if (alert.classList.contains('alert-permanent')) return;
-            
+
             setTimeout(() => {
                 const closeBtn = alert.querySelector('.btn-close');
                 if (closeBtn) {

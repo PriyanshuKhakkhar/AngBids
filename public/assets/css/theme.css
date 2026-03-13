@@ -358,12 +358,58 @@ h4,
 
 /* --- Specific Sections --- */
 .hero-section {
-    padding: 100px 0 100px;
+    height: 600px;
     background: linear-gradient(135deg, #1a2a6c 0%, #4e73df 50%, #224abe 100%);
     position: relative;
     overflow: hidden;
     color: #ffffff !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hero-section .carousel-inner,
+.hero-section .carousel-item {
+    height: 100%;
+}
+
+.hero-section .carousel-item {
+    padding: 0;
+}
+
+.hero-section .carousel-item .container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.hero-section .carousel-control-prev,
+.hero-section .carousel-control-next {
+    width: 5%;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+.hero-section .carousel-control-prev:hover,
+.hero-section .carousel-control-next:hover {
+    opacity: 1;
+}
+
+.hero-section .carousel-indicators {
+    bottom: 30px;
+}
+
+.hero-section .carousel-indicators [data-bs-target] {
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.4);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.hero-section .carousel-indicators .active {
+    width: 60px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 
@@ -722,8 +768,14 @@ footer {
 /* --- Responsive Polish & Fixes --- */
 @media (max-width: 991.98px) {
 
-    .hero-section {
-        padding: 80px 0 60px;
+    .hero-section,
+    .hero-section .carousel-item {
+        height: auto;
+        min-height: 500px;
+    }
+
+    .hero-section .carousel-item {
+        padding: 60px 0;
     }
 
 
