@@ -63,7 +63,10 @@ class BidController extends Controller
                             'min_increment' => (float)$auction->min_increment,
                             'is_winning' => true,
                             'current_user_id' => (int)$user->id,
-                            'winner_username' => $user->username
+                            'winner_username' => $user->username,
+                            'total_bids' => (int)$auction->bids()->count(),
+                            'end_time' => $auction->end_time->toIso8601String(),
+                            'end_time_formatted' => $auction->end_time->format('F d, Y \a\t g:i A')
                         ]);
                     }
                     return redirect()->back()->with('success', $message);
@@ -81,7 +84,10 @@ class BidController extends Controller
                             'is_winning' => false,
                             'winner_id' => $currentWinnerId,
                             'current_user_id' => (int)$user->id,
-                            'winner_username' => $highestBid ? $highestBid->user->username : null
+                            'winner_username' => $highestBid ? $highestBid->user->username : null,
+                            'total_bids' => (int)$auction->bids()->count(),
+                            'end_time' => $auction->end_time->toIso8601String(),
+                            'end_time_formatted' => $auction->end_time->format('F d, Y \a\t g:i A')
                         ]);
                     }
                     return redirect()->back()->with('warning', $message);

@@ -174,8 +174,8 @@
                                 <span class="hibid-bid-value hibid-bid-value--primary" id="current-bid-display">₹{{ number_format($auction->current_price, 2) }}</span>
                             </div>
                             <div class="hibid-bid-row">
-                                <span class="hibid-bid-label">Starting Price</span>
-                                <span class="hibid-bid-value">₹{{ number_format($auction->starting_price, 2) }}</span>
+                                <span class="hibid-bid-label">Bids Placed</span>
+                                <span class="hibid-bid-value hibid-bid-value--success"><span id="total-bids-count-card">{{ $auction->bids->count() }}</span> Bids</span>
                             </div>
                             <div class="hibid-bid-row">
                                 <span class="hibid-bid-label">Min Increment</span>
@@ -286,7 +286,7 @@
                                         <!-- Quick Bid Pane -->
                                         <div class="tab-pane fade show active" id="quick-bid" role="tabpanel">
                                             <div class="hibid-increment-header">
-                                                <label class="hibid-increment-label">YOUR BID INCREMENT (₹)</label>
+                                                <label class="hibid-increment-label">YOUR BID INCREMENT (₹) <span class="text-muted ms-2 fw-normal">(<span id="total-bids-count-box">{{ $auction->bids->count() }}</span> bids so far)</span></label>
                                                 <span class="hibid-min-badge">Min: ₹{{ number_format($auction->min_increment ?? 100.00, 2) }}</span>
                                             </div>
 
@@ -384,11 +384,11 @@
             <div class="col-12" data-aos="fade-up">
                 <div class="accordion premium-accordion" id="auctionAccordion">
                     
-                    <!-- 1. Information -->
+                    <!-- 1. Description -->
                     <div class="accordion-item border-0 mb-3 shadow-sm rounded-4 overflow-hidden">
                         <h2 class="accordion-header">
                             <button class="accordion-button fw-bold text-primary bg-white px-4 py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfo">
-                                Information
+                                Description
                             </button>
                         </h2>
                         <div id="collapseInfo" class="accordion-collapse collapse show" data-bs-parent="#auctionAccordion">
@@ -411,7 +411,7 @@
                                     <table class="table table-striped table-hover mb-0 info-table">
                                         <tbody>
                                             <tr>
-                                                <th class="bg-light ps-4 py-3" style="width: 200px;">Name</th>
+                                                <th class="bg-light ps-4 py-3" style="width: 200px;">Item Name</th>
                                                 <td class="ps-4 py-3 fw-medium">{{ $auction->title }}</td>
                                             </tr>
                                             <tr>
@@ -419,26 +419,18 @@
                                                 <td class="ps-4 py-3 fw-medium">@_{{ $auction->user->username }}</td>
                                             </tr>
                                             <tr>
-                                                <th class="bg-light ps-4 py-3">Type</th>
-                                                <td class="ps-4 py-3 fw-medium">Live Webcast Auction</td>
+                                                <th class="bg-light ps-4 py-3">Category</th>
+                                                <td class="ps-4 py-3 fw-medium">{{ $auction->category->name ?? 'N/A' }}</td>
                                             </tr>
                                             <tr>
-                                                <th class="bg-light ps-4 py-3">Date(s)</th>
+                                                <th class="bg-light ps-4 py-3">Duration</th>
                                                 <td class="ps-4 py-3 fw-medium">
-                                                    {{ \Carbon\Carbon::parse($auction->start_time)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($auction->end_time)->format('d/m/Y') }}
+                                                    {{ \Carbon\Carbon::parse($auction->start_time)->format('M d, Y') }} - {{ \Carbon\Carbon::parse($auction->end_time)->format('M d, Y') }}
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <th class="bg-light ps-4 py-3">Auction Date/Time Info</th>
-                                                <td class="ps-4 py-3 fw-medium">Ends {{ \Carbon\Carbon::parse($auction->end_time)->format('F d, Y \a\t g:i A') }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th class="bg-light ps-4 py-3">Preview Date/Time</th>
-                                                <td class="ps-4 py-3 fw-medium">Available online 24/7. Contact seller for physical inspection requests.</td>
-                                            </tr>
-                                            <tr>
-                                                <th class="bg-light ps-4 py-3">Checkout Date/Time</th>
-                                                <td class="ps-4 py-3 fw-medium">Immediately following receipt of invoice through 48 hours post-auction.</td>
+                                                <th class="bg-light ps-4 py-3">Closing Time</th>
+                                                <td class="ps-4 py-3 fw-medium" id="auction-end-time-display">{{ \Carbon\Carbon::parse($auction->end_time)->format('F d, Y \a\t g:i A') }}</td>
                                             </tr>
                                             <tr>
                                                 <th class="bg-light ps-4 py-3">Location</th>
@@ -451,12 +443,8 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <th class="bg-light ps-4 py-3">Buyer Premium</th>
-                                                <td class="ps-4 py-3 fw-medium">10% Buyer's Premium (Plus applicable taxes)</td>
-                                            </tr>
-                                            <tr>
-                                                <th class="bg-light ps-4 py-3">Description</th>
-                                                <td class="ps-4 py-3 fw-medium text-truncate-2">{{ Str::limit($auction->description, 150) }}</td>
+                                                <th class="bg-light ps-4 py-3">Bid Currency</th>
+                                                <td class="ps-4 py-3 fw-medium">INR (₹)</td>
                                             </tr>
                                             @if($auction->specifications)
                                                 @foreach($auction->specifications as $key => $value)
@@ -545,47 +533,7 @@
                         </div>
                     </div>
 
-                    <!-- 6. Bidding History -->
-                    <div class="accordion-item border-0 mb-3 shadow-sm rounded-4 overflow-hidden">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed fw-bold text-primary bg-white px-4 py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHistory">
-                                Bidding History
-                            </button>
-                        </h2>
-                        <div id="collapseHistory" class="accordion-collapse collapse" data-bs-parent="#auctionAccordion">
-                            <div class="accordion-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-hover mb-0" id="bidding-history-table">
-                                        <thead class="bg-light">
-                                            <tr>
-                                                <th class="ps-4">Bidder</th>
-                                                <th>Amount</th>
-                                                <th class="pe-4">Time</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @forelse($auction->bids->sortByDesc('created_at') as $bid)
-                                            <tr>
-                                                <td class="ps-4 fw-medium text-dark">
-                                                    @_{{ $bid->user->username }}
-                                                    @if($loop->first && !$isClosed)
-                                                        <span class="badge bg-success-subtle text-success ms-1 small">Highest</span>
-                                                    @endif
-                                                </td>
-                                                <td class="fw-bold text-primary">₹{{ number_format($bid->amount, 2) }}</td>
-                                                <td class="text-secondary small pe-4">{{ $bid->created_at->diffForHumans() }}</td>
-                                            </tr>
-                                            @empty
-                                            <tr id="no-bids-row">
-                                                <td colspan="3" class="text-center py-4 text-muted">No bids placed yet. Be the first to bid!</td>
-                                            </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
 
 
                 </div>
@@ -1267,6 +1215,14 @@
                     }
                 });
             }
+            
+            // 1.5 Update Bid Counts
+            if (typeof data.total_bids !== 'undefined') {
+                const countBox = document.getElementById('total-bids-count-box');
+                const countCard = document.getElementById('total-bids-count-card');
+                if (countBox) countBox.innerText = data.total_bids;
+                if (countCard) countCard.innerText = data.total_bids;
+            }
 
             // 2. Update Min Increment
             if (typeof data.min_increment !== 'undefined') {
@@ -1283,6 +1239,33 @@
                 document.querySelectorAll('.hibid-min-badge').forEach(badge => {
                     badge.innerText = 'Min: ₹' + minIncrement.toFixed(2);
                 });
+            }
+            
+            // 2.5 Update End Time & Timer
+            if (data.end_time && data.end_time_formatted) {
+                const endTimeDisplay = document.getElementById('auction-end-time-display');
+                if (endTimeDisplay) endTimeDisplay.innerText = data.end_time_formatted;
+                
+                const mainTimer = document.querySelector('.hibid-timer.timer-val');
+                if (mainTimer && data.end_time) {
+                    const newEndDate = new Date(data.end_time);
+                    const now = new Date();
+                    let diff = Math.floor((newEndDate - now) / 1000);
+                    
+                    if (diff > 0) {
+                        const days = Math.floor(diff / (24 * 3600));
+                        diff %= (24 * 3600);
+                        const hours = Math.floor(diff / 3600);
+                        diff %= 3600;
+                        const mins = Math.floor(diff / 60);
+                        const secs = diff % 60;
+                        
+                        mainTimer.dataset.days = days;
+                        mainTimer.dataset.hours = hours;
+                        mainTimer.dataset.min = mins;
+                        mainTimer.dataset.sec = secs;
+                    }
+                }
             }
 
             // 3. Update Status Badge
