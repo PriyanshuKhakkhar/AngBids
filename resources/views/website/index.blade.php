@@ -119,21 +119,24 @@
             @foreach($auctions as $index => $auction)
             <div class="col-md-6 col-lg-3">
                 <div class="card card-elite h-100 position-relative shadow-sm border-0 rounded-4 overflow-hidden bg-white hover-shadow-lg transition-all">
+                    <a href="{{ route('auctions.show', $auction->id) }}" class="stretched-link"></a>
                     <!-- Image Section -->
                     <div class="position-relative overflow-hidden" style="height: 180px;">
-                        @if($auction->image)
-                            <img src="{{ str_starts_with($auction->image, 'http') ? $auction->image : asset('storage/' . $auction->image) }}" class="card-img-top h-100 object-fit-cover shadow-sm" alt="{{ $auction->title }}">
-                        @else
-                            <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=1200"
-                                class="card-img-top h-100 object-fit-cover shadow-sm" alt="{{ $auction->title }}">
-                        @endif
+                        <div class="d-block w-100 h-100">
+                            @if($auction->image)
+                                <img src="{{ str_starts_with($auction->image, 'http') ? $auction->image : asset('storage/' . $auction->image) }}" class="card-img-top h-100 object-fit-cover shadow-sm transition-all" alt="{{ $auction->title }}">
+                            @else
+                                <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=1200"
+                                    class="card-img-top h-100 object-fit-cover shadow-sm transition-all" alt="{{ $auction->title }}">
+                            @endif
+                        </div>
                         <div class="position-absolute top-0 start-0 m-2" style="z-index: 2;">
-                            <span class="badge bg-gold text-dark shadow-sm" style="font-size: 0.7rem;">{{ $auction->category->name ?? 'Uncategorized' }}</span>
+                            <span class="badge bg-gold text-dark shadow-sm fw-bold" style="font-size: 0.7rem;">{{ $auction->category->name ?? 'Uncategorized' }}</span>
                         </div>
                         <div class="position-absolute top-0 end-0 m-2" style="z-index: 2;">
                             <form action="{{ route('user.watchlist.toggle', $auction->id ?? 0) }}" method="POST" class="watchlist-toggle-form">
                                 @csrf
-                                <button type="submit" class="btn btn-white rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px);">
+                                <button type="submit" class="btn btn-white rounded-circle shadow-sm d-flex align-items-center justify-content-center p-0" style="width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px);">
                                     <i class="{{ $auction->watchlists->isNotEmpty() ? 'fas' : 'far' }} fa-heart text-danger" style="font-size: 0.8rem;"></i>
                                 </button>
                             </form>
@@ -150,49 +153,64 @@
                         @endphp
                         
                         @if(!$isClosed)
-                        <div class="glass-timer text-center py-1 timer-val mb-2 shadow-none border" 
+                        <div class="glass-timer text-center py-1 timer-val mb-2 shadow-none border {{ ($diff->d == 0 && $diff->h == 0) ? 'urgent-timer' : '' }}" 
                             data-days="{{ $diff->d }}" 
                             data-hours="{{ $diff->h }}" 
                             data-min="{{ $diff->i }}" 
                             data-sec="{{ $diff->s }}">
                             <div class="row g-0 px-2">
-                                <div class="col">
+                                <div class="col border-end border-light">
                                     <div class="fw-bold fs-7" data-days>{{ sprintf('%02d', $diff->d) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">D</small>
+                                    <small class="opacity-50 text-uppercase d-block" style="font-size: 0.5rem;">D</small>
                                 </div>
-                                <div class="col">
+                                <div class="col border-end border-light">
                                     <div class="fw-bold fs-7" data-hours>{{ sprintf('%02d', $diff->h) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">H</small>
+                                    <small class="opacity-50 text-uppercase d-block" style="font-size: 0.5rem;">H</small>
                                 </div>
-                                <div class="col">
+                                <div class="col border-end border-light">
                                     <div class="fw-bold fs-7" data-min>{{ sprintf('%02d', $diff->i) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">M</small>
+                                    <small class="opacity-50 text-uppercase d-block" style="font-size: 0.5rem;">M</small>
                                 </div>
                                 <div class="col">
-                                    <div class="fw-bold fs-7" data-sec>{{ sprintf('%02d', $diff->s) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">S</small>
+                                    <div class="fw-bold fs-7 text-primary" data-sec>{{ sprintf('%02d', $diff->s) }}</div>
+                                    <small class="opacity-50 text-uppercase d-block" style="font-size: 0.5rem;">S</small>
                                 </div>
                             </div>
                         </div>
                         @else
-                        <div class="alert alert-danger alert-permanent py-1 mb-2 text-center small border-0" style="font-size: 0.7rem;">Closed</div>
+                        <div class="alert alert-danger alert-permanent border-0 py-1 mb-2 text-center small fw-bold" style="font-size: 0.7rem; background: rgba(220, 53, 69, 0.1); color: #dc3545;">
+                            <i class="fas fa-times-circle me-1"></i> Auction Closed
+                        </div>
                         @endif
 
-                        <h3 class="h6 mb-2 fw-bold text-dark text-truncate" title="{{ $auction->title }}">{{ $auction->title }}</h3>
+                        <h3 class="h6 mb-2 fw-bold text-dark text-truncate title-hover">
+                            {{ $auction->title }}
+                        </h3>
                         
-                        <div class="d-flex align-items-center mb-3">
-                            <img src="{{ $auction->user->avatar_url }}" class="rounded-circle me-1" width="18" height="18" style="object-fit: cover;" alt="Seller">
-                            <span class="text-xs text-muted text-truncate">{{ $auction->user->name }}</span>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center">
+                                @if($auction->user && $auction->user->avatar)
+                                    <img src="{{ str_starts_with($auction->user->avatar, 'http') ? $auction->user->avatar : asset('storage/' . $auction->user->avatar) }}" class="rounded-circle me-1 border" width="20" height="20" style="object-fit: cover;" alt="{{ $auction->user->name }}">
+                                @else
+                                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-1 border" style="width: 20px; height: 20px;">
+                                        <i class="fas fa-user text-secondary" style="font-size: 10px;"></i>
+                                    </div>
+                                @endif
+                                <span class="text-xs text-muted text-truncate" style="max-width: 80px;">{{ $auction->user->name ?? 'Seller' }}</span>
+                            </div>
+                            <span class="badge bg-light text-secondary border fw-normal text-xs px-2 py-1">
+                                {{ $auction->bids->count() }} Bids
+                            </span>
                         </div>
                         
                         <div class="mt-auto">
                             <div class="d-flex justify-content-between align-items-center mb-2 pt-2 border-top">
-                                <span class="text-xs text-secondary fw-bold text-uppercase">Bid</span>
+                                <span class="text-xs text-secondary fw-bold text-uppercase">{{ $isClosed ? 'Final Bid' : 'Current Bid' }}</span>
                                 <span class="h6 mb-0 text-primary fw-bold">₹{{ number_format($auction->current_price, 2) }}</span>
                             </div>
-                            <a href="{{ route('auctions.show', $auction->id) }}" class="btn btn-primary w-100 py-2 rounded-pill fw-bold stretched-link shadow-sm transition-all" style="font-size: 0.8rem;">
-                                BID NOW <i class="fas fa-gavel ms-1"></i>
-                            </a>
+                            <div class="btn {{ $isClosed ? 'btn-outline-secondary' : 'btn-primary' }} w-100 py-2 rounded-pill fw-bold shadow-sm transition-all btn-hover-effect" style="font-size: 0.8rem;">
+                                @if($isClosed) CLOSED @else BID NOW @endif <i class="fas {{ $isClosed ? 'fa-lock' : 'fa-gavel' }} ms-1"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -212,21 +230,24 @@
             @forelse($upcomingAuctions as $index => $upcoming)
             <div class="col-md-6 col-lg-3">
                 <div class="card card-elite h-100 position-relative shadow-sm border-0 rounded-4 overflow-hidden bg-white hover-shadow-lg transition-all">
+                    <a href="{{ route('auctions.show', $upcoming->id) }}" class="stretched-link"></a>
                     <!-- Image Section -->
                     <div class="position-relative overflow-hidden" style="height: 180px;">
-                        @if($upcoming->image)
-                            <img src="{{ str_starts_with($upcoming->image, 'http') ? $upcoming->image : asset('storage/' . $upcoming->image) }}" class="card-img-top h-100 object-fit-cover shadow-sm" alt="{{ $upcoming->title }}">
-                        @else
-                            <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=1200"
-                                class="card-img-top h-100 object-fit-cover shadow-sm" alt="{{ $upcoming->title }}">
-                        @endif
+                        <div class="d-block w-100 h-100">
+                            @if($upcoming->image)
+                                <img src="{{ str_starts_with($upcoming->image, 'http') ? $upcoming->image : asset('storage/' . $upcoming->image) }}" class="card-img-top h-100 object-fit-cover shadow-sm transition-all" alt="{{ $upcoming->title }}">
+                            @else
+                                <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=1200"
+                                    class="card-img-top h-100 object-fit-cover shadow-sm transition-all" alt="{{ $upcoming->title }}">
+                            @endif
+                        </div>
                         <div class="position-absolute top-0 start-0 m-2" style="z-index: 2;">
-                            <span class="badge bg-gold text-dark shadow-sm" style="font-size: 0.7rem;">{{ $upcoming->category->name ?? 'Uncategorized' }}</span>
+                            <span class="badge bg-gold text-dark shadow-sm fw-bold" style="font-size: 0.7rem;">{{ $upcoming->category->name ?? 'Uncategorized' }}</span>
                         </div>
                         <div class="position-absolute top-0 end-0 m-2" style="z-index: 2;">
                             <form action="{{ route('user.watchlist.toggle', $upcoming->id ?? 0) }}" method="POST" class="watchlist-toggle-form">
                                 @csrf
-                                <button type="submit" class="btn btn-white rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px);">
+                                <button type="submit" class="btn btn-white rounded-circle shadow-sm d-flex align-items-center justify-content-center p-0" style="width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px);">
                                     <i class="{{ $upcoming->watchlists->isNotEmpty() ? 'fas' : 'far' }} fa-heart text-danger" style="font-size: 0.8rem;"></i>
                                 </button>
                             </form>
@@ -241,46 +262,38 @@
                             $diff = $now->diff($startTime);
                         @endphp
                         
-                        <div class="glass-timer text-center py-1 timer-val mb-2 shadow-none border" 
-                            data-days="{{ $diff->d }}" 
-                            data-hours="{{ $diff->h }}" 
-                            data-min="{{ $diff->i }}" 
-                            data-sec="{{ $diff->s }}">
-                            <div class="row g-0 px-2">
-                                <div class="col">
-                                    <div class="fw-bold fs-7" data-days>{{ sprintf('%02d', $diff->d) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">D</small>
-                                </div>
-                                <div class="col">
-                                    <div class="fw-bold fs-7" data-hours>{{ sprintf('%02d', $diff->h) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">H</small>
-                                </div>
-                                <div class="col">
-                                    <div class="fw-bold fs-7" data-min>{{ sprintf('%02d', $diff->i) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">M</small>
-                                </div>
-                                <div class="col">
-                                    <div class="fw-bold fs-7" data-sec>{{ sprintf('%02d', $diff->s) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">S</small>
-                                </div>
-                            </div>
+                        <div class="alert alert-info alert-permanent py-1 mb-2 text-center small border-0 fw-bold" style="font-size: 0.7rem; background: rgba(13, 202, 240, 0.1); color: #0dcaf0;">
+                            <i class="fas fa-clock me-1"></i> Starts {{ $startTime->format('M d, H:i') }}
                         </div>
 
-                        <h3 class="h6 mb-2 fw-bold text-dark text-truncate" title="{{ $upcoming->title }}">{{ $upcoming->title }}</h3>
+                        <h3 class="h6 mb-2 fw-bold text-dark text-truncate title-hover">
+                            {{ $upcoming->title }}
+                        </h3>
                         
-                        <div class="d-flex align-items-center mb-3">
-                            <img src="{{ $upcoming->user->avatar_url }}" class="rounded-circle me-1" width="18" height="18" style="object-fit: cover;" alt="Seller">
-                            <span class="text-xs text-muted text-truncate">{{ $upcoming->user->name }}</span>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center">
+                                @if($upcoming->user && $upcoming->user->avatar)
+                                    <img src="{{ str_starts_with($upcoming->user->avatar, 'http') ? $upcoming->user->avatar : asset('storage/' . $upcoming->user->avatar) }}" class="rounded-circle me-1 border" width="20" height="20" style="object-fit: cover;" alt="{{ $upcoming->user->name }}">
+                                @else
+                                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-1 border" style="width: 20px; height: 20px;">
+                                        <i class="fas fa-user text-secondary" style="font-size: 10px;"></i>
+                                    </div>
+                                @endif
+                                <span class="text-xs text-muted text-truncate" style="max-width: 80px;">{{ $upcoming->user->name ?? 'Seller' }}</span>
+                            </div>
+                            <span class="badge bg-light text-secondary border fw-normal text-xs px-2 py-1">
+                                {{ $upcoming->bids->count() }} Bids
+                            </span>
                         </div>
                         
                         <div class="mt-auto">
                             <div class="d-flex justify-content-between align-items-center mb-2 pt-2 border-top">
-                                <span class="text-xs text-secondary fw-bold text-uppercase">Start Price</span>
-                                <span class="h6 mb-0 text-primary fw-bold">₹{{ number_format($upcoming->starting_price, 2) }}</span>
+                                <span class="text-xs text-secondary fw-bold text-uppercase">Current Bid</span>
+                                <span class="h6 mb-0 text-primary fw-bold">₹{{ number_format($upcoming->current_price, 2) }}</span>
                             </div>
-                            <a href="{{ route('auctions.show', $upcoming->id) }}" class="btn btn-primary w-100 py-2 rounded-pill fw-bold stretched-link shadow-sm transition-all" style="font-size: 0.8rem;">
-                                VIEW DETAILS <i class="fas fa-arrow-right ms-1"></i>
-                            </a>
+                            <div class="btn btn-primary w-100 py-2 rounded-pill fw-bold shadow-sm transition-all btn-hover-effect" style="font-size: 0.8rem;">
+                                VIEW <i class="fas fa-gavel ms-1"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -486,9 +499,96 @@
 </section>
 
 
+@push('styles')
+<style>
+    .bg-navy-shade {
+        background-color: #f8f9fc;
+    }
+    .card-elite {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-elite:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+    .bg-gold {
+        background-color: #d4af37;
+    }
+    .glass-timer {
+        background: rgba(248, 249, 250, 0.8);
+        backdrop-filter: blur(4px);
+        border-radius: 8px;
+    }
+    .fs-7 {
+        font-size: 0.9rem;
+    }
+    .text-primary {
+        color: #4e73df !important;
+    }
+    .text-xs {
+        font-size: 0.75rem;
+    }
+    .urgent-timer {
+        background: rgba(220, 53, 69, 0.08) !important;
+        border-color: rgba(220, 53, 69, 0.3) !important;
+    }
+    .urgent-timer * {
+        color: #dc3545 !important;
+    }
+    .title-hover:hover {
+        color: #4e73df !important;
+    }
+    .btn-hover-effect:active {
+        transform: scale(0.98);
+    }
+</style>
+@endpush
+
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Countdown functionality
+    const timerBoxes = document.querySelectorAll('.timer-val');
+    
+    setInterval(() => {
+        timerBoxes.forEach(box => {
+            let d = parseInt(box.dataset.days);
+            let h = parseInt(box.dataset.hours);
+            let m = parseInt(box.dataset.min);
+            let s = parseInt(box.dataset.sec);
+
+            if (d === 0 && h === 0 && m === 0 && s === 0) return;
+
+            s--;
+            if (s < 0) { s = 59; m--; }
+            if (m < 0) { m = 59; h--; }
+            if (h < 0) { h = 23; d--; }
+
+            box.dataset.days = d;
+            box.dataset.hours = h;
+            box.dataset.min = m;
+            box.dataset.sec = s;
+
+            // Update text content safely
+            const dElem = box.querySelector('[data-days]');
+            const hElem = box.querySelector('[data-hours]');
+            const mElem = box.querySelector('[data-min]');
+            const sElem = box.querySelector('[data-sec]');
+
+            if(dElem) dElem.innerText = d.toString().padStart(2, '0');
+            if(hElem) hElem.innerText = h.toString().padStart(2, '0');
+            if(mElem) mElem.innerText = m.toString().padStart(2, '0');
+            if(sElem) sElem.innerText = s.toString().padStart(2, '0');
+
+            // Color urgency logic: < 1 hour (0 days, 0 hours) -> Red Box
+            if (d === 0 && h === 0) {
+                box.classList.add('urgent-timer');
+            } else {
+                box.classList.remove('urgent-timer');
+            }
+        });
+    }, 1000);
+
     var myCarousel = document.getElementById('testimonialCarousel');
     if (myCarousel) {
         // Initialize the carousel
