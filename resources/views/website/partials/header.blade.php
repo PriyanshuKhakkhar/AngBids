@@ -120,7 +120,7 @@
                             </li>
                             <li>
                                 <a class="dropdown-item text-dark small" href="{{ route('user.my-bids') }}">
-                                    <i class="fas fa-hand-holding-usd me-2 text-primary"></i> My Bids
+                                    <i class="fas fa-rupee-sign me-2 text-primary"></i> My Bids
                                 </a>
                             </li>
                             <li>

@@ -19,7 +19,7 @@
             <div class="container h-100 d-flex align-items-center" data-aos="fade-up">
                 <div class="row align-items-center w-100">
                     <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
-                        <h1 class="display-2 fw-bold mb-4">LaraBids: Browse, <br><span class="text-white">Bid, and Win</span></h1>
+                        <h1 class="display-2 fw-bold mb-4">LaraBids: Browse, <br><span class="text-white text-glow">Bid, and Win</span></h1>
                         <p class="lead mb-5 opacity-75 pe-lg-5">
                             Join the premier community for high-value acquisitions. From rare collectibles to everyday electronics,
                             experience the power of professional bidding.
@@ -44,7 +44,7 @@
             <div class="container h-100 d-flex align-items-center">
                 <div class="row align-items-center w-100">
                     <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
-                        <h2 class="display-2 fw-bold mb-4 text-white">Rare Treasures <br><span>Await You</span></h2>
+                        <h2 class="display-2 fw-bold mb-4 text-white">Rare Treasures <br><span class="text-glow">Await You</span></h2>
                         <p class="lead mb-5 opacity-75 pe-lg-5">
                             Find unique items that aren't available anywhere else. Our verified sellers bring you the best in luxury and rarity.
                         </p>
@@ -68,7 +68,7 @@
             <div class="container h-100 d-flex align-items-center">
                 <div class="row align-items-center w-100">
                     <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
-                        <h2 class="display-2 fw-bold mb-4 text-white">Bid with <br><span>Confidence</span></h2>
+                        <h2 class="display-2 fw-bold mb-4 text-white">Bid with <br><span class="text-glow">Confidence</span></h2>
                         <p class="lead mb-5 opacity-75 pe-lg-5">
                             Every bid is tracked and Every seller is verified. Experience the most transparent auction platform in India.
                         </p>
@@ -339,7 +339,7 @@
                 <div class="step-card text-center p-4">
                     <div class="step-number mb-4 mx-auto">01</div>
                     <h4 class="h5 text-white mb-3">Quick Registration</h4>
-                    <p class="text-secondary small">Create your account and verify your email to join our
+                    <p class="text-white opacity-75 small">Create your account and verify your email to join our
                         global community of bidders.</p>
                 </div>
             </div>
@@ -347,7 +347,7 @@
                 <div class="step-card text-center p-4">
                     <div class="step-number mb-4 mx-auto">02</div>
                     <h4 class="h5 text-white mb-3">Place Your Bid</h4>
-                    <p class="text-secondary small">Engage in real-time bidding for verified items with transparent
+                    <p class="text-white opacity-75 small">Engage in real-time bidding for verified items with transparent
                         history and real-time alerts.</p>
                 </div>
             </div>
@@ -355,7 +355,7 @@
                 <div class="step-card text-center p-4">
                     <div class="step-number mb-4 mx-auto">03</div>
                     <h4 class="h5 text-white mb-3">Secure Delivery</h4>
-                    <p class="text-secondary small">Upon winning, enjoy secure transaction
+                    <p class="text-white opacity-75 small">Upon winning, enjoy secure transaction
                         handling and reliable delivery for your new item.</p>
                 </div>
             </div>
@@ -373,37 +373,43 @@
         </div>
         
         <div class="row justify-content-center">
-            <div class="col-lg-9">
-                <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+            <div class="col-lg-8">
+                <div id="testimonialCarousel" class="carousel slide testimonial-premium-carousel" data-bs-ride="carousel" data-bs-interval="5000">
                     <!-- Carousel Indicators -->
-                    <div class="carousel-indicators mb-n4">
+                    <div class="carousel-indicators mb-n5">
                         @foreach($testimonials as $index => $testimonial)
-                        <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="{{ $index }}" class="{{ $index == 0 ? 'active' : '' }} bg-primary" aria-current="{{ $index == 0 ? 'true' : 'false' }}" aria-label="Slide {{ $index + 1 }}"></button>
+                        <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="{{ $index }}" class="{{ $index == 0 ? 'active' : '' }} testimonial-dot" aria-current="{{ $index == 0 ? 'true' : 'false' }}" aria-label="Slide {{ $index + 1 }}"></button>
                         @endforeach
                     </div>
 
-                    <div class="carousel-inner overflow-visible">
+                    <div class="carousel-inner">
                         @foreach($testimonials as $index => $testimonial)
                         <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
-                            <div class="glass-panel-premium p-5 text-center mx-3 my-4">
-                                <div class="mb-4">
+                            <div class="testimonial-card-premium">
+                                <div class="testimonial-quote-icon">
+                                    <i class="fas fa-quote-left"></i>
+                                </div>
+                                
+                                <div class="testimonial-rating mb-3">
                                     @for($i = 0; $i < 5; $i++)
                                     <i class="fas fa-star text-warning small"></i>
                                     @endfor
                                 </div>
-                                <i class="fas fa-quote-left text-primary fs-1 mb-4 opacity-25"></i>
-                                <p class="h4 display-font text-dark mb-4 lh-base fw-semibold px-lg-5">
-                                    "{{ $testimonial->content }}"
+
+                                <p class="testimonial-text mb-4">
+                                    {{ $testimonial->content }}
                                 </p>
-                                <div class="d-flex align-items-center justify-content-center gap-3">
-                                    <div class="position-relative">
-                                        <img src="{{ $testimonial->avatar_url }}"
-                                            class="rounded-circle border border-primary border-2 shadow-sm" width="60" height="60" alt="{{ $testimonial->name }}" style="object-fit: cover;">
-                                        <div class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle" style="width: 14px; height: 14px; border-width: 2px !important;"></div>
+
+                                <div class="testimonial-author-box">
+                                    <div class="author-avatar-wrapper">
+                                        <img src="{{ $testimonial->avatar_url }}" alt="{{ $testimonial->name }}" class="author-avatar shadow-sm">
+                                        <div class="avatar-verified">
+                                            <i class="fas fa-check"></i>
+                                        </div>
                                     </div>
-                                    <div class="text-start">
-                                        <h6 class="text-primary mb-0 fw-bold">{{ $testimonial->name }}</h6>
-                                        <small class="text-secondary opacity-75">{{ $testimonial->role }}</small>
+                                    <div class="author-info">
+                                        <h5 class="author-name mb-0">{{ $testimonial->name }}</h5>
+                                        <span class="author-role">{{ $testimonial->role }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -412,13 +418,11 @@
                     </div>
                     
                     @if($testimonials->count() > 1)
-                    <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon bg-primary rounded-circle p-3" aria-hidden="true" style="background-size: 50%;"></span>
-                        <span class="visually-hidden">Previous</span>
+                    <button class="carousel-control-prev testimonial-btn-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+                        <i class="fas fa-chevron-left"></i>
                     </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon bg-primary rounded-circle p-3" aria-hidden="true" style="background-size: 50%;"></span>
-                        <span class="visually-hidden">Next</span>
+                    <button class="carousel-control-next testimonial-btn-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+                        <i class="fas fa-chevron-right"></i>
                     </button>
                     @endif
                 </div>
@@ -519,8 +523,9 @@
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 <style>
-    .bg-navy-shade {
-        background-color: #f8f9fc;
+    .bg-navy-shade { background-color: #f8f9fc; }
+    .text-glow {
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 0 0 20px rgba(78, 115, 223, 0.2);
     }
     .card-elite {
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -529,46 +534,26 @@
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
     }
-    .bg-gold {
-        background-color: #d4af37;
-    }
+    .bg-gold { background-color: #d4af37; }
     .glass-timer {
         background: rgba(248, 249, 250, 0.8);
         backdrop-filter: blur(4px);
         border-radius: 8px;
     }
-    .fs-7 {
-        font-size: 0.9rem;
-    }
-    .text-primary {
-        color: #4e73df !important;
-    }
-    .text-xs {
-        font-size: 0.75rem;
-    }
+    .fs-7 { font-size: 0.9rem; }
+    .text-primary { color: #4e73df !important; }
+    .text-xs { font-size: 0.75rem; }
     .urgent-timer {
         background: rgba(220, 53, 69, 0.08) !important;
         border-color: rgba(220, 53, 69, 0.3) !important;
     }
-    .urgent-timer * {
-        color: #dc3545 !important;
-    }
-    .title-hover:hover {
-        color: #4e73df !important;
-    }
-    .btn-hover-effect:active {
-        transform: scale(0.98);
-    }
+    .urgent-timer * { color: #dc3545 !important; }
+    .title-hover:hover { color: #4e73df !important; }
+    .btn-hover-effect:active { transform: scale(0.98); }
 
     /* Swiper Slider Styles */
-    .upcoming-swiper {
-        width: 100%;
-        overflow: hidden;
-    }
-    .swiper-wrapper {
-        display: flex !important;
-        flex-direction: row !important;
-    }
+    .upcoming-swiper { width: 100%; overflow: hidden; }
+    .swiper-wrapper { display: flex !important; flex-direction: row !important; }
     .upcoming-next, .upcoming-prev {
         background: #fff;
         width: 40px;
@@ -579,10 +564,7 @@
         z-index: 10;
         transition: all 0.3s ease;
     }
-    .upcoming-next:after, .upcoming-prev:after {
-        font-size: 1.1rem;
-        font-weight: bold;
-    }
+    .upcoming-next:after, .upcoming-prev:after { font-size: 1.1rem; font-weight: bold; }
     .upcoming-next { right: -50px; }
     .upcoming-prev { left: -50px; }
 
@@ -594,6 +576,117 @@
     @media (max-width: 1200px) {
         .upcoming-next { right: 10px; }
         .upcoming-prev { left: 10px; }
+    }
+
+    /* --- Testimonials Premium Style --- */
+    .testimonial-card-premium {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 30px;
+        padding: 3rem;
+        text-align: center;
+        margin: 1rem 0 3rem 0;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    .testimonial-quote-icon {
+        font-size: 2.5rem;
+        color: #4e73df;
+        opacity: 0.15;
+        margin-bottom: 1.5rem;
+    }
+    .testimonial-text {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2e59d9;
+        line-height: 1.6;
+        font-style: italic;
+    }
+    .testimonial-author-box {
+        display: inline-flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        text-align: left;
+    }
+    .author-avatar-wrapper { position: relative; }
+    .author-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+    }
+    .avatar-verified {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: #1cc88a;
+        color: white;
+        font-size: 0.6rem;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #fff;
+    }
+    .author-name { color: #1a202c; font-size: 1rem; font-weight: 700; }
+    .author-role { color: #718096; font-size: 0.85rem; }
+    
+    .testimonial-dot {
+        width: 10px !important;
+        height: 10px !important;
+        border-radius: 50% !important;
+        border: none !important;
+        background-color: #cbd5e0 !important;
+        margin: 0 5px !important;
+        transition: all 0.3s ease !important;
+    }
+    .testimonial-dot.active {
+        background-color: #4e73df !important;
+        width: 25px !important;
+        border-radius: 20px !important;
+    }
+    .testimonial-btn-prev, .testimonial-btn-next {
+        width: 40px;
+        height: 40px;
+        background: #fff;
+        border-radius: 50%;
+        color: #4e73df !important;
+        opacity: 1;
+        top: 50%;
+        transform: translateY(-50%);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        border: none;
+        z-index: 10;
+        font-size: 0.9rem;
+    }
+    .testimonial-btn-prev:hover, .testimonial-btn-next:hover {
+        background: #4e73df;
+        color: #fff !important;
+        box-shadow: 0 6px 15px rgba(78, 115, 223, 0.3);
+    }
+    .testimonial-btn-prev { left: -60px; }
+    .testimonial-btn-next { right: -60px; }
+
+    @media (max-width: 1200px) {
+        .testimonial-btn-prev { left: -30px; }
+        .testimonial-btn-next { right: -30px; }
+    }
+
+    @media (max-width: 991px) {
+        .testimonial-btn-prev { left: 5px; }
+        .testimonial-btn-next { right: 5px; }
+        .testimonial-card-premium { padding: 2rem; }
     }
 </style>
 

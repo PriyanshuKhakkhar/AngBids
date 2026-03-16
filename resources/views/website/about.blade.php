@@ -7,24 +7,20 @@
 <!-- Hero Header -->
 <section class="hero-section text-white d-flex align-items-center">
     <div class="container" data-aos="fade-up">
-        <div class="row align-items-center">
-            <div class="col-lg-7 text-center text-lg-start mb-5 mb-lg-0">
-                <h1 class="display-3 fw-bold mb-3">About <span class="text-white">LaraBids</span></h1>
-                <p class="lead opacity-75 pe-lg-5">
+        <div class="row align-items-center w-100">
+            <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
+                <h1 class="display-2 fw-bold mb-4">About <br><span class="text-white text-glow">LaraBids</span></h1>
+                <p class="lead mb-5 opacity-75 pe-lg-5">
                     LaraBids is the premier online auction platform designed for high-value acquisitions and a seamless bidding experience for collectors worldwide.
                 </p>
-                <div class="mt-4">
+                <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3">
                     <a href="#about-content" class="btn btn-gold btn-lg px-5 py-3 rounded-pill shadow">Explore Our Journey</a>
                 </div>
             </div>
-            <div class="col-lg-5">
-                <div class="hero-illustration-wrapper ps-lg-4 text-center">
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="hero-illustration-wrapper ps-lg-5 text-center">
                     <div class="hero-glow-blob"></div>
-                    <img src="{{ asset('assets/images/banner-2.png') }}" 
-                         class="img-fluid" 
-                         alt="About LaraBids"
-                         style="max-height: 400px; filter: drop-shadow(0 20px 50px rgba(0,0,0,0.3));">
-
+                    <img src="{{ asset('assets/images/banner-2.png') }}" class="img-fluid" alt="About LaraBids" style="max-height: 500px; filter: drop-shadow(0 20px 50px rgba(0,0,0,0.3));">
                 </div>
             </div>
         </div>
@@ -332,6 +328,9 @@
     .display-3 { font-size: 2.5rem; }
     .display-4 { font-size: 2rem; }
     .display-5 { font-size: 1.75rem; }
+}
+.text-glow {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 0 0 20px rgba(78, 115, 223, 0.2);
 }
 </style>
 @endpush
