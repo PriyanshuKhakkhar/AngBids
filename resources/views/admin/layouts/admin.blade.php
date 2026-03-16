@@ -100,6 +100,34 @@
                 width: 100%;
             }
         }
+
+        /* Premium Buttons */
+        .btn-premium-back {
+            background-color: #ffffff !important;
+            border: 1px solid #e3e6f0 !important;
+            color: #4e73df !important;
+            border-radius: 50px !important;
+            padding: 0.5rem 1.5rem !important;
+            font-weight: 700 !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+        }
+
+        .btn-premium-back:hover {
+            background-color: #4e73df !important;
+            color: #ffffff !important;
+            border-color: #4e73df !important;
+            transform: translateY(-1px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .btn-premium-back i {
+            transition: transform 0.3s ease;
+        }
+
+        .btn-premium-back:hover i {
+            transform: translateX(-3px);
+        }
         
         /* Sidebar Alignment Fix */
         #accordionSidebar .nav-item .nav-link {

@@ -95,19 +95,15 @@
 
 @section('content')
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4 pt-2">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <div>
-            <h1 class="h3 text-dark fw-bold mb-0">Manage Auctions</h1>
+            <h1 class="h3 mb-0 text-gray-800">Manage Auctions</h1>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0 small bg-transparent p-0">
-                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" class="text-decoration-none text-primary">Dashboard</a></li>
+                <ol class="breadcrumb bg-transparent p-0 small">
+                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Manage Auctions</li>
                 </ol>
             </nav>
-        </div>
-        <div class="d-none d-sm-inline-block shadow-sm px-4 py-2 bg-white rounded-pill border">
-            <span class="text-xs font-weight-bold text-uppercase text-muted mr-2">Total Auctions:</span>
-            <span class="h5 mb-0 font-weight-bold text-primary">{{ number_format($total_auctions) }}</span>
         </div>
     </div>
 

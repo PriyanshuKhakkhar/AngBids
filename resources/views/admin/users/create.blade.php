@@ -3,7 +3,22 @@
 @section('title', 'Create User - LaraBids')
 
 @section('content')
-    <h1 class="h3 mb-4 text-gray-800">Create New User</h1>
+    <!-- Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">Create New User</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-transparent p-0 small">
+                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.users.index') }}">Manage Users</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Create User</li>
+                </ol>
+            </nav>
+        </div>
+        <a href="{{ route('admin.users.index') }}" class="btn-premium-back text-decoration-none">
+            <i class="fas fa-arrow-left mr-2"></i> Back to List
+        </a>
+    </div>
 
     <div class="card shadow mb-4">
         <div class="card-header py-3">

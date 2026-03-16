@@ -70,24 +70,30 @@
 @section('content')
     <div class="container-fluid">
         <!-- Header -->
-        <div class="d-flex align-items-center justify-content-between mb-4 mt-2">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <div>
-                <h1 class="h3 mb-0 text-gray-900 font-weight-bold">View User</h1>
-                <p class="text-muted small mb-0">Manage and view detailed information for account <b>#{{ $user->id }}</b></p>
+                <h1 class="h3 mb-0 text-gray-800">User Details: {{ $user->name }}</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb bg-transparent p-0 small">
+                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('admin.users.index') }}">Manage Users</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">User Details</li>
+                    </ol>
+                </nav>
             </div>
             <div class="d-flex align-items-center">
-                <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3 mr-2 bg-white">
-                    <i class="fas fa-chevron-left mr-1"></i> Back to List
+                <a href="{{ route('admin.users.index') }}" class="btn-premium-back text-decoration-none mr-2">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to List
                 </a>
                 @if($user->trashed())
                    <form action="{{ route('admin.users.restore', $user->id) }}" method="POST" class="d-inline">
                         @csrf
-                        <button type="submit" class="btn btn-success btn-sm rounded-pill px-4 shadow-sm">
-                            <i class="fas fa-undo mr-1"></i> Restore Account
+                        <button type="submit" class="btn btn-success shadow-sm rounded-pill px-4 font-weight-bold">
+                            <i class="fas fa-undo mr-1"></i> Restore
                         </button>
                     </form>
                 @else
-                    <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-primary btn-sm rounded-pill px-4 shadow-sm">
+                    <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-primary shadow-sm rounded-pill px-4 font-weight-bold">
                         <i class="fas fa-edit mr-1"></i> Edit User
                     </a>
                 @endif

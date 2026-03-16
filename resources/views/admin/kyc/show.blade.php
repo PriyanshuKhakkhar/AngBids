@@ -3,10 +3,20 @@
 @section('title', 'KYC Details - LaraBids')
 
 @section('content')
+    <!-- Header -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">KYC Verification Details</h1>
-        <a href="{{ route('admin.kyc.index') }}" class="btn btn-secondary btn-sm shadow-sm">
-            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to List
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">KYC Verification Details</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-transparent p-0 small">
+                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.kyc.index') }}">KYC Verification</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">View Details</li>
+                </ol>
+            </nav>
+        </div>
+        <a href="{{ route('admin.kyc.index') }}" class="btn-premium-back text-decoration-none">
+            <i class="fas fa-arrow-left mr-2"></i> Back to List
         </a>
     </div>
 

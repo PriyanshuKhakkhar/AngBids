@@ -251,21 +251,15 @@
 @endpush
 
 @section('content')
-    {{-- Page Header --}}
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <div>
-            <h1 class="h3 mb-1 text-gray-800">
-                <i class="fas fa-cogs mr-2"></i>System Settings
-            </h1>
-            <p class="mb-0 text-muted small">Manage your application preferences and configuration</p>
-        </div>
-        <div class="d-flex align-items-center">
-            <span class="timezone-badge mr-3">
-                <i class="far fa-clock mr-1"></i> IST (UTC+5:30)
-            </span>
-            <span class="version-pill">
-                <i class="fas fa-code-branch"></i> v1.0.0
-            </span>
+            <h1 class="h3 mb-0 text-gray-800">System Settings</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-transparent p-0 small">
+                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">System Settings</li>
+                </ol>
+            </nav>
         </div>
     </div>
 
