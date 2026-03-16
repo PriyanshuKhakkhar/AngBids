@@ -223,93 +223,110 @@
 <!-- Upcoming Auctions -->
 <section class="py-4 bg-navy-shade">
     <div class="container py-lg-4">
-        <div class="text-center mb-5" data-aos="fade-up">
-            <h2 class="display-4 fw-bold">Upcoming Auctions</h2>
+        <div class="row align-items-end mb-5" data-aos="fade-up">
+            <div class="col-lg-6 text-center text-lg-start">
+                <h2 class="display-4 fw-bold mb-0">Upcoming Auctions</h2>
+            </div>
+            <div class="col-lg-6 text-center text-lg-end">
+                <a href="{{ route('auctions.index', ['status' => 'upcoming']) }}" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold shadow-sm mt-3 mt-lg-0">
+                    View All Upcoming <i class="fas fa-chevron-right ms-2"></i>
+                </a>
+            </div>
         </div>
-        <div class="row g-4">
-            @forelse($upcomingAuctions as $index => $upcoming)
-            <div class="col-md-6 col-lg-3">
-                <div class="card card-elite h-100 position-relative shadow-sm border-0 rounded-4 overflow-hidden bg-white hover-shadow-lg transition-all">
-                    <a href="{{ route('auctions.show', $upcoming->id) }}" class="stretched-link"></a>
-                    <!-- Image Section -->
-                    <div class="position-relative overflow-hidden" style="height: 180px;">
-                        <div class="d-block w-100 h-100">
-                            @if($upcoming->image)
-                                <img src="{{ str_starts_with($upcoming->image, 'http') ? $upcoming->image : asset('storage/' . $upcoming->image) }}" class="card-img-top h-100 object-fit-cover shadow-sm transition-all" alt="{{ $upcoming->title }}">
-                            @else
-                                <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=1200"
-                                    class="card-img-top h-100 object-fit-cover shadow-sm transition-all" alt="{{ $upcoming->title }}">
-                            @endif
-                        </div>
-                        <div class="position-absolute top-0 start-0 m-2" style="z-index: 2;">
-                            <span class="badge bg-gold text-dark shadow-sm fw-bold" style="font-size: 0.7rem;">{{ $upcoming->category->name ?? 'Uncategorized' }}</span>
-                        </div>
-                        <div class="position-absolute top-0 end-0 m-2" style="z-index: 2;">
-                            <form action="{{ route('user.watchlist.toggle', $upcoming->id ?? 0) }}" method="POST" class="watchlist-toggle-form">
-                                @csrf
-                                <button type="submit" class="btn btn-white rounded-circle shadow-sm d-flex align-items-center justify-content-center p-0" style="width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px);">
-                                    <i class="{{ $upcoming->watchlists->isNotEmpty() ? 'fas' : 'far' }} fa-heart text-danger" style="font-size: 0.8rem;"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
+        @if(count($upcomingAuctions) > 0)
+        <div class="position-relative">
+            <div class="swiper upcoming-swiper px-3">
+                <div class="swiper-wrapper">
+                    @foreach($upcomingAuctions as $upcoming)
+                    <div class="swiper-slide h-auto">
+                        <div class="card card-elite h-100 position-relative shadow-sm border-0 rounded-4 overflow-hidden bg-white hover-shadow-lg transition-all">
+                            <a href="{{ route('auctions.show', $upcoming->id) }}" class="stretched-link"></a>
+                            <!-- Image Section -->
+                            <div class="position-relative overflow-hidden" style="height: 180px;">
+                                <div class="d-block w-100 h-100">
+                                    @if($upcoming->image)
+                                        <img src="{{ str_starts_with($upcoming->image, 'http') ? $upcoming->image : asset('storage/' . $upcoming->image) }}" class="card-img-top h-100 object-fit-cover shadow-sm transition-all" alt="{{ $upcoming->title }}">
+                                    @else
+                                        <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=1200"
+                                            class="card-img-top h-100 object-fit-cover shadow-sm transition-all" alt="{{ $upcoming->title }}">
+                                    @endif
+                                </div>
+                                <div class="position-absolute top-0 start-0 m-2" style="z-index: 2;">
+                                    <span class="badge bg-gold text-dark shadow-sm fw-bold" style="font-size: 0.7rem;">{{ $upcoming->category->name ?? 'Uncategorized' }}</span>
+                                </div>
+                                <div class="position-absolute top-0 end-0 m-2" style="z-index: 2;">
+                                    <form action="{{ route('user.watchlist.toggle', $upcoming->id ?? 0) }}" method="POST" class="watchlist-toggle-form">
+                                        @csrf
+                                        <button type="submit" class="btn btn-white rounded-circle shadow-sm d-flex align-items-center justify-content-center p-0" style="width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px);">
+                                            <i class="{{ $upcoming->watchlists->isNotEmpty() ? 'fas' : 'far' }} fa-heart text-danger" style="font-size: 0.8rem;"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
 
-                    <!-- Content Section -->
-                    <div class="card-body p-3 d-flex flex-column flex-grow-1">
-                        @php
-                            $now = \Carbon\Carbon::now();
-                            $startTime = \Carbon\Carbon::parse($upcoming->start_time);
-                            $diff = $now->diff($startTime);
-                        @endphp
-                        
-                        <div class="alert alert-info alert-permanent py-1 mb-2 text-center small border-0 fw-bold" style="font-size: 0.7rem; background: rgba(13, 202, 240, 0.1); color: #0dcaf0;">
-                            <i class="fas fa-clock me-1"></i> Starts {{ $startTime->format('M d, H:i') }}
-                        </div>
+                            <!-- Content Section -->
+                            <div class="card-body p-3 d-flex flex-column flex-grow-1">
+                                @php
+                                    $now = \Carbon\Carbon::now();
+                                    $startTime = \Carbon\Carbon::parse($upcoming->start_time);
+                                    $diff = $now->diff($startTime);
+                                @endphp
+                                
+                                <div class="alert alert-info alert-permanent py-1 mb-2 text-center small border-0 fw-bold" style="font-size: 0.7rem; background: rgba(13, 202, 240, 0.1); color: #0dcaf0;">
+                                    <i class="fas fa-clock me-1"></i> Starts {{ $startTime->format('M d, H:i') }}
+                                </div>
 
-                        <h3 class="h6 mb-2 fw-bold text-dark text-truncate title-hover">
-                            {{ $upcoming->title }}
-                        </h3>
-                        
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <div class="d-flex align-items-center">
-                                @if($upcoming->user && $upcoming->user->avatar)
-                                    <img src="{{ str_starts_with($upcoming->user->avatar, 'http') ? $upcoming->user->avatar : asset('storage/' . $upcoming->user->avatar) }}" class="rounded-circle me-1 border" width="20" height="20" style="object-fit: cover;" alt="{{ $upcoming->user->name }}">
-                                @else
-                                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-1 border" style="width: 20px; height: 20px;">
-                                        <i class="fas fa-user text-secondary" style="font-size: 10px;"></i>
+                                <h3 class="h6 mb-2 fw-bold text-dark text-truncate title-hover">
+                                    {{ $upcoming->title }}
+                                </h3>
+                                
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <div class="d-flex align-items-center">
+                                        @if($upcoming->user && $upcoming->user->avatar)
+                                            <img src="{{ str_starts_with($upcoming->user->avatar, 'http') ? $upcoming->user->avatar : asset('storage/' . $upcoming->user->avatar) }}" class="rounded-circle me-1 border" width="20" height="20" style="object-fit: cover;" alt="{{ $upcoming->user->name }}">
+                                        @else
+                                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-1 border" style="width: 20px; height: 20px;">
+                                                <i class="fas fa-user text-secondary" style="font-size: 10px;"></i>
+                                            </div>
+                                        @endif
+                                        <span class="text-xs text-muted text-truncate" style="max-width: 80px;">{{ $upcoming->user->name ?? 'Seller' }}</span>
                                     </div>
-                                @endif
-                                <span class="text-xs text-muted text-truncate" style="max-width: 80px;">{{ $upcoming->user->name ?? 'Seller' }}</span>
-                            </div>
-                            <span class="badge bg-light text-secondary border fw-normal text-xs px-2 py-1">
-                                {{ $upcoming->bids->count() }} Bids
-                            </span>
-                        </div>
-                        
-                        <div class="mt-auto">
-                            <div class="d-flex justify-content-between align-items-center mb-2 pt-2 border-top">
-                                <span class="text-xs text-secondary fw-bold text-uppercase">Current Bid</span>
-                                <span class="h6 mb-0 text-primary fw-bold">₹{{ number_format($upcoming->current_price, 2) }}</span>
-                            </div>
-                            <div class="btn btn-primary w-100 py-2 rounded-pill fw-bold shadow-sm transition-all btn-hover-effect" style="font-size: 0.8rem;">
-                                VIEW <i class="fas fa-gavel ms-1"></i>
+                                    <span class="badge bg-light text-secondary border fw-normal text-xs px-2 py-1">
+                                        {{ $upcoming->bids->count() }} Bids
+                                    </span>
+                                </div>
+                                
+                                <div class="mt-auto">
+                                    <div class="d-flex justify-content-between align-items-center mb-2 pt-2 border-top">
+                                        <span class="text-xs text-secondary fw-bold text-uppercase">Current Bid</span>
+                                        <span class="h6 mb-0 text-primary fw-bold">₹{{ number_format($upcoming->current_price, 2) }}</span>
+                                    </div>
+                                    <div class="btn btn-primary w-100 py-2 rounded-pill fw-bold shadow-sm transition-all btn-hover-effect" style="font-size: 0.8rem;">
+                                        VIEW <i class="fas fa-gavel ms-1"></i>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    @endforeach
                 </div>
             </div>
-            @empty
-            <div class="col-12 text-center py-5">
-                <div class="opacity-50 mb-3">
-                    <i class="fas fa-calendar-times fa-3x text-secondary"></i>
-                </div>
-                <h5 class="text-secondary">No upcoming auctions scheduled yet.</h5>
-                <p class="small text-muted">Stay tuned for amazing deals!</p>
-            </div>
-            @endforelse
+            <!-- Navigation Buttons -->
+            <div class="swiper-button-next upcoming-next"></div>
+            <div class="swiper-button-prev upcoming-prev"></div>
         </div>
+        @else
+        <div class="text-center py-5">
+            <div class="opacity-50 mb-3">
+                <i class="fas fa-calendar-times fa-3x text-secondary"></i>
+            </div>
+            <h5 class="text-secondary">No upcoming auctions scheduled yet.</h5>
+            <p class="small text-muted">Stay tuned for amazing deals!</p>
+        </div>
+        @endif
     </div>
 </section>
+
 
 <!-- How LaraBids Works -->
 <section id="how-it-works" class="py-5 bg-dark-elite">
@@ -500,6 +517,7 @@
 
 
 @push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 <style>
     .bg-navy-shade {
         background-color: #f8f9fc;
@@ -541,7 +559,44 @@
     .btn-hover-effect:active {
         transform: scale(0.98);
     }
+
+    /* Swiper Slider Styles */
+    .upcoming-swiper {
+        width: 100%;
+        overflow: hidden;
+    }
+    .swiper-wrapper {
+        display: flex !important;
+        flex-direction: row !important;
+    }
+    .upcoming-next, .upcoming-prev {
+        background: #fff;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        color: #4e73df !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        z-index: 10;
+        transition: all 0.3s ease;
+    }
+    .upcoming-next:after, .upcoming-prev:after {
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+    .upcoming-next { right: -50px; }
+    .upcoming-prev { left: -50px; }
+
+    @media (max-width: 1400px) {
+        .upcoming-next { right: -25px; }
+        .upcoming-prev { left: -25px; }
+    }
+
+    @media (max-width: 1200px) {
+        .upcoming-next { right: 10px; }
+        .upcoming-prev { left: 10px; }
+    }
 </style>
+
 @endpush
 
 @push('scripts')
@@ -604,11 +659,29 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('Testimonials carousel initialized and cycle forced.');
     }
+
+    // Initialize Swiper for Upcoming Auctions
+    if (document.querySelector('.upcoming-swiper')) {
+        const swiper = new Swiper('.upcoming-swiper', {
+            slidesPerView: 1,
+            spaceBetween: 25,
+            loop: true,
+            slidesPerGroup: 1,
+            grabCursor: true,
+            navigation: {
+                nextEl: '.upcoming-next',
+                prevEl: '.upcoming-prev',
+            },
+            breakpoints: {
+                576: { slidesPerView: 2 },
+                992: { slidesPerView: 4 }
+            }
+        });
+    }
 });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
 @endpush
-
 @endsection
-
-
 

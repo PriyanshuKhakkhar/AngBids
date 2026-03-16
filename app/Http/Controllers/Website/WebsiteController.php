@@ -30,7 +30,7 @@ class WebsiteController extends Controller
         $upcomingAuctions = Auction::where('status', 'active')
             ->where('start_time', '>', now())
             ->orderBy('start_time', 'asc')
-            ->take(4)
+            ->take(8)
             ->with(['user', 'category', 'watchlists' => function($q) {
                 if (auth()->check()) {
                     $q->where('user_id', auth()->id());
