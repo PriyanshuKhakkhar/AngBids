@@ -8,7 +8,7 @@
     <div style="max-width: 600px; margin: 20px auto; background: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 15px rgba(0,0,0,0.08);">
         
         <div style="text-align: center; margin-bottom: 25px;">
-            <h1 style="color: #0d6efd; font-size: 24px; margin: 0;">LaraBids</h1>
+            <h1 style="color: #4e73df; font-size: 24px; margin: 0;">LaraBids</h1>
         </div>
 
         <h2 style="text-align: center; color: #333333; margin-bottom: 10px;">Account Verification</h2>
@@ -30,3 +30,6 @@
     </div>
 </body>
 </html>
+
+
+

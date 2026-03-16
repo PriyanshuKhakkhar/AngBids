@@ -279,7 +279,7 @@
 
 <!-- ================= CTA SECTION ================= -->
 
-<section class="py-5 position-relative overflow-hidden" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);">
+<section class="py-5 position-relative overflow-hidden" style="background: linear-gradient(135deg, #4e73df 0%, #2e59d9 100%);">
     <!-- Background Glow -->
     <div class="position-absolute top-50 start-50 translate-middle bg-white rounded-circle" style="width: 500px; height: 500px; filter: blur(150px); opacity: 0.1;"></div>
 
@@ -337,3 +337,6 @@
 @endpush
 
 @endsection
+
+
+

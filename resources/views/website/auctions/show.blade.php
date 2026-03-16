@@ -927,7 +927,7 @@
         background: #fff;
     }
     .hibid-bid-row:last-child { border-bottom: none; }
-    .hibid-bid-row--current { background: #f8f9ff; }
+    .hibid-bid-row--current { background: #f8f9fc; }
     .hibid-bid-label {
         font-size: 0.8rem;
         color: #6c757d;
@@ -979,7 +979,7 @@
         font-size: 1rem;
         font-weight: 700;
         color: #4e73df;
-        background: #f8f9ff;
+        background: #f8f9fc;
         border-right: 1px solid #dee2e6;
         height: 42px;
         display: flex;
@@ -1552,3 +1552,6 @@
 @endpush
 
 @endsection
+
+
+

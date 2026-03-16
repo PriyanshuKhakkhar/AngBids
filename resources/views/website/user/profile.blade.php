@@ -39,7 +39,7 @@
         position: absolute;
         bottom: 0;
         right: 0;
-        background-color: #0d6efd;
+        background-color: #4e73df;
         color: white;
         border: 2px solid white;
         border-radius: 50%;
@@ -105,7 +105,7 @@
     .stat-value {
         font-size: 1.25rem;
         font-weight: 700;
-        color: #0d6efd;
+        color: #4e73df;
         margin-bottom: 2px;
     }
     .stat-label {
@@ -398,3 +398,6 @@
     }
 </script>
 @endpush
+
+
+
