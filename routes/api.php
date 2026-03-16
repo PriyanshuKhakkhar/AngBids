@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\User\WatchlistController;
 use App\Http\Controllers\Api\User\ProfileController;
 use App\Http\Controllers\Api\User\NotificationController;
 use App\Http\Controllers\Api\User\BidController;
+use App\Http\Controllers\Api\User\KycController;
 use App\Http\Controllers\Api\User\AutoBidController;
 
 // Admin Controllers
@@ -91,6 +92,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/auto-bids', [AutoBidController::class, 'index'])->name('api.user.auto-bids.index');
     Route::post('/user/auto-bids', [AutoBidController::class, 'store'])->name('api.user.auto-bids.store');
     Route::delete('/user/auto-bids/{id}', [AutoBidController::class, 'destroy'])->name('api.user.auto-bids.destroy');
+
+    // KYC Submission
+    Route::get('/user/kyc', [KycController::class, 'show'])->name('api.user.kyc.show');
+    Route::post('/user/kyc', [KycController::class, 'store'])->name('api.user.kyc.store');
 
 
 
