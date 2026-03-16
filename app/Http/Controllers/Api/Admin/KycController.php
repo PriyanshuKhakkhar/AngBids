@@ -9,9 +9,7 @@ use App\Http\Resources\KycResource;
 
 class KycController extends Controller
 {
-    /**
-     * Display a listing of the KYC requests with filters.
-     */
+    //display a listing of the KYC requests with filtering, sorting, and pagination
     public function index(Request $request)
     {
         $status    = $request->get('status', 'all'); // all | pending | approved | rejected
