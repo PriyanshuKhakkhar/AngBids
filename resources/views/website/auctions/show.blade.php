@@ -135,7 +135,7 @@
                         @endphp
 
                         @if($isUpcoming)
-                        <div class="alert alert-info border-0 shadow-sm mb-4 rounded-3">
+                        <div class="alert alert-info alert-permanent border-0 shadow-sm mb-4 rounded-3">
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-clock me-3 fs-4 text-primary"></i>
                                 <div>
