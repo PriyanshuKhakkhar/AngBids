@@ -7,37 +7,22 @@
 <!-- ================= HERO SECTION ================= -->
 <section class="hero-section text-white d-flex align-items-center">
     <div class="container" data-aos="fade-up">
-        <div class="row align-items-center">
-
-            <div class="col-lg-7 text-center text-lg-start mb-5 mb-lg-0">
-
-                <h1 class="display-4 fw-bold mb-3">
-                    Contact <span class="text-white">LaraBids</span>
-                </h1>
-
-                <p class="lead opacity-75 pe-lg-5">
-                    Need help with auctions, bids, or account-related queries?
-                    Our support team is here to assist you every step of the way.
+        <div class="row align-items-center w-100">
+            <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
+                <h1 class="display-2 fw-bold mb-4">Contact <br><span class="text-white text-glow">LaraBids</span></h1>
+                <p class="lead mb-5 opacity-75 pe-lg-5">
+                    Need help with auctions, bids, or account-related queries? Our support team is here to assist you every step of the way.
                 </p>
-
-                <a href="#contact-content"
-                   class="btn btn-gold btn-lg px-5 py-3 rounded-pill shadow mt-3">
-                    Contact Support
-                </a>
-            </div>
-
-            <div class="col-lg-5 text-center">
-                <div class="hero-illustration-wrapper">
-                    <!-- Glow blob for depth -->
-                    <div class="hero-glow-blob"></div>
-                    
-                    <img src="{{ asset('assets/images/banner-5.png') }}"
-                         class="img-fluid"
-                         alt="LaraBids Support"
-                         style="max-height: 380px; filter: drop-shadow(0 20px 40px rgba(0,0,0,.35));">
+                <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3">
+                    <a href="#contact-content" class="btn btn-gold btn-lg px-5 py-3 rounded-pill shadow">Contact Support</a>
                 </div>
             </div>
-
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="hero-illustration-wrapper ps-lg-5 text-center">
+                    <div class="hero-glow-blob"></div>
+                    <img src="{{ asset('assets/images/banner-5.png') }}" class="img-fluid" alt="LaraBids Support" style="max-height: 500px; filter: drop-shadow(0 20px 50px rgba(0,0,0,0.3));">
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -408,6 +393,10 @@
 
 #contact-content .btn-primary:active {
     transform: translateY(-1px);
+}
+
+.text-glow {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 0 0 20px rgba(78, 115, 223, 0.2);
 }
 
 </style>

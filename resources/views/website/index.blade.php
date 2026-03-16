@@ -19,7 +19,7 @@
             <div class="container h-100 d-flex align-items-center" data-aos="fade-up">
                 <div class="row align-items-center w-100">
                     <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
-                        <h1 class="display-2 fw-bold mb-4">LaraBids: Browse, <br><span class="text-white">Bid, and Win</span></h1>
+                        <h1 class="display-2 fw-bold mb-4">LaraBids: Browse, <br><span class="text-white text-glow">Bid, and Win</span></h1>
                         <p class="lead mb-5 opacity-75 pe-lg-5">
                             Join the premier community for high-value acquisitions. From rare collectibles to everyday electronics,
                             experience the power of professional bidding.
@@ -44,7 +44,7 @@
             <div class="container h-100 d-flex align-items-center">
                 <div class="row align-items-center w-100">
                     <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
-                        <h2 class="display-2 fw-bold mb-4 text-white">Rare Treasures <br><span>Await You</span></h2>
+                        <h2 class="display-2 fw-bold mb-4 text-white">Rare Treasures <br><span class="text-glow">Await You</span></h2>
                         <p class="lead mb-5 opacity-75 pe-lg-5">
                             Find unique items that aren't available anywhere else. Our verified sellers bring you the best in luxury and rarity.
                         </p>
@@ -68,7 +68,7 @@
             <div class="container h-100 d-flex align-items-center">
                 <div class="row align-items-center w-100">
                     <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
-                        <h2 class="display-2 fw-bold mb-4 text-white">Bid with <br><span>Confidence</span></h2>
+                        <h2 class="display-2 fw-bold mb-4 text-white">Bid with <br><span class="text-glow">Confidence</span></h2>
                         <p class="lead mb-5 opacity-75 pe-lg-5">
                             Every bid is tracked and Every seller is verified. Experience the most transparent auction platform in India.
                         </p>
@@ -119,21 +119,24 @@
             @foreach($auctions as $index => $auction)
             <div class="col-md-6 col-lg-3">
                 <div class="card card-elite h-100 position-relative shadow-sm border-0 rounded-4 overflow-hidden bg-white hover-shadow-lg transition-all">
+                    <a href="{{ route('auctions.show', $auction->id) }}" class="stretched-link"></a>
                     <!-- Image Section -->
                     <div class="position-relative overflow-hidden" style="height: 180px;">
-                        @if($auction->image)
-                            <img src="{{ str_starts_with($auction->image, 'http') ? $auction->image : asset('storage/' . $auction->image) }}" class="card-img-top h-100 object-fit-cover shadow-sm" alt="{{ $auction->title }}">
-                        @else
-                            <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=1200"
-                                class="card-img-top h-100 object-fit-cover shadow-sm" alt="{{ $auction->title }}">
-                        @endif
+                        <div class="d-block w-100 h-100">
+                            @if($auction->image)
+                                <img src="{{ str_starts_with($auction->image, 'http') ? $auction->image : asset('storage/' . $auction->image) }}" class="card-img-top h-100 object-fit-cover shadow-sm transition-all" alt="{{ $auction->title }}">
+                            @else
+                                <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=1200"
+                                    class="card-img-top h-100 object-fit-cover shadow-sm transition-all" alt="{{ $auction->title }}">
+                            @endif
+                        </div>
                         <div class="position-absolute top-0 start-0 m-2" style="z-index: 2;">
-                            <span class="badge bg-gold text-dark shadow-sm" style="font-size: 0.7rem;">{{ $auction->category->name ?? 'Uncategorized' }}</span>
+                            <span class="badge bg-gold text-dark shadow-sm fw-bold" style="font-size: 0.7rem;">{{ $auction->category->name ?? 'Uncategorized' }}</span>
                         </div>
                         <div class="position-absolute top-0 end-0 m-2" style="z-index: 2;">
                             <form action="{{ route('user.watchlist.toggle', $auction->id ?? 0) }}" method="POST" class="watchlist-toggle-form">
                                 @csrf
-                                <button type="submit" class="btn btn-white rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px);">
+                                <button type="submit" class="btn btn-white rounded-circle shadow-sm d-flex align-items-center justify-content-center p-0" style="width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px);">
                                     <i class="{{ $auction->watchlists->isNotEmpty() ? 'fas' : 'far' }} fa-heart text-danger" style="font-size: 0.8rem;"></i>
                                 </button>
                             </form>
@@ -150,49 +153,64 @@
                         @endphp
                         
                         @if(!$isClosed)
-                        <div class="glass-timer text-center py-1 timer-val mb-2 shadow-none border" 
+                        <div class="glass-timer text-center py-1 timer-val mb-2 shadow-none border {{ ($diff->d == 0 && $diff->h == 0) ? 'urgent-timer' : '' }}" 
                             data-days="{{ $diff->d }}" 
                             data-hours="{{ $diff->h }}" 
                             data-min="{{ $diff->i }}" 
                             data-sec="{{ $diff->s }}">
                             <div class="row g-0 px-2">
-                                <div class="col">
+                                <div class="col border-end border-light">
                                     <div class="fw-bold fs-7" data-days>{{ sprintf('%02d', $diff->d) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">D</small>
+                                    <small class="opacity-50 text-uppercase d-block" style="font-size: 0.5rem;">D</small>
                                 </div>
-                                <div class="col">
+                                <div class="col border-end border-light">
                                     <div class="fw-bold fs-7" data-hours>{{ sprintf('%02d', $diff->h) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">H</small>
+                                    <small class="opacity-50 text-uppercase d-block" style="font-size: 0.5rem;">H</small>
                                 </div>
-                                <div class="col">
+                                <div class="col border-end border-light">
                                     <div class="fw-bold fs-7" data-min>{{ sprintf('%02d', $diff->i) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">M</small>
+                                    <small class="opacity-50 text-uppercase d-block" style="font-size: 0.5rem;">M</small>
                                 </div>
                                 <div class="col">
-                                    <div class="fw-bold fs-7" data-sec>{{ sprintf('%02d', $diff->s) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">S</small>
+                                    <div class="fw-bold fs-7 text-primary" data-sec>{{ sprintf('%02d', $diff->s) }}</div>
+                                    <small class="opacity-50 text-uppercase d-block" style="font-size: 0.5rem;">S</small>
                                 </div>
                             </div>
                         </div>
                         @else
-                        <div class="alert alert-danger alert-permanent py-1 mb-2 text-center small border-0" style="font-size: 0.7rem;">Closed</div>
+                        <div class="alert alert-danger alert-permanent border-0 py-1 mb-2 text-center small fw-bold" style="font-size: 0.7rem; background: rgba(220, 53, 69, 0.1); color: #dc3545;">
+                            <i class="fas fa-times-circle me-1"></i> Auction Closed
+                        </div>
                         @endif
 
-                        <h3 class="h6 mb-2 fw-bold text-dark text-truncate" title="{{ $auction->title }}">{{ $auction->title }}</h3>
+                        <h3 class="h6 mb-2 fw-bold text-dark text-truncate title-hover">
+                            {{ $auction->title }}
+                        </h3>
                         
-                        <div class="d-flex align-items-center mb-3">
-                            <img src="{{ $auction->user->avatar_url }}" class="rounded-circle me-1" width="18" height="18" style="object-fit: cover;" alt="Seller">
-                            <span class="text-xs text-muted text-truncate">{{ $auction->user->name }}</span>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center">
+                                @if($auction->user && $auction->user->avatar)
+                                    <img src="{{ str_starts_with($auction->user->avatar, 'http') ? $auction->user->avatar : asset('storage/' . $auction->user->avatar) }}" class="rounded-circle me-1 border" width="20" height="20" style="object-fit: cover;" alt="{{ $auction->user->name }}">
+                                @else
+                                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-1 border" style="width: 20px; height: 20px;">
+                                        <i class="fas fa-user text-secondary" style="font-size: 10px;"></i>
+                                    </div>
+                                @endif
+                                <span class="text-xs text-muted text-truncate" style="max-width: 80px;">{{ $auction->user->name ?? 'Seller' }}</span>
+                            </div>
+                            <span class="badge bg-light text-secondary border fw-normal text-xs px-2 py-1">
+                                {{ $auction->bids->count() }} Bids
+                            </span>
                         </div>
                         
                         <div class="mt-auto">
                             <div class="d-flex justify-content-between align-items-center mb-2 pt-2 border-top">
-                                <span class="text-xs text-secondary fw-bold text-uppercase">Bid</span>
+                                <span class="text-xs text-secondary fw-bold text-uppercase">{{ $isClosed ? 'Final Bid' : 'Current Bid' }}</span>
                                 <span class="h6 mb-0 text-primary fw-bold">₹{{ number_format($auction->current_price, 2) }}</span>
                             </div>
-                            <a href="{{ route('auctions.show', $auction->id) }}" class="btn btn-primary w-100 py-2 rounded-pill fw-bold stretched-link shadow-sm transition-all" style="font-size: 0.8rem;">
-                                BID NOW <i class="fas fa-gavel ms-1"></i>
-                            </a>
+                            <div class="btn {{ $isClosed ? 'btn-outline-secondary' : 'btn-primary' }} w-100 py-2 rounded-pill fw-bold shadow-sm transition-all btn-hover-effect" style="font-size: 0.8rem;">
+                                @if($isClosed) CLOSED @else BID NOW @endif <i class="fas {{ $isClosed ? 'fa-lock' : 'fa-gavel' }} ms-1"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -205,98 +223,110 @@
 <!-- Upcoming Auctions -->
 <section class="py-4 bg-navy-shade">
     <div class="container py-lg-4">
-        <div class="text-center mb-5" data-aos="fade-up">
-            <h2 class="display-4 fw-bold">Upcoming Auctions</h2>
+        <div class="row align-items-end mb-5" data-aos="fade-up">
+            <div class="col-lg-6 text-center text-lg-start">
+                <h2 class="display-4 fw-bold mb-0">Upcoming Auctions</h2>
+            </div>
+            <div class="col-lg-6 text-center text-lg-end">
+                <a href="{{ route('auctions.index', ['status' => 'upcoming']) }}" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold shadow-sm mt-3 mt-lg-0">
+                    View All Upcoming <i class="fas fa-chevron-right ms-2"></i>
+                </a>
+            </div>
         </div>
-        <div class="row g-4">
-            @forelse($upcomingAuctions as $index => $upcoming)
-            <div class="col-md-6 col-lg-3">
-                <div class="card card-elite h-100 position-relative shadow-sm border-0 rounded-4 overflow-hidden bg-white hover-shadow-lg transition-all">
-                    <!-- Image Section -->
-                    <div class="position-relative overflow-hidden" style="height: 180px;">
-                        @if($upcoming->image)
-                            <img src="{{ str_starts_with($upcoming->image, 'http') ? $upcoming->image : asset('storage/' . $upcoming->image) }}" class="card-img-top h-100 object-fit-cover shadow-sm" alt="{{ $upcoming->title }}">
-                        @else
-                            <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=1200"
-                                class="card-img-top h-100 object-fit-cover shadow-sm" alt="{{ $upcoming->title }}">
-                        @endif
-                        <div class="position-absolute top-0 start-0 m-2" style="z-index: 2;">
-                            <span class="badge bg-gold text-dark shadow-sm" style="font-size: 0.7rem;">{{ $upcoming->category->name ?? 'Uncategorized' }}</span>
-                        </div>
-                        <div class="position-absolute top-0 end-0 m-2" style="z-index: 2;">
-                            <form action="{{ route('user.watchlist.toggle', $upcoming->id ?? 0) }}" method="POST" class="watchlist-toggle-form">
-                                @csrf
-                                <button type="submit" class="btn btn-white rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px);">
-                                    <i class="{{ $upcoming->watchlists->isNotEmpty() ? 'fas' : 'far' }} fa-heart text-danger" style="font-size: 0.8rem;"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
+        @if(count($upcomingAuctions) > 0)
+        <div class="position-relative">
+            <div class="swiper upcoming-swiper px-3">
+                <div class="swiper-wrapper">
+                    @foreach($upcomingAuctions as $upcoming)
+                    <div class="swiper-slide h-auto">
+                        <div class="card card-elite h-100 position-relative shadow-sm border-0 rounded-4 overflow-hidden bg-white hover-shadow-lg transition-all">
+                            <a href="{{ route('auctions.show', $upcoming->id) }}" class="stretched-link"></a>
+                            <!-- Image Section -->
+                            <div class="position-relative overflow-hidden" style="height: 180px;">
+                                <div class="d-block w-100 h-100">
+                                    @if($upcoming->image)
+                                        <img src="{{ str_starts_with($upcoming->image, 'http') ? $upcoming->image : asset('storage/' . $upcoming->image) }}" class="card-img-top h-100 object-fit-cover shadow-sm transition-all" alt="{{ $upcoming->title }}">
+                                    @else
+                                        <img src="https://images.unsplash.com/photo-1523275335684-21481017106d?auto=format&fit=crop&w=1200"
+                                            class="card-img-top h-100 object-fit-cover shadow-sm transition-all" alt="{{ $upcoming->title }}">
+                                    @endif
+                                </div>
+                                <div class="position-absolute top-0 start-0 m-2" style="z-index: 2;">
+                                    <span class="badge bg-gold text-dark shadow-sm fw-bold" style="font-size: 0.7rem;">{{ $upcoming->category->name ?? 'Uncategorized' }}</span>
+                                </div>
+                                <div class="position-absolute top-0 end-0 m-2" style="z-index: 2;">
+                                    <form action="{{ route('user.watchlist.toggle', $upcoming->id ?? 0) }}" method="POST" class="watchlist-toggle-form">
+                                        @csrf
+                                        <button type="submit" class="btn btn-white rounded-circle shadow-sm d-flex align-items-center justify-content-center p-0" style="width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px);">
+                                            <i class="{{ $upcoming->watchlists->isNotEmpty() ? 'fas' : 'far' }} fa-heart text-danger" style="font-size: 0.8rem;"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
 
-                    <!-- Content Section -->
-                    <div class="card-body p-3 d-flex flex-column flex-grow-1">
-                        @php
-                            $now = \Carbon\Carbon::now();
-                            $startTime = \Carbon\Carbon::parse($upcoming->start_time);
-                            $diff = $now->diff($startTime);
-                        @endphp
-                        
-                        <div class="glass-timer text-center py-1 timer-val mb-2 shadow-none border" 
-                            data-days="{{ $diff->d }}" 
-                            data-hours="{{ $diff->h }}" 
-                            data-min="{{ $diff->i }}" 
-                            data-sec="{{ $diff->s }}">
-                            <div class="row g-0 px-2">
-                                <div class="col">
-                                    <div class="fw-bold fs-7" data-days>{{ sprintf('%02d', $diff->d) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">D</small>
+                            <!-- Content Section -->
+                            <div class="card-body p-3 d-flex flex-column flex-grow-1">
+                                @php
+                                    $now = \Carbon\Carbon::now();
+                                    $startTime = \Carbon\Carbon::parse($upcoming->start_time);
+                                    $diff = $now->diff($startTime);
+                                @endphp
+                                
+                                <div class="alert alert-info alert-permanent py-1 mb-2 text-center small border-0 fw-bold" style="font-size: 0.7rem; background: rgba(13, 202, 240, 0.1); color: #0dcaf0;">
+                                    <i class="fas fa-clock me-1"></i> Starts {{ $startTime->format('M d, H:i') }}
                                 </div>
-                                <div class="col">
-                                    <div class="fw-bold fs-7" data-hours>{{ sprintf('%02d', $diff->h) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">H</small>
+
+                                <h3 class="h6 mb-2 fw-bold text-dark text-truncate title-hover">
+                                    {{ $upcoming->title }}
+                                </h3>
+                                
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <div class="d-flex align-items-center">
+                                        @if($upcoming->user && $upcoming->user->avatar)
+                                            <img src="{{ str_starts_with($upcoming->user->avatar, 'http') ? $upcoming->user->avatar : asset('storage/' . $upcoming->user->avatar) }}" class="rounded-circle me-1 border" width="20" height="20" style="object-fit: cover;" alt="{{ $upcoming->user->name }}">
+                                        @else
+                                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-1 border" style="width: 20px; height: 20px;">
+                                                <i class="fas fa-user text-secondary" style="font-size: 10px;"></i>
+                                            </div>
+                                        @endif
+                                        <span class="text-xs text-muted text-truncate" style="max-width: 80px;">{{ $upcoming->user->name ?? 'Seller' }}</span>
+                                    </div>
+                                    <span class="badge bg-light text-secondary border fw-normal text-xs px-2 py-1">
+                                        {{ $upcoming->bids->count() }} Bids
+                                    </span>
                                 </div>
-                                <div class="col">
-                                    <div class="fw-bold fs-7" data-min>{{ sprintf('%02d', $diff->i) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">M</small>
-                                </div>
-                                <div class="col">
-                                    <div class="fw-bold fs-7" data-sec>{{ sprintf('%02d', $diff->s) }}</div>
-                                    <small class="opacity-50 text-uppercase" style="font-size: 0.5rem;">S</small>
+                                
+                                <div class="mt-auto">
+                                    <div class="d-flex justify-content-between align-items-center mb-2 pt-2 border-top">
+                                        <span class="text-xs text-secondary fw-bold text-uppercase">Current Bid</span>
+                                        <span class="h6 mb-0 text-primary fw-bold">₹{{ number_format($upcoming->current_price, 2) }}</span>
+                                    </div>
+                                    <div class="btn btn-primary w-100 py-2 rounded-pill fw-bold shadow-sm transition-all btn-hover-effect" style="font-size: 0.8rem;">
+                                        VIEW <i class="fas fa-gavel ms-1"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
-                        <h3 class="h6 mb-2 fw-bold text-dark text-truncate" title="{{ $upcoming->title }}">{{ $upcoming->title }}</h3>
-                        
-                        <div class="d-flex align-items-center mb-3">
-                            <img src="{{ $upcoming->user->avatar_url }}" class="rounded-circle me-1" width="18" height="18" style="object-fit: cover;" alt="Seller">
-                            <span class="text-xs text-muted text-truncate">{{ $upcoming->user->name }}</span>
-                        </div>
-                        
-                        <div class="mt-auto">
-                            <div class="d-flex justify-content-between align-items-center mb-2 pt-2 border-top">
-                                <span class="text-xs text-secondary fw-bold text-uppercase">Start Price</span>
-                                <span class="h6 mb-0 text-primary fw-bold">₹{{ number_format($upcoming->starting_price, 2) }}</span>
-                            </div>
-                            <a href="{{ route('auctions.show', $upcoming->id) }}" class="btn btn-primary w-100 py-2 rounded-pill fw-bold stretched-link shadow-sm transition-all" style="font-size: 0.8rem;">
-                                VIEW DETAILS <i class="fas fa-arrow-right ms-1"></i>
-                            </a>
-                        </div>
                     </div>
+                    @endforeach
                 </div>
             </div>
-            @empty
-            <div class="col-12 text-center py-5">
-                <div class="opacity-50 mb-3">
-                    <i class="fas fa-calendar-times fa-3x text-secondary"></i>
-                </div>
-                <h5 class="text-secondary">No upcoming auctions scheduled yet.</h5>
-                <p class="small text-muted">Stay tuned for amazing deals!</p>
-            </div>
-            @endforelse
+            <!-- Navigation Buttons -->
+            <div class="swiper-button-next upcoming-next"></div>
+            <div class="swiper-button-prev upcoming-prev"></div>
         </div>
+        @else
+        <div class="text-center py-5">
+            <div class="opacity-50 mb-3">
+                <i class="fas fa-calendar-times fa-3x text-secondary"></i>
+            </div>
+            <h5 class="text-secondary">No upcoming auctions scheduled yet.</h5>
+            <p class="small text-muted">Stay tuned for amazing deals!</p>
+        </div>
+        @endif
     </div>
 </section>
+
 
 <!-- How LaraBids Works -->
 <section id="how-it-works" class="py-5 bg-dark-elite">
@@ -309,7 +339,7 @@
                 <div class="step-card text-center p-4">
                     <div class="step-number mb-4 mx-auto">01</div>
                     <h4 class="h5 text-white mb-3">Quick Registration</h4>
-                    <p class="text-secondary small">Create your account and verify your email to join our
+                    <p class="text-white opacity-75 small">Create your account and verify your email to join our
                         global community of bidders.</p>
                 </div>
             </div>
@@ -317,7 +347,7 @@
                 <div class="step-card text-center p-4">
                     <div class="step-number mb-4 mx-auto">02</div>
                     <h4 class="h5 text-white mb-3">Place Your Bid</h4>
-                    <p class="text-secondary small">Engage in real-time bidding for verified items with transparent
+                    <p class="text-white opacity-75 small">Engage in real-time bidding for verified items with transparent
                         history and real-time alerts.</p>
                 </div>
             </div>
@@ -325,7 +355,7 @@
                 <div class="step-card text-center p-4">
                     <div class="step-number mb-4 mx-auto">03</div>
                     <h4 class="h5 text-white mb-3">Secure Delivery</h4>
-                    <p class="text-secondary small">Upon winning, enjoy secure transaction
+                    <p class="text-white opacity-75 small">Upon winning, enjoy secure transaction
                         handling and reliable delivery for your new item.</p>
                 </div>
             </div>
@@ -343,37 +373,43 @@
         </div>
         
         <div class="row justify-content-center">
-            <div class="col-lg-9">
-                <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+            <div class="col-lg-8">
+                <div id="testimonialCarousel" class="carousel slide testimonial-premium-carousel" data-bs-ride="carousel" data-bs-interval="5000">
                     <!-- Carousel Indicators -->
-                    <div class="carousel-indicators mb-n4">
+                    <div class="carousel-indicators mb-n5">
                         @foreach($testimonials as $index => $testimonial)
-                        <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="{{ $index }}" class="{{ $index == 0 ? 'active' : '' }} bg-primary" aria-current="{{ $index == 0 ? 'true' : 'false' }}" aria-label="Slide {{ $index + 1 }}"></button>
+                        <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="{{ $index }}" class="{{ $index == 0 ? 'active' : '' }} testimonial-dot" aria-current="{{ $index == 0 ? 'true' : 'false' }}" aria-label="Slide {{ $index + 1 }}"></button>
                         @endforeach
                     </div>
 
-                    <div class="carousel-inner overflow-visible">
+                    <div class="carousel-inner">
                         @foreach($testimonials as $index => $testimonial)
                         <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
-                            <div class="glass-panel-premium p-5 text-center mx-3 my-4">
-                                <div class="mb-4">
+                            <div class="testimonial-card-premium">
+                                <div class="testimonial-quote-icon">
+                                    <i class="fas fa-quote-left"></i>
+                                </div>
+                                
+                                <div class="testimonial-rating mb-3">
                                     @for($i = 0; $i < 5; $i++)
                                     <i class="fas fa-star text-warning small"></i>
                                     @endfor
                                 </div>
-                                <i class="fas fa-quote-left text-primary fs-1 mb-4 opacity-25"></i>
-                                <p class="h4 display-font text-dark mb-4 lh-base fw-semibold px-lg-5">
-                                    "{{ $testimonial->content }}"
+
+                                <p class="testimonial-text mb-4">
+                                    {{ $testimonial->content }}
                                 </p>
-                                <div class="d-flex align-items-center justify-content-center gap-3">
-                                    <div class="position-relative">
-                                        <img src="{{ $testimonial->avatar_url }}"
-                                            class="rounded-circle border border-primary border-2 shadow-sm" width="60" height="60" alt="{{ $testimonial->name }}" style="object-fit: cover;">
-                                        <div class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle" style="width: 14px; height: 14px; border-width: 2px !important;"></div>
+
+                                <div class="testimonial-author-box">
+                                    <div class="author-avatar-wrapper">
+                                        <img src="{{ $testimonial->avatar_url }}" alt="{{ $testimonial->name }}" class="author-avatar shadow-sm">
+                                        <div class="avatar-verified">
+                                            <i class="fas fa-check"></i>
+                                        </div>
                                     </div>
-                                    <div class="text-start">
-                                        <h6 class="text-primary mb-0 fw-bold">{{ $testimonial->name }}</h6>
-                                        <small class="text-secondary opacity-75">{{ $testimonial->role }}</small>
+                                    <div class="author-info">
+                                        <h5 class="author-name mb-0">{{ $testimonial->name }}</h5>
+                                        <span class="author-role">{{ $testimonial->role }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -382,13 +418,11 @@
                     </div>
                     
                     @if($testimonials->count() > 1)
-                    <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon bg-primary rounded-circle p-3" aria-hidden="true" style="background-size: 50%;"></span>
-                        <span class="visually-hidden">Previous</span>
+                    <button class="carousel-control-prev testimonial-btn-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+                        <i class="fas fa-chevron-left"></i>
                     </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon bg-primary rounded-circle p-3" aria-hidden="true" style="background-size: 50%;"></span>
-                        <span class="visually-hidden">Next</span>
+                    <button class="carousel-control-next testimonial-btn-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+                        <i class="fas fa-chevron-right"></i>
                     </button>
                     @endif
                 </div>
@@ -486,9 +520,223 @@
 </section>
 
 
+@push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<style>
+    .bg-navy-shade { background-color: #f8f9fc; }
+    .text-glow {
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 0 0 20px rgba(78, 115, 223, 0.2);
+    }
+    .card-elite {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-elite:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+    .bg-gold { background-color: #d4af37; }
+    .glass-timer {
+        background: rgba(248, 249, 250, 0.8);
+        backdrop-filter: blur(4px);
+        border-radius: 8px;
+    }
+    .fs-7 { font-size: 0.9rem; }
+    .text-primary { color: #4e73df !important; }
+    .text-xs { font-size: 0.75rem; }
+    .urgent-timer {
+        background: rgba(220, 53, 69, 0.08) !important;
+        border-color: rgba(220, 53, 69, 0.3) !important;
+    }
+    .urgent-timer * { color: #dc3545 !important; }
+    .title-hover:hover { color: #4e73df !important; }
+    .btn-hover-effect:active { transform: scale(0.98); }
+
+    /* Swiper Slider Styles */
+    .upcoming-swiper { width: 100%; overflow: hidden; }
+    .swiper-wrapper { display: flex !important; flex-direction: row !important; }
+    .upcoming-next, .upcoming-prev {
+        background: #fff;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        color: #4e73df !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        z-index: 10;
+        transition: all 0.3s ease;
+    }
+    .upcoming-next:after, .upcoming-prev:after { font-size: 1.1rem; font-weight: bold; }
+    .upcoming-next { right: -50px; }
+    .upcoming-prev { left: -50px; }
+
+    @media (max-width: 1400px) {
+        .upcoming-next { right: -25px; }
+        .upcoming-prev { left: -25px; }
+    }
+
+    @media (max-width: 1200px) {
+        .upcoming-next { right: 10px; }
+        .upcoming-prev { left: 10px; }
+    }
+
+    /* --- Testimonials Premium Style --- */
+    .testimonial-card-premium {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 30px;
+        padding: 3rem;
+        text-align: center;
+        margin: 1rem 0 3rem 0;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    .testimonial-quote-icon {
+        font-size: 2.5rem;
+        color: #4e73df;
+        opacity: 0.15;
+        margin-bottom: 1.5rem;
+    }
+    .testimonial-text {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2e59d9;
+        line-height: 1.6;
+        font-style: italic;
+    }
+    .testimonial-author-box {
+        display: inline-flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        text-align: left;
+    }
+    .author-avatar-wrapper { position: relative; }
+    .author-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+    }
+    .avatar-verified {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: #1cc88a;
+        color: white;
+        font-size: 0.6rem;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #fff;
+    }
+    .author-name { color: #1a202c; font-size: 1rem; font-weight: 700; }
+    .author-role { color: #718096; font-size: 0.85rem; }
+    
+    .testimonial-dot {
+        width: 10px !important;
+        height: 10px !important;
+        border-radius: 50% !important;
+        border: none !important;
+        background-color: #cbd5e0 !important;
+        margin: 0 5px !important;
+        transition: all 0.3s ease !important;
+    }
+    .testimonial-dot.active {
+        background-color: #4e73df !important;
+        width: 25px !important;
+        border-radius: 20px !important;
+    }
+    .testimonial-btn-prev, .testimonial-btn-next {
+        width: 40px;
+        height: 40px;
+        background: #fff;
+        border-radius: 50%;
+        color: #4e73df !important;
+        opacity: 1;
+        top: 50%;
+        transform: translateY(-50%);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        border: none;
+        z-index: 10;
+        font-size: 0.9rem;
+    }
+    .testimonial-btn-prev:hover, .testimonial-btn-next:hover {
+        background: #4e73df;
+        color: #fff !important;
+        box-shadow: 0 6px 15px rgba(78, 115, 223, 0.3);
+    }
+    .testimonial-btn-prev { left: -60px; }
+    .testimonial-btn-next { right: -60px; }
+
+    @media (max-width: 1200px) {
+        .testimonial-btn-prev { left: -30px; }
+        .testimonial-btn-next { right: -30px; }
+    }
+
+    @media (max-width: 991px) {
+        .testimonial-btn-prev { left: 5px; }
+        .testimonial-btn-next { right: 5px; }
+        .testimonial-card-premium { padding: 2rem; }
+    }
+</style>
+
+@endpush
+
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Countdown functionality
+    const timerBoxes = document.querySelectorAll('.timer-val');
+    
+    setInterval(() => {
+        timerBoxes.forEach(box => {
+            let d = parseInt(box.dataset.days);
+            let h = parseInt(box.dataset.hours);
+            let m = parseInt(box.dataset.min);
+            let s = parseInt(box.dataset.sec);
+
+            if (d === 0 && h === 0 && m === 0 && s === 0) return;
+
+            s--;
+            if (s < 0) { s = 59; m--; }
+            if (m < 0) { m = 59; h--; }
+            if (h < 0) { h = 23; d--; }
+
+            box.dataset.days = d;
+            box.dataset.hours = h;
+            box.dataset.min = m;
+            box.dataset.sec = s;
+
+            // Update text content safely
+            const dElem = box.querySelector('[data-days]');
+            const hElem = box.querySelector('[data-hours]');
+            const mElem = box.querySelector('[data-min]');
+            const sElem = box.querySelector('[data-sec]');
+
+            if(dElem) dElem.innerText = d.toString().padStart(2, '0');
+            if(hElem) hElem.innerText = h.toString().padStart(2, '0');
+            if(mElem) mElem.innerText = m.toString().padStart(2, '0');
+            if(sElem) sElem.innerText = s.toString().padStart(2, '0');
+
+            // Color urgency logic: < 1 hour (0 days, 0 hours) -> Red Box
+            if (d === 0 && h === 0) {
+                box.classList.add('urgent-timer');
+            } else {
+                box.classList.remove('urgent-timer');
+            }
+        });
+    }, 1000);
+
     var myCarousel = document.getElementById('testimonialCarousel');
     if (myCarousel) {
         // Initialize the carousel
@@ -504,11 +752,29 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('Testimonials carousel initialized and cycle forced.');
     }
+
+    // Initialize Swiper for Upcoming Auctions
+    if (document.querySelector('.upcoming-swiper')) {
+        const swiper = new Swiper('.upcoming-swiper', {
+            slidesPerView: 1,
+            spaceBetween: 25,
+            loop: true,
+            slidesPerGroup: 1,
+            grabCursor: true,
+            navigation: {
+                nextEl: '.upcoming-next',
+                prevEl: '.upcoming-prev',
+            },
+            breakpoints: {
+                576: { slidesPerView: 2 },
+                992: { slidesPerView: 4 }
+            }
+        });
+    }
 });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
 @endpush
-
 @endsection
-
-
 

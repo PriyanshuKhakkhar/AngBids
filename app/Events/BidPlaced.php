@@ -64,6 +64,7 @@ class BidPlaced implements ShouldBroadcast
             'winner_name' => $currentTopBid ? $currentTopBid->user->name : null,
             'winner_username' => $currentTopBid ? $currentTopBid->user->username : null,
             'bid_amount' => (float)$this->bid->amount,
+            'total_bids' => (int)$this->auction->bids()->count(),
         ];
     }
 }
