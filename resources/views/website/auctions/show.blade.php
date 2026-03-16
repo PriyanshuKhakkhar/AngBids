@@ -188,7 +188,11 @@
                                            <!-- Bid Form / Login / Registration -->
                         @if(!$isClosed && !$isUpcoming)
                         @auth
-                            @if(!auth()->user()->isKycApproved())
+                            @if(auth()->id() === $auction->user_id)
+                                <div class="alert alert-secondary alert-permanent border-0 shadow-sm mb-4 rounded-3 text-center">
+                                    <i class="fas fa-user-tie me-2"></i> You are the seller of this auction.
+                                </div>
+                            @elseif(!auth()->user()->isKycApproved())
                                 <div class="alert alert-warning alert-permanent border-0 shadow-sm mb-3 rounded-3 small">
                                     <div class="d-flex align-items-center">
                                         <i class="fas fa-exclamation-triangle me-2 text-warning fs-5"></i>
