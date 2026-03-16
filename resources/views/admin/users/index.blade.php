@@ -89,17 +89,17 @@
 @section('content')
 
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4 pt-2">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <div>
-            <h1 class="h3 text-dark fw-bold mb-0">Manage Users</h1>
+            <h1 class="h3 mb-0 text-gray-800">Manage Users</h1>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0 small bg-transparent p-0">
-                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" class="text-decoration-none text-primary">Dashboard</a></li>
+                <ol class="breadcrumb bg-transparent p-0 small">
+                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Manage Users</li>
                 </ol>
             </nav>
         </div>
-        <a href="{{ route('admin.users.create') }}" class="btn btn-primary shadow-sm rounded-pill px-4 font-weight-bold" style="border-radius: 50px;">
+        <a href="{{ route('admin.users.create') }}" class="btn btn-sm btn-primary shadow-sm" style="border-radius: 50px;">
             <i class="fas fa-plus-circle mr-1"></i> Add New User
         </a>
     </div>

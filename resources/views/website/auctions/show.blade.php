@@ -189,7 +189,7 @@
                         @if(!$isClosed && !$isUpcoming)
                         @auth
                             @if(!auth()->user()->isKycApproved())
-                                <div class="alert alert-warning border-0 shadow-sm mb-3 rounded-3 small">
+                                <div class="alert alert-warning alert-permanent border-0 shadow-sm mb-3 rounded-3 small">
                                     <div class="d-flex align-items-center">
                                         <i class="fas fa-exclamation-triangle me-2 text-warning fs-5"></i>
                                         <div>

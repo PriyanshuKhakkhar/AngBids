@@ -210,11 +210,11 @@
                                 @endphp
                                 
                                 @if($isClosed)
-                                    <div class="alert alert-danger border-0 py-1 mb-2 text-center small fw-bold" style="font-size: 0.7rem; background: rgba(220, 53, 69, 0.1); color: #dc3545;">
+                                    <div class="alert alert-danger alert-permanent border-0 py-1 mb-2 text-center small fw-bold" style="font-size: 0.7rem; background: rgba(220, 53, 69, 0.1); color: #dc3545;">
                                         <i class="fas fa-times-circle me-1"></i> Auction Closed
                                     </div>
                                 @elseif($isUpcoming)
-                                    <div class="alert alert-info py-1 mb-2 text-center small border-0 fw-bold" style="font-size: 0.7rem;">
+                                    <div class="alert alert-info alert-permanent py-1 mb-2 text-center small border-0 fw-bold" style="font-size: 0.7rem;">
                                         <i class="fas fa-clock me-1"></i> Starts {{ $start->format('M d, H:i') }}
                                     </div>
                                 @else

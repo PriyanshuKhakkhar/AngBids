@@ -4,12 +4,22 @@
 
 @section('content')
 
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Contact Message Details</h1>
-    <a href="{{ route('admin.contacts.index') }}" class="btn btn-sm btn-secondary shadow-sm">
-        <i class="fas fa-arrow-left fa-sm"></i> Back to List
-    </a>
-</div>
+    <!-- Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">Contact Message Details</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-transparent p-0 small">
+                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.contacts.index') }}">Contact Messages</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">View Message</li>
+                </ol>
+            </nav>
+        </div>
+        <a href="{{ route('admin.contacts.index') }}" class="btn-premium-back">
+            <i class="fas fa-arrow-left mr-2"></i> Back to List
+        </a>
+    </div>
 
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">

@@ -7,13 +7,12 @@
 @endpush
 
 @section('content')
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4 pt-2">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <div>
-            <h1 class="h3 text-dark fw-bold mb-0">Payments & Transactions</h1>
+            <h1 class="h3 mb-0 text-gray-800">Payments & Transactions</h1>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0 small bg-transparent p-0">
-                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" class="text-decoration-none text-primary">Dashboard</a></li>
+                <ol class="breadcrumb bg-transparent p-0 small">
+                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Payments & Transactions</li>
                 </ol>
             </nav>

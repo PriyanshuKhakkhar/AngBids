@@ -99,26 +99,19 @@
 
 @section('content')
 
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4 pt-2">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <div>
-            <h1 class="h3 text-dark fw-bold mb-0">Manage Categories</h1>
+            <h1 class="h3 mb-0 text-gray-800">Manage Categories</h1>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0 small bg-transparent p-0">
-                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" class="text-decoration-none text-primary">Dashboard</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Manage Categories</li>
+                <ol class="breadcrumb bg-transparent p-0 small">
+                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Categories</li>
                 </ol>
             </nav>
         </div>
-        <div class="d-flex align-items-center">
-            <div class="d-none d-sm-inline-block shadow-sm px-4 py-2 bg-white rounded-pill border mr-3">
-                <span class="text-xs font-weight-bold text-uppercase text-muted mr-2">Total:</span>
-                <span class="h5 mb-0 font-weight-bold text-primary">{{ $total_categories }}</span>
-            </div>
-            <a href="{{ route('admin.categories.create') }}" class="btn btn-primary shadow-sm rounded-pill px-4 font-weight-bold" style="border-radius: 50px;">
-                <i class="fas fa-plus-circle mr-1"></i> Add New Category
-            </a>
-        </div>
+        <a href="{{ route('admin.categories.create') }}" class="btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-plus fa-sm text-white-50 mr-1"></i> Add Category
+        </a>
     </div>
 
     <!-- Filters Section -->

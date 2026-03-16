@@ -3,10 +3,21 @@
 @section('title', 'Edit Category - LaraBids')
 
 @section('content')
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pt-2">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Edit Category: {{ $category->name }}</h1>
-        <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary shadow-sm btn-sm">
-            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to List
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">Edit Category</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-transparent p-0 small">
+                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.categories.index') }}">Categories</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                </ol>
+            </nav>
+        </div>
+        <a href="{{ route('admin.categories.index') }}" class="btn-premium-back text-decoration-none">
+            <i class="fas fa-arrow-left mr-2"></i> Back to List
         </a>
     </div>
 

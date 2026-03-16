@@ -101,8 +101,8 @@
 
 
 <!-- Live Auctions -->
-<section id="auctions" class="pb-5 pt-5">
-    <div class="container pb-lg-5 pt-lg-5">
+<section id="auctions" class="pt-5 pb-0">
+    <div class="container pt-lg-5 pb-0">
         <div class="row align-items-end mb-5" data-aos="fade-right">
             <div class="col-lg-6">
                 <h2 class="display-4 fw-bold mb-3">Live Now</h2>
@@ -175,7 +175,7 @@
                             </div>
                         </div>
                         @else
-                        <div class="alert alert-danger py-1 mb-2 text-center small border-0" style="font-size: 0.7rem;">Closed</div>
+                        <div class="alert alert-danger alert-permanent py-1 mb-2 text-center small border-0" style="font-size: 0.7rem;">Closed</div>
                         @endif
 
                         <h3 class="h6 mb-2 fw-bold text-dark text-truncate" title="{{ $auction->title }}">{{ $auction->title }}</h3>
@@ -203,8 +203,8 @@
 </section>
 
 <!-- Upcoming Auctions -->
-<section class="py-5 bg-navy-shade">
-    <div class="container py-lg-5">
+<section class="py-4 bg-navy-shade">
+    <div class="container py-lg-4">
         <div class="text-center mb-5" data-aos="fade-up">
             <h2 class="display-4 fw-bold">Upcoming Auctions</h2>
         </div>
