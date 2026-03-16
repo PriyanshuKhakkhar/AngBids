@@ -2,127 +2,273 @@
 
 @section('title', 'User Details - LaraBids')
 
-@section('content')
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">User Details</h1>
-        <div>
-            @if(request()->has('view_deleted') || $user->trashed())
-               <form action="{{ route('admin.users.restore', $user->id) }}" method="POST" class="d-inline">
-                    @csrf
-                    <button type="submit" class="btn btn-sm btn-success shadow-sm">
-                        <i class="fas fa-trash-restore fa-sm text-white-50 mr-1"></i> Restore User
-                    </button>
-                </form>
-            @else
-                <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-sm btn-primary shadow-sm">
-                    <i class="fas fa-edit fa-sm text-white-50 mr-1"></i> Edit User
-                </a>
-            @endif
-            
-            <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-secondary shadow-sm">
-                <i class="fas fa-arrow-left fa-sm text-white-50 mr-1"></i> Back to List
-            </a>
-        </div>
-    </div>
+@push('styles')
+<style>
+    .avatar-lg {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border: 4px solid #fff;
+    }
+    .card {
+        border: none;
+        border-radius: 12px;
+    }
+    .card-header {
+        background-color: transparent;
+        border-bottom: 1px solid #f1f1f1;
+        padding: 1.25rem;
+    }
+    .label-muted {
+        color: #888;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: block;
+        margin-bottom: 2px;
+    }
+    .info-value {
+        color: #333;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+    .stat-box {
+        background: #f8f9fc;
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        transition: all 0.2s;
+        border: 1px solid #edf2f9;
+        height: 100%;
+    }
+    .stat-box:hover {
+        background: #fff;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        border-color: #4e73df;
+    }
+    .stat-label {
+        font-size: 0.75rem;
+        color: #6c757d;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .stat-value {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #4e73df;
+        display: block;
+    }
+    .badge-status {
+        padding: 6px 12px;
+        border-radius: 30px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+</style>
+@endpush
 
-    <div class="row">
-        <!-- User Profile Card -->
-        <div class="col-xl-4 col-md-6 mb-4">
-            <div class="card shadow h-100 py-2 border-left-primary">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col-12 text-center">
-                             <div class="mb-3">
-                                <span class="fa-stack fa-3x">
-                                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                                    <i class="fas fa-user fa-stack-1x fa-inverse"></i>
-                                </span>
-                             </div>
-                            <h5 class="font-weight-bold text-gray-800">{{ $user->name }}</h5>
-                            <p class="text-primary font-weight-bold mb-1">@_{{ $user->username }}</p>
-                            <p class="text-muted mb-2 small">{{ $user->email }}</p>
-                            <div class="mb-3">
-                                @foreach($user->roles as $role)
-                                    <span class="badge badge-info px-2 py-1">{{ ucfirst($role->name) }}</span>
-                                @endforeach
-                            </div>
-                            
-                            @if($user->trashed())
-                                <div class="alert alert-danger py-2">
-                                    This user is currently deleted.
-                                </div>
+@section('content')
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="d-flex align-items-center justify-content-between mb-4 mt-2">
+            <div>
+                <h1 class="h3 mb-0 text-gray-900 font-weight-bold">View User</h1>
+                <p class="text-muted small mb-0">Manage and view detailed information for account <b>#{{ $user->id }}</b></p>
+            </div>
+            <div class="d-flex align-items-center">
+                <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3 mr-2 bg-white">
+                    <i class="fas fa-chevron-left mr-1"></i> Back to List
+                </a>
+                @if($user->trashed())
+                   <form action="{{ route('admin.users.restore', $user->id) }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-success btn-sm rounded-pill px-4 shadow-sm">
+                            <i class="fas fa-undo mr-1"></i> Restore Account
+                        </button>
+                    </form>
+                @else
+                    <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-primary btn-sm rounded-pill px-4 shadow-sm">
+                        <i class="fas fa-edit mr-1"></i> Edit User
+                    </a>
+                @endif
+            </div>
+        </div>
+
+        @php $stats = $user->getStatistics(); @endphp
+
+        <div class="row">
+            <!-- Sidebar / Profile Info -->
+            <div class="col-xl-4 col-lg-5">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body text-center py-5">
+                        <div class="position-relative d-inline-block mb-3">
+                            <img src="{{ $user->avatar_url }}" class="rounded-circle shadow-sm avatar-lg" alt="{{ $user->name }}">
+                            @if(!$user->trashed())
+                                <span class="position-absolute border border-white rounded-circle bg-success shadow-sm" style="bottom: 10px; right: 10px; width: 18px; height: 18px;"></span>
                             @else
-                                <div class="small">
-                                    <span class="text-success"><i class="fas fa-circle"></i> Active Account</span>
-                                </div>
+                                <span class="position-absolute border border-white rounded-circle bg-danger shadow-sm" style="bottom: 10px; right: 10px; width: 18px; height: 18px;"></span>
                             @endif
+                        </div>
+                        <h4 class="font-weight-bold text-dark mb-1">{{ $user->name }}</h4>
+                        <p class="text-primary font-weight-bold small">@_{{ $user->username }}</p>
+                        
+                        <div class="d-flex justify-content-center flex-wrap mt-3">
+                            @foreach($user->roles as $role)
+                                <span class="badge badge-light border text-dark font-weight-bold px-3 py-2 mx-1 mb-2" style="border-radius: 8px;">
+                                    <i class="fas fa-shield-alt mr-1 text-primary"></i> {{ strtoupper($role->name) }}
+                                </span>
+                            @endforeach
+                        </div>
+
+                        <div class="mt-4 pt-4 border-top">
+                            <div class="row">
+                                <div class="col-6 border-right">
+                                    <span class="label-muted">Joined</span>
+                                    <span class="info-value" style="font-size: 0.9rem;">{{ $user->created_at->format('M Y') }}</span>
+                                </div>
+                                <div class="col-6">
+                                    <span class="label-muted">Status</span>
+                                    @if($user->trashed())
+                                        <span class="badge border border-danger text-danger badge-status">SUSPENDED</span>
+                                    @else
+                                        <span class="badge border border-success text-success badge-status">ACTIVE</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics Box -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-dark">Activity Overview</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-4 mb-3">
+                                <div class="stat-box">
+                                    <span class="stat-label">Auctions</span>
+                                    <span class="stat-value">{{ $stats['auctions_created'] }}</span>
+                                </div>
+                            </div>
+                            <div class="col-4 mb-3">
+                                <div class="stat-box">
+                                    <span class="stat-label">Bids</span>
+                                    <span class="stat-value">{{ $stats['total_bids'] }}</span>
+                                </div>
+                            </div>
+                            <div class="col-4 mb-3">
+                                <div class="stat-box">
+                                    <span class="stat-label">Wins</span>
+                                    <span class="stat-value text-success">{{ $stats['items_won'] }}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- User Information Card -->
-        <div class="col-xl-8 col-md-6 mb-4">
-            <div class="card shadow h-100">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Account Information</h6>
+            <!-- Content Area -->
+            <div class="col-xl-8 col-lg-7">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-dark">Account Information</h6>
+                        @if($user->isKycApproved())
+                            <span class="badge badge-pill badge-success-soft text-success px-3 py-2 small font-weight-bold" style="background: rgba(28, 200, 138, 0.1);">
+                                <i class="fas fa-check-circle mr-1"></i> VERIFIED
+                            </span>
+                        @endif
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <span class="label-muted">Full Display Name</span>
+                                <span class="info-value">{{ $user->name }}</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <span class="label-muted">Email Address</span>
+                                <span class="info-value">{{ $user->email }}</span>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <span class="label-muted">System Username</span>
+                                <span class="info-value text-primary">@_{{ $user->username }}</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <span class="label-muted">Phone Number</span>
+                                <span class="info-value">{{ $user->phone ?? 'Not Linked' }}</span>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <span class="label-muted">Primary Location</span>
+                                <span class="info-value">
+                                    <i class="fas fa-map-marker-alt text-muted mr-1"></i> 
+                                    {{ $user->location ?? 'Not specified' }}
+                                </span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <span class="label-muted">Registration Date</span>
+                                <span class="info-value">{{ $user->created_at->format('F d, Y') }} at {{ $user->created_at->format('h:i A') }}</span>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="row">
+                            <div class="col-12">
+                                <span class="label-muted">Biography / About</span>
+                                <p class="mt-2 text-dark font-italic" style="background-color: #f8f9fc; padding: 15px; border-radius: 8px; border-left: 3px solid #e3e6f0;">
+                                    {!! !empty($user->bio) ? nl2br(e($user->bio)) : '<span class="text-muted">No biography provided by user.</span>' !!}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-borderless">
-                            <tbody>
-                                <tr class="border-bottom">
-                                    <th width="35%" class="text-gray-600 pl-0">User ID</th>
-                                    <td class="text-gray-800">#{{ $user->id }}</td>
-                                </tr>
-                                <tr class="border-bottom">
-                                    <th class="text-gray-600 pl-0">Full Name</th>
-                                    <td class="text-gray-800">{{ $user->name }}</td>
-                                </tr>
-                                <tr class="border-bottom">
-                                    <th class="text-gray-600 pl-0">Username</th>
-                                    <td class="text-gray-800">@_{{ $user->username }}</td>
-                                </tr>
-                                <tr class="border-bottom">
-                                    <th class="text-gray-600 pl-0">Email Address</th>
-                                    <td class="text-gray-800">{{ $user->email }}</td>
-                                </tr>
-                                <tr class="border-bottom">
-                                    <th class="text-gray-600 pl-0">Roles</th>
-                                    <td>
-                                        @if($user->roles->isNotEmpty())
-                                            @foreach($user->roles as $role)
-                                                <span class="badge badge-secondary">{{ ucfirst($role->name) }}</span>
-                                            @endforeach
-                                        @else
-                                            <span class="text-muted">No roles assigned</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                                <tr class="border-bottom">
-                                    <th class="text-gray-600 pl-0">Joined Date</th>
-                                    <td class="text-gray-800">{{ $user->created_at->format('F d, Y h:i A') }}</td>
-                                </tr>
-                                <tr class="border-bottom">
-                                    <th class="text-gray-600 pl-0">Last Updated</th>
-                                    <td class="text-gray-800">{{ $user->updated_at->format('F d, Y h:i A') }}</td>
-                                </tr>
-                                @if($user->trashed())
-                                <tr class="bg-danger text-white">
-                                    <th class="pl-2">Deleted At</th>
-                                    <td>{{ $user->deleted_at->format('F d, Y h:i A') }}</td>
-                                </tr>
-                                <tr class="bg-danger text-white">
-                                    <th class="pl-2">Deleted By</th>
-                                    <td>{{ $user->deletedBy ? $user->deletedBy->name : 'Unknown' }}</td>
-                                </tr>
-                                @endif
-                            </tbody>
-                        </table>
+
+                @if($user->trashed())
+                <div class="card border-0 shadow-sm bg-danger text-white mb-4">
+                    <div class="card-body py-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h6 class="mb-1 font-weight-bold"><i class="fas fa-trash-alt mr-2"></i> ACCOUNT SUSPENDED</h6>
+                                <p class="mb-0 small opacity-75">Deleted on {{ $user->deleted_at->format('M d, Y') }} by {{ $user->deletedBy ? $user->deletedBy->name : 'Administrator' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-dark">Recent Statistics</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-borderless table-sm mb-0">
+                                <tbody>
+                                    <tr>
+                                        <td class="text-muted">Watchlist Count</td>
+                                        <td class="text-right font-weight-bold">{{ $stats['watchlist_count'] }} items</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted">Active Auctions</td>
+                                        <td class="text-right font-weight-bold">{{ $stats['active_auctions'] }} active</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted">Last Profile Update</td>
+                                        <td class="text-right font-weight-bold">{{ $user->updated_at->diffForHumans() }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 @endsection
+
+

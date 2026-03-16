@@ -20,7 +20,7 @@
             <div class="col-lg-5">
                 <div class="hero-illustration-wrapper ps-lg-4 text-center">
                     <div class="hero-glow-blob"></div>
-                    <img src="{{ asset('assets/images/banner-1.png') }}" 
+                    <img src="{{ asset('assets/images/banner-2.png') }}" 
                          class="img-fluid" 
                          alt="About LaraBids"
                          style="max-height: 400px; filter: drop-shadow(0 20px 50px rgba(0,0,0,0.3));">
