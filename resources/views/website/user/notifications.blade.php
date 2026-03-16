@@ -83,7 +83,7 @@
                             <!-- Icon Column -->
                             <div class="col-auto">
                                 <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
-                                     style="width: 50px; height: 50px; background-color: var(--bs-{{ $colorClass }}-bg-subtle, #f8f9fa); color: var(--bs-{{ $colorClass }}, #0d6efd);">
+                                     style="width: 50px; height: 50px; background-color: var(--bs-{{ $colorClass }}-bg-subtle, #f8f9fa); color: var(--bs-{{ $colorClass }}, #4e73df);">
                                     <i class="fas fa-{{ $icon }} fa-lg"></i>
                                 </div>
                             </div>
@@ -297,3 +297,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </style>
 
 @endsection
+
+
+

@@ -16,7 +16,12 @@ class BidService
             throw new Exception('Bidding is only allowed on active auctions.');
         }
 
-        // 2. Check if auction has expired
+        // 2. Check if auction has started
+        if ($auction->start_time->isFuture()) {
+            throw new Exception('Bidding has not started yet for this auction.');
+        }
+
+        // 3. Check if auction has expired
         if ($auction->end_time->isPast()) {
             throw new Exception('This auction has already ended.');
         }

@@ -67,7 +67,7 @@
             
             <!-- LEFT COLUMN: Contact Information -->
             <div class="col-lg-5">
-                <div class="card border-0 shadow-sm rounded-3 h-100 overflow-hidden text-white" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);">
+                <div class="card border-0 shadow-sm rounded-3 h-100 overflow-hidden text-white" style="background: linear-gradient(135deg, #4e73df 0%, #2e59d9 100%);">
                     <div class="card-body p-5 position-relative">
                         <!-- Background Pattern -->
                         <div class="position-absolute top-0 start-0 w-100 h-100" style="background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px; opacity: 0.3;"></div>
@@ -396,7 +396,7 @@
 
 /* Submit Button */
 #contact-content .btn-primary {
-    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    background: linear-gradient(135deg, #4e73df 0%, #2e59d9 100%);
     border: none;
     transition: all 0.3s ease;
     letter-spacing: 0.5px;
@@ -411,3 +411,6 @@
 }
 
 </style>
+
+
+

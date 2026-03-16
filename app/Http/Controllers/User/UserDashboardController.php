@@ -286,12 +286,7 @@ class UserDashboardController extends Controller
         try {
             $user = auth()->user();
             
-            $query = \App\Models\Auction::where('end_time', '<=', now())
-                ->whereIn('status', ['active', 'closed'])
-                ->whereHas('bids', function ($q) use ($user) {
-                    $q->where('user_id', $user->id)
-                      ->whereRaw('amount = (SELECT MAX(amount) FROM bids WHERE auction_id = auctions.id)');
-                })
+            $query = \App\Models\Auction::where('winner_id', $user->id)
                 ->with(['category', 'user']);
 
             // Filters

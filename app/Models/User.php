@@ -110,12 +110,7 @@ class User extends Authenticatable
 
     public function getWonAuctionsCount()
     {
-        return Auction::whereIn('status', ['active', 'closed'])
-            ->where('end_time', '<=', now())
-            ->whereHas('bids', function ($query) {
-                $query->where('user_id', $this->id)
-                      ->whereRaw('amount = (SELECT MAX(amount) FROM bids WHERE auction_id = auctions.id)');
-            })->count();
+        return Auction::where('winner_id', $this->id)->count();
     }
 
     public function kyc()

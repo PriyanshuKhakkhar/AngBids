@@ -256,7 +256,7 @@
 @push('styles')
 <style>
     .otp-verify-section {
-        background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 50%, #fef8f8 100%);
+        background: linear-gradient(135deg, #f8f9fc 0%, #f0f4ff 50%, #fef8f8 100%);
     }
 
     .otp-card {
@@ -278,7 +278,7 @@
         width: 72px;
         height: 72px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        background: linear-gradient(135deg, #4e73df 0%, #2e59d9 100%);
         color: #ffffff;
         position: relative;
         z-index: 2;
@@ -346,7 +346,7 @@
 
     /* Verify Button */
     .btn-otp-verify {
-        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        background: linear-gradient(135deg, #4e73df 0%, #2e59d9 100%);
         color: #ffffff;
         border: none;
         border-radius: 12px;
@@ -409,7 +409,7 @@
     }
 
     .otp-resend-link:hover {
-        color: #224abe;
+        color: #2e59d9;
     }
 
     /* Back Link */
@@ -438,3 +438,6 @@
     }
 </style>
 @endpush
+
+
+

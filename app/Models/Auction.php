@@ -28,6 +28,7 @@ class Auction extends Model
         'specifications',
         'cancellation_reason',
         'min_increment',
+        'winner_id',
     ];
 
     protected $casts = [
@@ -173,5 +174,45 @@ class Auction extends Model
     public function registeredUsers()
     {
         return $this->belongsToMany(User::class, 'auction_registrations');
+    }
+
+    /**
+     * Get the winner
+     */
+    public function winner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'winner_id');
+    }
+
+    /**
+     * Finalize the auction (Select winner and close)
+     */
+    public function finalize(): bool
+    {
+        // 1. Only finalize if active and end_time has passed
+        if ($this->status !== 'active' || $this->end_time->isFuture()) {
+            return false;
+        }
+
+        // 2. Determine highest bidder
+        $highestBid = $this->highestBid();
+
+        // 3. Update status and winner_id
+        $this->update([
+            'winner_id' => $highestBid ? $highestBid->user_id : null,
+            'status' => 'closed'
+        ]);
+
+        // 4. Notify winner if exists
+        if ($highestBid && $highestBid->user) {
+            $highestBid->user->notify(new \App\Notifications\WinnerNotification($this));
+            
+            // Also notify the seller
+            if ($this->user) {
+                $this->user->notify(new \App\Notifications\SellerAuctionSoldNotification($this));
+            }
+        }
+
+        return true;
     }
 }

@@ -128,11 +128,23 @@
                         @php
                             $now = \Carbon\Carbon::now();
                             $end = \Carbon\Carbon::parse($auction->end_time);
+                            $start = \Carbon\Carbon::parse($auction->start_time);
                             $diff = $now->diff($end);
                             $isClosed = $now->greaterThan($end);
+                            $isUpcoming = $now->lessThan($start);
                         @endphp
 
-                        @if(!$isClosed)
+                        @if($isUpcoming)
+                        <div class="alert alert-info alert-permanent border-0 shadow-sm mb-4 rounded-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-clock me-3 fs-4 text-primary"></i>
+                                <div>
+                                    <h6 class="mb-0 fw-bold">Starting Soon</h6>
+                                    <p class="mb-0 small text-muted">Bidding begins on {{ \Carbon\Carbon::parse($auction->start_time)->format('M d, Y \a\t g:i A') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        @elseif(!$isClosed)
                         <div class="hibid-timer timer-val mb-3"
                             data-days="{{ $diff->d }}" data-hours="{{ $diff->h }}" data-min="{{ $diff->i }}" data-sec="{{ $diff->s }}">
                             <div class="hibid-timer-unit">
@@ -174,9 +186,13 @@
                                 <span class="hibid-bid-value hibid-bid-value--danger">₹{{ number_format(\App\Models\Auction::MAX_INCREMENT_ALLOWED, 2) }}</span>
                             </div>
                                            <!-- Bid Form / Login / Registration -->
-                        @if(!$isClosed)
+                        @if(!$isClosed && !$isUpcoming)
                         @auth
-                            @if(!auth()->user()->isKycApproved())
+                            @if(auth()->id() === $auction->user_id)
+                                <div class="alert alert-secondary alert-permanent border-0 shadow-sm mb-4 rounded-3 text-center">
+                                    <i class="fas fa-user-tie me-2"></i> You are the seller of this auction.
+                                </div>
+                            @elseif(!auth()->user()->isKycApproved())
                                 <div class="alert alert-warning alert-permanent border-0 shadow-sm mb-3 rounded-3 small">
                                     <div class="d-flex align-items-center">
                                         <i class="fas fa-exclamation-triangle me-2 text-warning fs-5"></i>
@@ -911,7 +927,7 @@
         background: #fff;
     }
     .hibid-bid-row:last-child { border-bottom: none; }
-    .hibid-bid-row--current { background: #f8f9ff; }
+    .hibid-bid-row--current { background: #f8f9fc; }
     .hibid-bid-label {
         font-size: 0.8rem;
         color: #6c757d;
@@ -963,7 +979,7 @@
         font-size: 1rem;
         font-weight: 700;
         color: #4e73df;
-        background: #f8f9ff;
+        background: #f8f9fc;
         border-right: 1px solid #dee2e6;
         height: 42px;
         display: flex;
@@ -1536,3 +1552,6 @@
 @endpush
 
 @endsection
+
+
+
