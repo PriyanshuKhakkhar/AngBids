@@ -89,7 +89,6 @@ Route::middleware('auth')->group(function () {
         // KYC Routes
         Route::get('/kyc', [KycController::class, 'showForm'])->name('kyc.form');
         Route::post('/kyc/submit', [KycController::class, 'submitKyc'])->name('kyc.submit');
-        Route::get('/kyc/status', [KycController::class, 'showStatus'])->name('kyc.status');
 
         // Auction Registration Routes
         Route::post('/auctions/{auction}/register', [\App\Http\Controllers\User\AuctionRegistrationController::class, 'register'])->name('auctions.register');

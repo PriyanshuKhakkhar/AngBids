@@ -199,27 +199,39 @@
                             <div class="me-3 fs-3 text-success"><i class="fas fa-check-circle"></i></div>
                             <div>
                                 <h6 class="fw-bold mb-1 text-success">Verified User</h6>
-                                <p class="mb-0 small text-muted">You can bid and create auctions.</p>
+                                <p class="mb-0 small text-muted">Verification id: <span class="bg-light px-1 rounded">{{ substr($kyc->id_number, -4) }}</span></p>
                             </div>
                         </div>
                     @elseif($kyc && $kyc->status === 'pending')
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="me-3 fs-3 text-warning"><i class="fas fa-clock"></i></div>
-                            <div>
-                                <h6 class="fw-bold mb-1 text-warning">Review Pending</h6>
-                                <p class="mb-0 small text-muted">Your documents are being checked.</p>
+                        <div class="d-flex flex-column gap-2">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3 fs-3 text-warning"><i class="fas fa-clock"></i></div>
+                                <div>
+                                    <h6 class="fw-bold mb-1 text-warning">Review Pending</h6>
+                                    <p class="mb-0 small text-muted">Submitted on {{ $kyc->created_at->format('M d, Y') }}</p>
+                                </div>
+                            </div>
+                            <div class="bg-warning-subtle p-2 rounded border border-warning-subtle small text-dark">
+                                <i class="fas fa-info-circle me-1"></i> Documents are under review. This usually takes 24-48 hours.
                             </div>
                         </div>
-                        <a href="{{ route('user.kyc.status') }}" class="btn btn-sm btn-outline-warning w-100">Check Status</a>
                     @elseif($kyc && $kyc->status === 'rejected')
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="me-3 fs-3 text-danger"><i class="fas fa-times-circle"></i></div>
-                            <div>
-                                <h6 class="fw-bold mb-1 text-danger">Verification Failed</h6>
-                                <p class="mb-0 small text-muted">Please check remarks and re-submit.</p>
+                        <div class="d-flex flex-column gap-3">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3 fs-3 text-danger"><i class="fas fa-times-circle"></i></div>
+                                <div>
+                                    <h6 class="fw-bold mb-1 text-danger">Verification Failed</h6>
+                                    <p class="mb-0 small text-muted">Your application was rejected.</p>
+                                </div>
                             </div>
+                            @if($kyc->admin_note)
+                                <div class="bg-danger-subtle p-2 px-3 rounded border border-danger-subtle small text-danger">
+                                    <div class="fw-bold text-uppercase" style="font-size: 0.65rem;">Reason for Rejection:</div>
+                                    <div>{{ $kyc->admin_note }}</div>
+                                </div>
+                            @endif
+                            <a href="{{ route('user.kyc.form') }}" class="btn btn-sm btn-danger w-100 rounded-pill">Re-submit Documents</a>
                         </div>
-                        <a href="{{ route('user.kyc.form') }}" class="btn btn-sm btn-danger w-100">Re-submit Documents</a>
                     @else
                         <div class="d-flex align-items-center mb-3">
                             <div class="me-3 fs-3 text-secondary"><i class="fas fa-id-card"></i></div>
