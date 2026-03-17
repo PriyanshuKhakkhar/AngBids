@@ -13,13 +13,30 @@ class WatchlistController extends Controller
     /**
      * Get user's watchlist
      */
-    public function index()
+    public function index(Request $request)
     {
-        $watchlists = auth()->user()
+        $query = auth()->user()
             ->watchlist()
-            ->with(['auction.category', 'auction.images', 'auction.user'])
-            ->latest()
-            ->get();
+            ->with(['auction.category', 'auction.images', 'auction.user']);
+
+        // Category Filter
+        if ($request->filled('category')) {
+            $query->whereHas('auction.category', function($q) use ($request) {
+                $q->where('slug', $request->category);
+            });
+        }
+
+        // Sorting
+        $sort = $request->input('sort', 'latest');
+        if ($sort === 'price_asc' || $sort === 'price_desc') {
+            $query->join('auctions', 'watchlists.auction_id', '=', 'auctions.id')
+                  ->select('watchlists.*')
+                  ->orderBy('auctions.current_price', $sort === 'price_asc' ? 'asc' : 'desc');
+        } else {
+            $query->latest('watchlists.created_at');
+        }
+
+        $watchlists = $query->get();
 
         $auctions = $watchlists->map(function ($watchlist) {
             return $watchlist->auction;
@@ -27,7 +44,8 @@ class WatchlistController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => AuctionResource::collection($auctions)
+            'data' => AuctionResource::collection($auctions),
+            'filters_applied' => $request->only(['category', 'sort'])
         ]);
     }
 

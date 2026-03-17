@@ -213,28 +213,64 @@ class AuctionController extends Controller
     public function managedAuctions(Request $request){
         $perPage = $request->input('per_page', 10);
 
-        $status = $request->input('status');
-
         $query = Auction::where('user_id', auth()->id())
             ->with(['category', 'images'])
             ->withCount('bids');
 
-            if($status && $status !== 'all'){
-                if($status === 'active'){
-                    $query->active();
-                } else {
-                    $query->where('status', $status);
-                }
+        // Status Filter
+        if ($request->filled('status')) {
+            $status = $request->status;
+            if ($status === 'live') {
+                $query->active()
+                      ->where('start_time', '<=', now())
+                      ->where('end_time', '>', now());
+            } elseif ($status === 'ended') {
+                $query->where('end_time', '<=', now());
+            } elseif ($status !== 'all') {
+                $query->where('status', $status);
             }
+        }
 
-            $auctions = $query->latest()->paginate($perPage);
+        // Category Filter
+        if ($request->filled('category')) {
+            $category = Category::where('slug', $request->category)->first();
+            if ($category) {
+                $query->whereIn('category_id', $category->getAllChildIds());
+            }
+        }
 
-            return AuctionResource::collection($auctions)->additional([
-                'success' => true,
-                'filters_applied' => [
-                    'status' => $status,
-                ],
-            ]);
+        // Date Range Filter
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        // Keyword Search
+        if ($request->filled('q')) {
+            $keyword = $request->q;
+            $query->where(function($q) use ($keyword) {
+                $q->where('title', 'like', "%{$keyword}%")
+                  ->orWhere('description', 'like', "%{$keyword}%");
+            });
+        }
+
+        // Sorting
+        $sort = $request->input('sort', 'latest');
+        match($sort) {
+            'price_asc' => $query->orderBy('current_price', 'asc'),
+            'price_desc' => $query->orderBy('current_price', 'desc'),
+            'ending_soon' => $query->orderBy('end_time', 'asc'),
+            default => $query->orderBy('created_at', 'desc'),
+        };
+
+        $auctions = $query->paginate($perPage);
+
+        return AuctionResource::collection($auctions)->additional([
+            'success' => true,
+            'filters_applied' => $request->only(['status', 'category', 'start_date', 'end_date', 'sort', 'q']),
+        ]);
     }
 
     /**

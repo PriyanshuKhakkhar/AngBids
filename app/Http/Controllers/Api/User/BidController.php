@@ -16,13 +16,67 @@ class BidController extends Controller
     {
         $perPage = $request->input('per_page', 10);
 
-        $bids = Bid::where('user_id', auth()->id())
-            ->with(['auction.category', 'auction.images', 'user'])
-            ->orderBy('created_at', 'desc')
-            ->paginate($perPage);
+        $query = Bid::where('user_id', auth()->id())
+            ->whereIn('id', function($query) {
+                $query->selectRaw('MAX(id)')
+                    ->from('bids')
+                    ->where('user_id', auth()->id())
+                    ->groupBy('auction_id');
+            })
+            ->with(['auction.category', 'auction.images', 'user']);
+
+        // Filter by Category
+        if ($request->filled('category')) {
+            $query->whereHas('auction.category', function($q) use ($request) {
+                $q->where('slug', $request->category);
+            });
+        }
+
+        // Filter by Status
+        if ($request->filled('status')) {
+            $status = $request->status;
+            $query->whereHas('auction', function($q) use ($status) {
+                if ($status === 'live') {
+                    $q->where('status', 'active')
+                      ->where('start_time', '<=', now())
+                      ->where('end_time', '>', now());
+                } elseif ($status === 'ended') {
+                    $q->where('end_time', '<=', now());
+                } elseif ($status !== 'all') {
+                    $q->where('status', $status);
+                }
+            });
+        }
+
+        // Date Range
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        // Keyword Search
+        if ($request->filled('q')) {
+            $keyword = $request->q;
+            $query->whereHas('auction', function($q) use ($keyword) {
+                $q->where('title', 'like', "%{$keyword}%");
+            });
+        }
+
+        // Sort
+        $sort = $request->input('sort', 'latest');
+        match($sort) {
+            'price_asc' => $query->orderBy('amount', 'asc'),
+            'price_desc' => $query->orderBy('amount', 'desc'),
+            default => $query->orderBy('created_at', 'desc'),
+        };
+
+        $bids = $query->paginate($perPage);
 
         return BidResource::collection($bids)->additional([
             'success' => true,
+            'filters_applied' => $request->only(['status', 'category', 'start_date', 'end_date', 'sort', 'q']),
         ]);
     }
 

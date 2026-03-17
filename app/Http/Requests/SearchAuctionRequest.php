@@ -28,7 +28,7 @@ class SearchAuctionRequest extends FormRequest
             'category_id' => 'nullable|integer|exists:categories,id',
             'min_price' => 'nullable|numeric|min:0',
             'max_price' => 'nullable|numeric|min:0',
-            'status' => 'nullable|string|in:active,pending,closed,cancelled,draft,past,all',
+            'status' => 'nullable|string|in:active,pending,closed,cancelled,draft,past,all,live,upcoming',
             'sort' => 'nullable|string|in:latest,price_asc,price_desc,ending_soon',
             'per_page' => 'nullable|integer|min:1|max:100',
             'page' => 'nullable|integer|min:1',
@@ -49,7 +49,7 @@ class SearchAuctionRequest extends FormRequest
             'category_id.exists' => 'The selected category ID does not exist.',
             'min_price.min' => 'Minimum price must be at least 0.',
             'max_price.min' => 'Maximum price must be at least 0.',
-            'status.in' => 'Invalid status. Allowed values: active, pending, closed, cancelled, draft, past, all.',
+            'status.in' => 'Invalid status. Allowed values: active, pending, closed, cancelled, draft, past, all, live, upcoming.',
             'sort.in' => 'Invalid sort option. Allowed values: latest, price_asc, price_desc, ending_soon.',
             'per_page.max' => 'Maximum results per page is 100.',
         ];
