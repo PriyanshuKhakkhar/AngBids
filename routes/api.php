@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\User\ProfileController;
 use App\Http\Controllers\Api\User\NotificationController;
 use App\Http\Controllers\Api\User\BidController;
 use App\Http\Controllers\Api\User\KycController;
+use App\Http\Controllers\Api\User\AuctionRegistrationController;
 use App\Http\Controllers\Api\User\AutoBidController;
 
 // Admin Controllers
@@ -61,6 +62,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('watchlist', [WatchlistController::class, 'index']);
     Route::post('watchlist/{auction_id}', [WatchlistController::class, 'store']);
     Route::delete('watchlist/{auction_id}', [WatchlistController::class, 'destroy']);
+
+    // Auction Registration
+    Route::get('auctions/{id}/registration-status', [AuctionRegistrationController::class, 'status']);
+    Route::post('auctions/{id}/register', [AuctionRegistrationController::class, 'register']);
 
     // User Profile Routes
     Route::prefix('user')->name('api.user.')->group(function () {
