@@ -80,6 +80,7 @@
                             <th>User</th>
                             <th>Full Name</th>
                             <th>ID Type</th>
+                            <th>Gender</th>
                             <th>Submitted At</th>
                             <th class="text-center">Status</th>
                             <th width="100" class="text-center">Actions</th>
@@ -205,6 +206,7 @@
                     { data: 'user', name: 'user' },
                     { data: 'full_name', name: 'full_name', className: 'font-weight-bold text-dark' },
                     { data: 'id_type', name: 'id_type' },
+                    { data: 'gender', name: 'gender', className: 'text-capitalize' },
                     { data: 'created_at', name: 'created_at', className: 'text-muted small' },
                     { data: 'status', name: 'status', className: 'text-center' },
                     { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center text-nowrap' }

@@ -55,6 +55,9 @@ class AdminKycController extends Controller
             ->editColumn('created_at', function ($kyc) {
                 return $kyc->created_at->format('M d, Y H:i');
             })
+            ->editColumn('gender', function ($kyc) {
+                return ucfirst($kyc->gender);
+            })
             ->editColumn('status', function ($kyc) {
                 $badges = [
                     'pending' => 'warning',

@@ -30,7 +30,7 @@ class SocialController extends Controller
     }
 
     // Handle Google callback after authentication
-    public function callback($provider)
+    public function callback(Request $request, $provider)
     {
         try {
             $socialUser = Socialite::driver($provider)->stateless()->user();
@@ -79,8 +79,12 @@ class SocialController extends Controller
             Cookie::queue('last_oauth_name', $user->name, 525600);
             Cookie::queue('last_oauth_avatar', $socialUser->getAvatar(), 525600);
 
-            // Login user with remember me
-            Auth::login($user, true);
+            // Login user WITHOUT remember me (respects session lifetime)
+            Auth::login($user, false);
+
+            // Standard Laravel login session regeneration
+            $request->session()->regenerate();
+
             return redirect()->intended(route('home'));
 
         } catch (\Exception $e) {
