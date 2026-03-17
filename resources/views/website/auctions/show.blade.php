@@ -186,7 +186,7 @@
                                 <span class="hibid-bid-value hibid-bid-value--danger">₹{{ number_format(\App\Models\Auction::MAX_INCREMENT_ALLOWED, 2) }}</span>
                             </div>
                                            <!-- Bid Form / Login / Registration -->
-                        @if(!$isClosed && !$isUpcoming)
+                        @if(!$isClosed)
                         @auth
                             @if(auth()->id() === $auction->user_id)
                                 <div class="alert alert-secondary alert-permanent border-0 shadow-sm mb-4 rounded-3 text-center">
@@ -269,6 +269,7 @@
                                     </div>
                                 @endif
 
+                                @if(!$isUpcoming)
                                 <form action="{{ route('auctions.bid', $auction->id) }}" method="POST" class="mb-3" id="place-bid-form">
                                     @csrf
                                     
@@ -345,6 +346,13 @@
                                         Place Bid Now <i class="fas fa-gavel ms-2"></i>
                                     </button>
                                 </form>
+                                @else
+                                <div class="alert alert-light border shadow-sm rounded-3 text-center mb-3">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <strong>You are registered!</strong><br>
+                                    <span class="small text-muted">We'll notify you when bidding opens.</span>
+                                </div>
+                                @endif
                             @endif
                         @else
                             <div class="hibid-login-prompt">

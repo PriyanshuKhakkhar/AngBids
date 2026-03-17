@@ -10,6 +10,7 @@ class AuctionRegistration extends Model
         'user_id',
         'auction_id',
         'status',
+        'starting_notified',
     ];
 
     public function user()

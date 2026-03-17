@@ -33,7 +33,14 @@ class AuctionRegistrationController extends Controller
                 'status' => 'registered'
             ]);
 
-            return redirect()->back()->with('success', 'You have successfully registered for the auction: ' . $auction->title . '. You can now place bids!');
+            $message = 'You have successfully registered for the auction: ' . $auction->title . '.';
+            if ($auction->start_time->isFuture()) {
+                $message .= ' We will notify you 30 minutes before bidding opens!';
+            } else {
+                $message .= ' You can now place bids!';
+            }
+
+            return redirect()->back()->with('success', $message);
 
         } catch (Exception $e) {
             return redirect()->back()->with('error', 'Failed to register for the auction. Please try again later.');

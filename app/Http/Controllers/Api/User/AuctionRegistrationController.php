@@ -72,9 +72,14 @@ class AuctionRegistrationController extends Controller
                 'status' => 'registered'
             ]);
 
+            $message = 'Successfully registered for ' . $auction->title;
+            if ($auction->start_time->isFuture()) {
+                $message .= '. We will notify you 30 minutes before bidding opens!';
+            }
+
             return (new AuctionRegistrationResource($registration))->additional([
                 'success' => true,
-                'message' => 'Successfully registered for ' . $auction->title
+                'message' => $message
             ]);
 
         } catch (Exception $e) {
