@@ -33,16 +33,16 @@ class AuctionStartingSoonNotification extends Notification
     /**
      * Get the mail representation of the notification.
      */
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-            ->subject('Auction Starting Soon: ' . $this->auction->title)
-            ->line('An auction you registered for is starting in 30 minutes!')
-            ->line('Auction: ' . $this->auction->title)
-            ->line('Starts at: ' . $this->auction->start_time->format('h:i A'))
-            ->action('View Auction', route('auctions.show', $this->auction->id))
-            ->line('Good luck with your bidding!');
-    }
+    // public function toMail(object $notifiable): MailMessage
+    // {
+    //     return (new MailMessage)
+    //         ->subject('Auction Starting Soon: ' . $this->auction->title)
+    //         ->line('An auction you registered for is starting in 30 minutes!')
+    //         ->line('Auction: ' . $this->auction->title)
+    //         ->line('Starts at: ' . $this->auction->start_time->format('h:i A'))
+    //         ->action('View Auction', route('auctions.show', $this->auction->id))
+    //         ->line('Good luck with your bidding!');
+    // }
 
     /**
      * Get the array representation of the notification.
