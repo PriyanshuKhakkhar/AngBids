@@ -21,9 +21,13 @@ class WatchlistController extends Controller
 
         // Category Filter
         if ($request->filled('category')) {
-            $query->whereHas('auction.category', function($q) use ($request) {
-                $q->where('slug', $request->category);
-            });
+            $category = \App\Models\Category::where('slug', $request->category)->first();
+            if ($category) {
+                $categoryIds = $category->getAllChildIds();
+                $query->whereHas('auction.category', function($q) use ($categoryIds) {
+                    $q->whereIn('id', $categoryIds);
+                });
+            }
         }
 
         // Sorting
