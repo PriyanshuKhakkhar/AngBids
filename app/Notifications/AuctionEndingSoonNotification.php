@@ -35,17 +35,17 @@ class AuctionEndingSoonNotification extends Notification implements ShouldQueue
     /**
      * Get the mail representation of the notification.
      */
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-                    ->subject('Act Fast: Auction Ending in 1 Hour! ⏳')
-                    ->greeting('Hello ' . $notifiable->name . ',')
-                    ->line('An item in your Watchlist is ending soon.')
-                    ->line('**' . $this->auction->title . '** is closing in exactly **1 hour**! The current bid is **₹' . number_format($this->auction->current_price, 2) . '**.')
-                    ->line("Don't miss out on winning this item. Place your final bid now before it's too late.")
-                    ->action('Place Bid Now', route('auctions.show', $this->auction->id))
-                    ->line('Happy Bidding!');
-    }
+    // public function toMail(object $notifiable): MailMessage
+    // {
+    //     return (new MailMessage)
+    //                 ->subject('Act Fast: Auction Ending in 1 Hour! ⏳')
+    //                 ->greeting('Hello ' . $notifiable->name . ',')
+    //                 ->line('An item in your Watchlist is ending soon.')
+    //                 ->line('**' . $this->auction->title . '** is closing in exactly **1 hour**! The current bid is **₹' . number_format($this->auction->current_price, 2) . '**.')
+    //                 ->line("Don't miss out on winning this item. Place your final bid now before it's too late.")
+    //                 ->action('Place Bid Now', route('auctions.show', $this->auction->id))
+    //                 ->line('Happy Bidding!');
+    // }
 
     /**
      * Get the array representation of the notification.
