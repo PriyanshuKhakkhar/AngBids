@@ -115,6 +115,8 @@ class KycController extends Controller
             'admin_note' => $validated['status'] === 'rejected' ? $validated['admin_note'] : null,
         ]);
 
+        $kyc->user->notify(new \App\Notifications\KycStatusUpdatedNotification($kyc));
+
         return response()->json([
             'status'  => true,
             'message' => 'KYC status updated to ' . $validated['status'],

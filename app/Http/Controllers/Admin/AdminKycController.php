@@ -87,6 +87,8 @@ class AdminKycController extends Controller
         $kyc = Kyc::findOrFail($id);
         $kyc->update(['status' => 'approved', 'admin_note' => null]);
 
+        $kyc->user->notify(new \App\Notifications\KycStatusUpdatedNotification($kyc));
+
         return redirect()->back()->with('success', 'KYC approved successfully.');
     }
 
@@ -101,6 +103,8 @@ class AdminKycController extends Controller
             'status' => 'rejected',
             'admin_note' => $request->admin_note,
         ]);
+
+        $kyc->user->notify(new \App\Notifications\KycStatusUpdatedNotification($kyc));
 
         return redirect()->back()->with('success', 'KYC rejected with note.');
     }
