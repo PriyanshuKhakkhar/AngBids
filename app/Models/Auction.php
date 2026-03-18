@@ -25,6 +25,7 @@ class Auction extends Model
         'start_time',
         'end_time',
         'status',
+        'ending_soon_notified',
         'specifications',
         'cancellation_reason',
         'min_increment',
