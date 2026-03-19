@@ -175,6 +175,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Auto-dismiss Alerts System ---
     function setupAutoDismiss() {
+        const path = window.location.pathname;
+        const isContactPage = path === '/contact' || path === '/contact/';
+        const isAuctionShowPage = /^\/auctions\/\d+$/.test(path);
+        
+        // Sirf in 2 pages par auto dismiss chalega
+        if (!isContactPage && !isAuctionShowPage) {
+            return;
+        }
+
         // Function to dismiss a single alert
         const dismissAlert = (alert) => {
             if (alert.classList.contains('alert-permanent')) return;

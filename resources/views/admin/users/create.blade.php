@@ -24,17 +24,17 @@
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">User Details</h6>
         </div>
-        <div class="card-body p-4 p-md-5">
+        <div class="card-body p-4">
             <form action="{{ route('admin.users.store') }}" method="POST" id="userCreateForm" novalidate>
                 @csrf
                 
-                <h5 class="font-weight-bold text-dark mb-4" style="border-left: 4px solid #4e73df; padding-left: 12px;">User Information</h5>
+                <h5 class="font-weight-bold text-dark mb-3" style="border-left: 4px solid #4e73df; padding-left: 12px;">User Information</h5>
 
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group mb-4">
+                        <div class="form-group mb-3">
                             <label for="name" class="font-weight-bold text-dark small">Full Name <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control form-control-lg bg-light border-0 shadow-sm @error('name') is-invalid @enderror" id="name" value="{{ old('name') }}" placeholder="Enter full name">
+                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" id="name" value="{{ old('name') }}" placeholder="Enter full name">
                             <div class="invalid-feedback" id="name-error"></div>
                             @error('name')
                                 <span class="invalid-feedback d-block" role="alert">
@@ -45,15 +45,10 @@
                     </div>
 
                     <div class="col-md-6">
-                        <div class="form-group mb-4">
+                        <div class="form-group mb-3">
                             <label for="username" class="font-weight-bold text-dark small">Username <span class="text-danger">*</span></label>
-                            <div class="input-group input-group-lg shadow-sm rounded">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-light border-0 text-primary font-weight-bold">@</span>
-                                </div>
-                                <input type="text" name="username" class="form-control bg-light border-0 shadow-none @error('username') is-invalid @enderror" id="username" value="{{ old('username') }}" placeholder="username">
-                                <div class="invalid-feedback" id="username-error"></div>
-                            </div>
+                            <input type="text" name="username" class="form-control @error('username') is-invalid @enderror" id="username" value="{{ old('username') }}" placeholder="username">
+                            <div class="invalid-feedback" id="username-error"></div>
                             <small class="form-text text-muted mt-1 px-1">A-Z, 0-9, dashes and underscores only</small>
                             @error('username')
                                 <span class="invalid-feedback d-block" role="alert">
@@ -66,38 +61,30 @@
 
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group mb-4">
+                        <div class="form-group mb-3">
                             <label for="email" class="font-weight-bold text-dark small">Email Address <span class="text-danger">*</span></label>
-                            <div class="input-group input-group-lg shadow-sm rounded">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-light border-0"><i class="fas fa-envelope text-primary"></i></span>
-                                </div>
-                                <input type="email" name="email" class="form-control bg-light border-0 shadow-none @error('email') is-invalid @enderror" id="email" value="{{ old('email') }}" placeholder="Enter email address">
+                            <div class="input-group rounded">
+                                <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" id="email" value="{{ old('email') }}" placeholder="Enter email address">
                                 <div class="input-group-append">
-                                    <button class="btn btn-primary px-4 font-weight-bold" type="button" id="sendOtpBtn">Get OTP</button>
+                                    <button class="btn btn-primary px-3" type="button" id="sendOtpBtn">Get OTP</button>
                                 </div>
+                                <div class="invalid-feedback" id="email-error"></div>
+                                @error('email')
+                                    <span class="invalid-feedback d-block" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
                             </div>
-                            <div class="invalid-feedback d-block" id="email-error"></div>
-                            @error('email')
-                                <span class="invalid-feedback d-block" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
                             <small class="form-text mt-1 px-1 font-weight-bold" id="otpMessage"></small>
                         </div>
                     </div>
 
                     <div class="col-md-6">
-                        <div class="form-group mb-4">
+                        <div class="form-group mb-3">
                             <label for="otp" class="font-weight-bold text-dark small">Email OTP Verification <span class="text-danger">*</span></label>
-                            <div class="input-group input-group-lg shadow-sm rounded">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-light border-0"><i class="fas fa-key text-primary"></i></span>
-                                </div>
-                                <input type="text" name="otp" class="form-control bg-light border-0 shadow-none @error('otp') is-invalid @enderror" id="otp" value="{{ old('otp') }}" placeholder="6-digit OTP code">
-                            </div>
+                            <input type="text" name="otp" class="form-control @error('otp') is-invalid @enderror" id="otp" value="{{ old('otp') }}" placeholder="6-digit code" maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                             <small class="form-text text-muted mt-1 px-1">Enter OTP to verify user immediately.</small>
-                            <div class="invalid-feedback d-block" id="otp-error"></div>
+                            <div class="invalid-feedback" id="otp-error"></div>
                             @error('otp')
                                 <span class="invalid-feedback d-block" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -109,9 +96,9 @@
 
                 <div class="row mb-3">
                     <div class="col-md-12">
-                        <div class="form-group mb-4">
+                        <div class="form-group mb-3">
                             <label for="role" class="font-weight-bold text-dark small">User Role & Permissions <span class="text-danger">*</span></label>
-                            <select name="role" id="role" class="form-control form-control-lg bg-light border-0 shadow-sm @error('role') is-invalid @enderror">
+                            <select name="role" id="role" class="form-control @error('role') is-invalid @enderror">
                                 <option value="" disabled selected>Select Role</option>
                                 @foreach($roles as $role)
                                     <option value="{{ $role->name }}" {{ old('role') == $role->name ? 'selected' : '' }}>{{ ucfirst($role->name) }}</option>
@@ -127,33 +114,44 @@
                     </div>
                 </div>
 
-                <h5 class="font-weight-bold text-dark mb-4 mt-5" style="border-left: 4px solid #1cc88a; padding-left: 12px;">Security</h5>
+                <h5 class="font-weight-bold text-dark mb-3 mt-4" style="border-left: 4px solid #1cc88a; padding-left: 12px;">Security</h5>
 
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group mb-4">
+                        <div class="form-group mb-3">
                             <label for="password" class="font-weight-bold text-dark small">Password <span class="text-danger">*</span></label>
-                            <input type="password" name="password" class="form-control form-control-lg bg-light border-0 shadow-sm @error('password') is-invalid @enderror" id="password" placeholder="Enter secure password">
-                            <small class="form-text text-muted mt-1 px-1">Minimum 8 characters</small>
-                            <div class="invalid-feedback" id="password-error"></div>
-                            @error('password')
-                                <span class="invalid-feedback d-block" role="alert">
-                                    <strong>{{ $message }}</strong>
+                            <div class="position-relative">
+                                <input type="password" name="password" class="form-control no-validation-icon @error('password') is-invalid @enderror" id="password" placeholder="Enter secure password" style="padding-right: 45px;">
+                                <span class="position-absolute toggle-password text-muted" data-target="password" style="right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; z-index: 10;">
+                                    <i class="far fa-eye-slash"></i>
                                 </span>
-                            @enderror
+                                <div class="invalid-feedback" id="password-error"></div>
+                                @error('password')
+                                    <span class="invalid-feedback d-block" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                            <small class="form-text text-muted mt-1 px-1">Minimum 8 characters</small>
                         </div>
                     </div>
 
                     <div class="col-md-6">
-                        <div class="form-group mb-4">
+                        <div class="form-group mb-3">
                             <label for="password_confirmation" class="font-weight-bold text-dark small">Confirm Password <span class="text-danger">*</span></label>
-                            <input type="password" name="password_confirmation" class="form-control form-control-lg bg-light border-0 shadow-sm" id="password_confirmation" placeholder="Re-enter password">
-                            <div class="invalid-feedback" id="password_confirmation-error"></div>
+                            <div class="position-relative">
+                                <input type="password" name="password_confirmation" class="form-control no-validation-icon" id="password_confirmation" placeholder="Re-enter password" style="padding-right: 45px;">
+                                <span class="position-absolute toggle-password text-muted" data-target="password_confirmation" style="right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; z-index: 10;">
+                                    <i class="far fa-eye-slash"></i>
+                                </span>
+                                </div>
+                                <div class="invalid-feedback" id="password_confirmation-error"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <hr class="mt-5 mb-4 border-0" style="border-top: 1px dashed #e3e6f0 !important;">
+                <hr class="mt-4 mb-4 border-0" style="border-top: 1px dashed #e3e6f0 !important;">
 
                 <div class="form-group mb-0 text-right mt-4">
                     <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary px-4 mr-2 rounded-pill font-weight-bold">
@@ -168,9 +166,38 @@
     </div>
 @endsection
 
+@push('styles')
+<style>
+    .no-validation-icon.is-invalid, 
+    .was-validated .no-validation-icon:invalid,
+    .no-validation-icon.is-valid, 
+    .was-validated .no-validation-icon:valid {
+        background-image: none !important;
+    }
+</style>
+@endpush
+
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Password Toggle Logic
+    document.querySelectorAll('.toggle-password').forEach(function(button) {
+        button.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            const icon = this.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            }
+        });
+    });
     const form = document.getElementById('userCreateForm');
     const nameInput = document.getElementById('name');
     const usernameInput = document.getElementById('username');
@@ -254,18 +281,27 @@ document.addEventListener('DOMContentLoaded', function() {
     function validatePassword() {
         const value = passwordInput.value;
         const errorDiv = document.getElementById('password-error');
+        const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
         
         if (value === '') {
             passwordInput.classList.add('is-invalid');
             errorDiv.textContent = 'Password is required.';
+            errorDiv.classList.add('d-block');
             return false;
         } else if (value.length < 8) {
             passwordInput.classList.add('is-invalid');
             errorDiv.textContent = 'Password must be at least 8 characters.';
+            errorDiv.classList.add('d-block');
+            return false;
+        } else if (!passRegex.test(value)) {
+            passwordInput.classList.add('is-invalid');
+            errorDiv.textContent = 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (symbol).';
+            errorDiv.classList.add('d-block');
             return false;
         } else {
             passwordInput.classList.remove('is-invalid');
             errorDiv.textContent = '';
+            errorDiv.classList.remove('d-block');
             return true;
         }
     }
@@ -278,14 +314,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if (confirmation === '') {
             passwordConfirmInput.classList.add('is-invalid');
             errorDiv.textContent = 'Please confirm your password.';
+            errorDiv.classList.add('d-block');
             return false;
         } else if (password !== confirmation) {
             passwordConfirmInput.classList.add('is-invalid');
             errorDiv.textContent = 'Passwords do not match.';
+            errorDiv.classList.add('d-block');
             return false;
         } else {
             passwordConfirmInput.classList.remove('is-invalid');
             errorDiv.textContent = '';
+            errorDiv.classList.remove('d-block');
             return true;
         }
     }
@@ -313,17 +352,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (value === '') {
             otpInput.classList.add('is-invalid');
             errorDiv.textContent = 'OTP is required.';
-            errorDiv.classList.add('d-block');
             return false;
         } else if (!/^\d{6}$/.test(value)) {
             otpInput.classList.add('is-invalid');
             errorDiv.textContent = 'OTP must be exactly 6 digits.';
-            errorDiv.classList.add('d-block');
             return false;
         } else {
             otpInput.classList.remove('is-invalid');
             errorDiv.textContent = '';
-            errorDiv.classList.remove('d-block');
             return true;
         }
     }
@@ -475,6 +511,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 btn.disabled = false;
                 btn.innerHTML = 'Get OTP';
             });
+        });
+    }
+
+    if(emailInput) {
+        emailInput.addEventListener('input', function() {
+            const msg = document.getElementById('otpMessage');
+            if (msg && msg.innerHTML.includes('text-danger')) {
+                if (msg.innerHTML.includes('first') || msg.innerHTML.includes('valid')) {
+                    msg.innerHTML = '';
+                }
+            }
         });
     }
 });

@@ -74,6 +74,9 @@ class FormValidator {
                 const password = input.form.querySelector('input[name="password"]').value;
                 error = this.validatePasswordConfirmation(value, password);
                 break;
+            case 'otp':
+                error = this.validateOtp(value);
+                break;
             case 'subject':
                 error = this.validateSubject(value);
                 break;
@@ -151,6 +154,9 @@ class FormValidator {
             if (!/[0-9]/.test(value)) {
                 return 'Password must contain at least one number.';
             }
+            if (!/[^a-zA-Z0-9]/.test(value)) {
+                return 'Password must contain at least one special character.';
+            }
         }
         return null;
     }
@@ -161,6 +167,16 @@ class FormValidator {
         }
         if (value !== password) {
             return 'Passwords do not match.';
+        }
+        return null;
+    }
+
+    validateOtp(value) {
+        if (!value) {
+            return 'OTP verification code is required.';
+        }
+        if (!/^\d{6}$/.test(value)) {
+            return 'OTP must be exactly 6 digits.';
         }
         return null;
     }

@@ -39,14 +39,22 @@
                         <!-- Password -->
                         <div class="mb-3">
                             <label for="password" class="form-label fw-bold">Password</label>
-                            <input type="password" 
-                                   class="form-control @error('password') is-invalid @enderror" 
-                                   id="password" 
-                                   name="password" 
-                                   placeholder="Enter your password"
-                                   required>
+                            <div class="position-relative">
+                                <input type="password" 
+                                       class="form-control no-validation-icon @error('password') is-invalid @enderror" 
+                                       id="password" 
+                                       name="password" 
+                                       placeholder="Enter your password"
+                                       style="padding-right: 45px;"
+                                       required>
+                                <span class="position-absolute toggle-password text-muted" 
+                                      data-target="password" 
+                                      style="right: 15px; top: 19px; transform: translateY(-50%); cursor: pointer; z-index: 10;">
+                                    <i class="far fa-eye-slash"></i>
+                                </span>
+                            </div>
                             @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -169,6 +177,12 @@
         border-color: #dee2e6;
         opacity: 1;
     }
+    .no-validation-icon.is-invalid, 
+    .was-validated .no-validation-icon:invalid,
+    .no-validation-icon.is-valid, 
+    .was-validated .no-validation-icon:valid {
+        background-image: none !important;
+    }
 </style>
 @endpush
 
@@ -188,6 +202,25 @@
         });
     </script>
 @endif
+<script>
+    document.querySelectorAll('.toggle-password').forEach(function(button) {
+        button.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            const icon = this.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            }
+        });
+    });
+</script>
 @endpush
 
 
