@@ -100,9 +100,12 @@
                         </a>
                         <div class="hibid-seller-info">
                             <a href="{{ route('sellers.show', $auction->user->id) }}" class="hibid-seller-name">@_{{ $auction->user->username }}</a>
-                            <div class="hibid-seller-meta">
-                                <span class="hibid-verified"><i class="fas fa-check-circle me-1"></i>VERIFIED</span>
-                                <span class="hibid-rating"><i class="fas fa-star me-1"></i>4.9</span>
+                            <div class="hibid-seller-meta d-flex flex-wrap gap-2 mt-1 align-items-center">
+                                <span class="hibid-verified m-0"><i class="fas fa-check-circle me-1"></i>VERIFIED</span>
+                                <span class="hibid-rating m-0"><i class="fas fa-star me-1"></i>4.9</span>
+                                @if($auction->user->location)
+                                    <span class="badge bg-light text-secondary border fw-normal py-1"><i class="fas fa-map-marker-alt me-1 text-primary"></i>{{ $auction->user->location }}</span>
+                                @endif
                             </div>
                         </div>
                         <a href="#" class="hibid-contact-btn">Contact</a>
@@ -443,7 +446,9 @@
                                             <tr>
                                                 <th class="bg-light ps-4 py-3">Location</th>
                                                 <td class="ps-4 py-3 fw-medium">
-                                                    @if($auction->user->location)
+                                                    @if($auction->location)
+                                                        {{ $auction->location }}
+                                                    @elseif($auction->user->location)
                                                         {{ $auction->user->location }}
                                                     @else
                                                         Online Auction - Ships Worldwide

@@ -188,7 +188,17 @@ $(document).ready(function() {
             paginate: {
                 previous: '<i class="fas fa-chevron-left"></i>',
                 next: '<i class="fas fa-chevron-right"></i>'
-            }
+            },
+            emptyTable: `<div class="text-center py-5">
+                            <i class="fas fa-gavel fs-1 text-gray-300 opacity-25 mb-3 d-block"></i>
+                            <span class="text-secondary fw-bold fs-6">No active bids yet.</span>
+                            <span class="d-block text-muted small mt-1">Explore live auctions and place your first bid!</span>
+                        </div>`,
+            zeroRecords: `<div class="text-center py-5">
+                            <i class="fas fa-search fs-1 text-gray-300 opacity-25 mb-3 d-block"></i>
+                            <span class="text-secondary fw-bold fs-6">No matching bids found.</span>
+                            <span class="d-block text-muted small mt-1">Try adjusting your filters or search query.</span>
+                        </div>`
         },
         dom: "<'row mb-3'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>rt<'row mt-3'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
     });

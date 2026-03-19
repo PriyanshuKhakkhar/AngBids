@@ -112,6 +112,17 @@
                                 @enderror
                             </div>
 
+                            <div class="col-12">
+                                <label class="form-label fw-bold text-dark small">Item Location</label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text bg-light border-0"><i class="fas fa-map-marker-alt text-primary"></i></span>
+                                    <input type="text" name="location" class="form-control bg-light border-0 shadow-none @error('location') is-invalid @enderror" 
+                                        placeholder="e.g. Mumbai, India or Local Pickup Only" value="{{ old('location', $auction->location) }}">
+                                </div>
+                                @error('location')
+                                    <div class="invalid-feedback d-block" data-server-error>{{ $message }}</div>
+                                @enderror
+                            </div>
 
                             <div class="col-12">
                                 <label class="form-label fw-bold text-dark small">Description</label>

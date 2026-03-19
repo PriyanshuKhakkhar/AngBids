@@ -30,6 +30,7 @@ class Auction extends Model
         'cancellation_reason',
         'min_increment',
         'winner_id',
+        'location',
     ];
 
     protected $casts = [

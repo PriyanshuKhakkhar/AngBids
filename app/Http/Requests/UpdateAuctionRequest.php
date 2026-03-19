@@ -51,6 +51,7 @@ class UpdateAuctionRequest extends FormRequest
             'images.*' => ['image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'deleted_images' => ['nullable', 'array'],
             'deleted_images.*' => ['exists:auction_images,id'],
+            'location' => ['nullable', 'string', 'max:255'],
         ];
 
         // Custom validation for total image count (existing - deleted + new <= 5)
