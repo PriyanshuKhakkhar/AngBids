@@ -164,7 +164,9 @@ class UserController extends Controller
     public function sendOtp(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|unique:users,email'
+            'email' => ['required', 'email', 'unique:users,email', 'max:255', 'not_regex:/\+/']
+        ], [
+            'email.not_regex' => 'Please enter a valid standard email address.'
         ]);
 
         $email = strtolower(trim($request->email));
@@ -199,22 +201,32 @@ class UserController extends Controller
         // No restriction for super admin - can create all roles
 
         $validated = $request->validate([
-            'name'     => 'required|string|min:2|max:255',
+            'name'     => ['required', 'string', 'min:2', 'max:255', 'regex:/^[a-zA-Z\s\'-]+$/'],
             'username' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_-]+$/', 'unique:users,username'],
-            'email'    => 'required|email|max:255|unique:users,email',
-            'password' => ['required', 'confirmed', 'min:8', Rules\Password::defaults()],
+            'email'    => ['required', 'email', 'max:255', 'unique:users,email', 'not_regex:/\+/'],
+            'password' => ['required', 'confirmed', 'min:8', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/'],
             'role'     => 'required|exists:roles,name',
             'otp'      => 'required|string|size:6',
+        ], [
+            'name.regex' => 'Name can only contain letters, spaces, hyphens, and apostrophes.',
+            'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (symbol).',
+            'email.not_regex' => 'Please enter a valid standard email address.',
         ]);
 
         $emailVerifiedAt = null;
 
         if (!empty($validated['otp'])) {
-            $sessionOtp = session('admin_create_user_otp_' . strtolower(trim($validated['email'])));
+            $emailKey = strtolower(trim($validated['email']));
+            $sessionOtp = session('admin_create_user_otp_' . $emailKey);
+            $sessionTime = session('admin_create_user_otp_time_' . $emailKey);
+            
             if ($sessionOtp && $sessionOtp == $validated['otp']) {
+                if (!$sessionTime || now()->diffInMinutes($sessionTime) > 10) {
+                    session()->forget(['admin_create_user_otp_' . $emailKey, 'admin_create_user_otp_time_' . $emailKey]);
+                    return back()->withInput()->with('error', 'OTP has expired. Please request a new one.');
+                }
                 $emailVerifiedAt = now();
-                session()->forget('admin_create_user_otp_' . strtolower(trim($validated['email'])));
-                session()->forget('admin_create_user_otp_time_' . strtolower(trim($validated['email'])));
+                session()->forget(['admin_create_user_otp_' . $emailKey, 'admin_create_user_otp_time_' . $emailKey]);
             } else {
                 return back()->withInput()->with('error', 'Invalid OTP provided for the email. User not created.');
             }
@@ -318,10 +330,13 @@ class UserController extends Controller
         // No restriction for super admin on role assignment
 
         $validated = $request->validate([
-            'name'     => 'required|string|min:2|max:255',
+            'name'     => ['required', 'string', 'min:2', 'max:255', 'regex:/^[a-zA-Z\s\'-]+$/'],
             'username' => 'required|string|alpha_dash|max:255|unique:users,username,' . $user->id,
-            'email'    => 'required|email|max:255|unique:users,email,' . $user->id,
+            'email'    => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id, 'not_regex:/\+/'],
             'role'     => 'required|exists:roles,name',
+        ], [
+            'name.regex' => 'Name can only contain letters, spaces, hyphens, and apostrophes.',
+            'email.not_regex' => 'Please enter a valid standard email address.',
         ]);
 
         DB::transaction(function () use ($request, $validated, $user) {
@@ -334,7 +349,9 @@ class UserController extends Controller
 
             if ($request->filled('password')) {
                 $request->validate([
-                    'password' => ['confirmed', 'min:8', Rules\Password::defaults()],
+                    'password' => ['confirmed', 'min:8', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/'],
+                ], [
+                    'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (symbol).',
                 ]);
 
                 $user->update([
