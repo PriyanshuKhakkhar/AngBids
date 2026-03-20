@@ -352,9 +352,9 @@ class UserDashboardController extends Controller
                 ->addColumn('payment_status', function($auction) {
                     $payment = \App\Models\Payment::where('auction_id', $auction->id)->where('status', 'success')->first();
                     if ($payment) {
-                        return '<span class="badge rounded-pill bg-success-subtle text-success border border-success px-3">Paid</span>';
+                        return '<span class="badge rounded-pill px-3" style="background-color: #e2ede5; color: #3e6d4d; border: 1px solid #c3d9c9; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Paid</span>';
                     }
-                    return '<span class="badge rounded-pill bg-warning-subtle text-warning border border-warning px-3">Unpaid</span>';
+                    return '<span class="badge rounded-pill px-3" style="background-color: #fff4e5; color: #a35200; border: 1px solid #ffcc80; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Unpaid</span>';
                 })
                 ->addColumn('action', function($auction) {
                     $viewUrl = route('auctions.show', $auction->id);
@@ -364,7 +364,13 @@ class UserDashboardController extends Controller
                     
                     if (!$payment) {
                         $payUrl = route('payment.payu.checkout', $auction->id);
-                        $html .= '<a href="'.$payUrl.'" class="btn btn-success btn-sm px-3 rounded-pill shadow-sm" title="Pay Now"><i class="fas fa-credit-card me-1"></i> Pay Now</a>';
+                        $html .= '<a href="'.$payUrl.'" class="btn btn-sm px-2 rounded-pill shadow-sm fw-bold text-white mb-0" 
+                                    style="background: linear-gradient(135deg, #a88b77 0%, #7d6355 100%); border: none; font-size: 0.65rem; padding: 4px 12px; transition: transform 0.2s; text-transform: uppercase; letter-spacing: 0.02em;" 
+                                    onmouseover="this.style.transform=\'scale(1.05)\'" 
+                                    onmouseout="this.style.transform=\'scale(1)\'"
+                                    title="Pay Now">
+                                    <i class="fas fa-credit-card me-1" style="font-size: 0.6rem;"></i> Pay Now
+                                  </a>';
                     }
                     
                     return '<div class="d-flex align-items-center">'.$html.'</div>';
