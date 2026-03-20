@@ -110,6 +110,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('user.dashboard')->with('success', 'Account created and verified successfully!');
+        return redirect()->route('user.kyc.form')->with('success', 'Account created! Please complete your KYC verification to continue.');
     }
 }

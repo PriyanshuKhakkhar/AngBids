@@ -34,6 +34,7 @@ class SocialController extends Controller
     {
         try {
             $socialUser = Socialite::driver($provider)->stateless()->user();
+            $isNewUser = false;
 
             // First try to find user by google_id
             $user = User::where('google_id', $socialUser->getId())->first();
@@ -50,6 +51,7 @@ class SocialController extends Controller
                     }
                     $user->update($updateData);
                 } else {
+                    $isNewUser = true;
                     // Create a brand new user
                     // Generate a unique username from name
                     $baseUsername = Str::slug($socialUser->getName() ?: 'user', '');
@@ -85,7 +87,20 @@ class SocialController extends Controller
             // Standard Laravel login session regeneration
             $request->session()->regenerate();
 
-            return redirect()->intended(route('home'));
+            $authUser = Auth::user();
+
+            if ($isNewUser) {
+                return redirect()->route('user.kyc.form')->with('success', 'Account created! Please complete your KYC verification to continue.');
+            }
+
+            if (!$authUser->isAdmin() && !$authUser->isSuperAdmin()) {
+                if (!$authUser->kyc || $authUser->kyc->status === 'rejected') {
+                    return redirect()->route('user.kyc.form')->with('warning', 'Please complete your KYC verification to continue.');
+                }
+            }
+
+            return redirect()->intended(route('dashboard'));
+
 
         } catch (\Exception $e) {
             Log::error('Google login failed: ' . $e->getMessage());

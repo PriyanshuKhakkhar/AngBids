@@ -48,7 +48,8 @@ class WebsiteController extends Controller
     // Dashboard redirect
     public function dashboard()
     {
-        if (auth()->user()->role === 'admin' || auth()->user()->role === 'super admin') {
+        $user = auth()->user();
+        if ($user->isAdmin() || $user->isSuperAdmin()) {
             return redirect()->route('admin.dashboard');
         }
         

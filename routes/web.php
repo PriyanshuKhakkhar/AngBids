@@ -113,6 +113,7 @@ Route::middleware(['auth', 'role:admin|super admin'])
     ->group(function () {
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard/chart-data', [DashboardController::class, 'chartData'])->name('dashboard.chart_data');
 
         // Auctions
         Route::get('/auctions', [AdminAuctionController::class, 'index'])->name('auctions.index');
