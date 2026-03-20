@@ -29,7 +29,7 @@ class KycStatusUpdatedNotification extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
+        return ['database'];
     }
 
     /**
@@ -64,11 +64,11 @@ class KycStatusUpdatedNotification extends Notification implements ShouldQueue
     {
         return [
             'type' => 'kyc_status_updated',
+            'title' => 'KYC Status Update',
             'status' => $this->kyc->status,
             'message' => $this->kyc->status === 'approved' 
                 ? 'Your KYC has been approved. You can now participate in auctions!' 
                 : 'Your KYC was rejected. Reason: ' . $this->kyc->admin_note,
-            'action_url' => $this->kyc->status === 'approved' ? '/auctions' : route('user.kyc.form', [], false)
         ];
     }
 }

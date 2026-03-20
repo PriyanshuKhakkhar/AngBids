@@ -199,7 +199,7 @@
                             <div class="me-3 fs-3 text-success"><i class="fas fa-check-circle"></i></div>
                             <div>
                                 <h6 class="fw-bold mb-1 text-success">Verified User</h6>
-                                <p class="mb-0 small text-muted">Verification id: <span class="bg-light px-1 rounded">{{ substr($kyc->id_number, -4) }}</span></p>
+                                <p class="mb-0 small text-muted">Your identity has been verified.</p>
                             </div>
                         </div>
                     @elseif($kyc && $kyc->status === 'pending')

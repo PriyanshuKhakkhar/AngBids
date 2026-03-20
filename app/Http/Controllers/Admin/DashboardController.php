@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\Bid;
 use App\Models\Category;
 use App\Models\Contact;
+use App\Models\Kyc;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -15,13 +17,14 @@ class DashboardController extends Controller
     {
         // Get statistics
         $stats = [
-            'total_auctions' => Auction::count(),
 
             'active_auctions' => Auction::where('status', 'active')
                 ->where('end_time', '>', now())
                 ->count(),
 
             'pending_auctions' => Auction::where('status', 'pending')->count(),
+
+            'pending_kycs' => Kyc::where('status', 'pending')->count(),
 
             'closed_auctions' => Auction::where('status', 'active')
                 ->where('end_time', '<=', now())
@@ -31,22 +34,20 @@ class DashboardController extends Controller
 
             'total_users' => User::role('user')->count(),
 
-            'new_users_this_month' => User::role('user')
-                ->whereMonth('created_at', now()->month)
-                ->whereYear('created_at', now()->year)
-                ->count(),
-
             'total_bids' => Bid::count(),
 
             'bids_today' => Bid::whereDate('created_at', today())->count(),
 
-            'total_categories' => Category::count(),
-
             'active_categories' => Category::where('is_active', true)->count(),
 
-            'total_contacts' => Contact::count(),
-
             'unread_contacts' => Contact::where('status', 'unread')->count(),
+
+            // Payment & Revenue Details (PayU Integration Pending)
+            'total_sales' => Auction::where('status', 'closed')->whereNotNull('winner_id')->sum('current_price') ?? 0,
+            
+            'platform_fee' => (Auction::where('status', 'closed')->whereNotNull('winner_id')->sum('current_price') ?? 0) * 0.05, // Assuming 5% platform fee
+            
+            'successful_payments' => Auction::where('status', 'closed')->whereNotNull('winner_id')->count() ?? 0,
         ];
 
         // Recent auctions
@@ -55,8 +56,9 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        // Recent users
-        $recent_users = User::role('user')
+        // Pending KYCs
+        $recent_kycs = Kyc::with('user')
+            ->where('status', 'pending')
             ->latest()
             ->take(5)
             ->get();
@@ -96,7 +98,7 @@ class DashboardController extends Controller
             compact(
                 'stats',
                 'recent_auctions',
-                'recent_users',
+                'recent_kycs',
                 'auction_chart_data',
                 'monthly_chart_data'
             )
@@ -106,6 +108,28 @@ class DashboardController extends Controller
     public function blank()
     {
         return view('admin.blank');
+    }
+
+    public function chartData(Request $request)
+    {
+        $months = max(1, (int) $request->get('months', 6));
+        $monthly_auctions = [];
+        $monthly_labels = [];
+
+        for ($i = $months - 1; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+
+            $monthly_labels[] = $date->format('M Y');
+
+            $monthly_auctions[] = Auction::whereYear('created_at', $date->year)
+                ->whereMonth('created_at', $date->month)
+                ->count();
+        }
+
+        return response()->json([
+            'labels' => $monthly_labels,
+            'data' => $monthly_auctions,
+        ]);
     }
 }
    

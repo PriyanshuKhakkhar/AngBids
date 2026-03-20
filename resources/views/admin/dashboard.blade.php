@@ -23,17 +23,27 @@
         transition: all 0.2s ease-in-out;
         border-radius: 10px;
         padding: 1.5rem 1rem;
-        border: 1px solid transparent;
+        background-color: #fff;
+        border: 1px solid #e3e6f0;
         display: flex;
         flex-direction: column;
         align-items: center;
         text-decoration: none !important;
-        color: #fff !important;
+        color: #5a5c69 !important;
     }
     .quick-action-btn:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-        filter: brightness(1.05);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+        border-color: #d1d3e2;
+        color: #4e73df !important;
+        background-color: #f8f9fc;
+    }
+    .quick-action-btn i {
+        color: #858796;
+        transition: color 0.2s ease-in-out;
+    }
+    .quick-action-btn:hover i {
+        color: #4e73df;
     }
     /* Simple clean card style for dashboard */
     .dashboard-card {
@@ -52,96 +62,13 @@
 @section('content')
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-            <i class="fas fa-download fa-sm text-white-50"></i> Generate Report
-        </a>
-    </div>
-
-    <!-- Stats Row 1 - Auctions -->
-    <div class="row">
-        <!-- Total Auctions -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2 stat-card">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total Auctions
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($stats['total_auctions']) }}</div>
-                            <a href="{{ route('admin.auctions.index') }}" class="small text-primary">View All <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-gavel fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Active Auctions -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2 stat-card">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Active Auctions
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($stats['active_auctions']) }}</div>
-                            <a href="{{ route('admin.auctions.index') }}" class="small text-success">Manage <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pending Auctions -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2 stat-card">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Pending Approval
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($stats['pending_auctions']) }}</div>
-                            <a href="{{ route('admin.auctions.index') }}" class="small text-warning">Review Now <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-clock fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Closed Auctions -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-secondary shadow h-100 py-2 stat-card">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
-                                Closed Auctions
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($stats['closed_auctions']) }}</div>
-                            <span class="small text-muted">Ended</span>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-lock fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">Overview</h1>
+            <p class="mb-0 text-muted mt-1">Welcome back, <span class="font-weight-bold">{{ auth()->user()->name ?? 'Admin' }}</span>. Here's what's happening today.</p>
         </div>
     </div>
 
-    <!-- Stats Row 2 - Users & Bids -->
+    <!-- Key Metrics Overview -->
     <div class="row">
         <!-- Total Users -->
         <div class="col-xl-3 col-md-6 mb-4">
@@ -153,7 +80,7 @@
                                 Total Users
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($stats['total_users']) }}</div>
-                            <a href="{{ route('admin.users.index') }}" class="small text-info">Manage Users <i class="fas fa-arrow-right"></i></a>
+                            <a href="{{ route('admin.users.index') }}" class="small text-info">View Directory <i class="fas fa-arrow-right"></i></a>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-users fa-2x text-gray-300"></i>
@@ -163,60 +90,143 @@
             </div>
         </div>
 
-        <!-- New Users This Month -->
+        <!-- Pending KYC (Requires Action) -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2 stat-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Pending KYC Actions
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($stats['pending_kycs'] ?? 0) }}</div>
+                            <a href="{{ route('admin.kyc.index') ?? '#' }}" class="small text-danger">Review Documents <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-id-card fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Sales Volume -->
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-success shadow h-100 py-2 stat-card">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                New Users (This Month)
+                                Total Sales (PayU)
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($stats['new_users_this_month']) }}</div>
-                            <span class="small text-muted">{{ now()->format('F Y') }}</span>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">₹{{ number_format($stats['total_sales'], 2) }}</div>
+                            <span class="small text-muted">All Time Closed</span>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-user-plus fa-2x text-gray-300"></i>
+                            <i class="fas fa-wallet fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Total Bids -->
+        <!-- Platform Revenue -->
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-primary shadow h-100 py-2 stat-card">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total Bids
+                                Platform Fee (5%)
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($stats['total_bids']) }}</div>
-                            <span class="small text-muted">{{ number_format($stats['bids_today']) }} today</span>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">₹{{ number_format($stats['platform_fee'], 2) }}</div>
+                            <span class="small text-muted">Estimated Revenue</span>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-rupee-sign fa-2x text-gray-300"></i>
+                            <i class="fas fa-hand-holding-usd fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Categories -->
+    <!-- Stats Row 2 - Engagement & Support -->
+    <div class="row">
+        <!-- Live Categories -->
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-warning shadow h-100 py-2 stat-card">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Categories
+                                Live Categories
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($stats['total_categories']) }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($stats['active_categories']) }}</div>
                             <a href="{{ route('admin.categories.index') }}" class="small text-warning">Manage <i class="fas fa-arrow-right"></i></a>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-tags fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Engagements (Bids) -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2 stat-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Engagement (Total Bids)
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($stats['total_bids']) }}</div>
+                            <span class="small text-muted">Overall Activity</span>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-gavel fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bids Today -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2 stat-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Activity Today
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($stats['bids_today']) }} Bids</div>
+                            <span class="small text-muted">Daily Engagement</span>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unread Support Tickets -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2 stat-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Unread Support Msg
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($stats['unread_contacts']) }}</div>
+                            <a href="{{ route('admin.contacts.index') }}" class="small text-danger">Reply Now <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-envelope fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -246,9 +256,15 @@
         <div class="col-xl-6 col-lg-6">
             <div class="card dashboard-card mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">
+                    <h6 class="m-0 font-weight-bold text-primary" id="trendChartTitle">
                         <i class="fas fa-chart-line mr-2"></i>Auctions Trend (Last 6 Months)
                     </h6>
+                    <select id="trendMonths" class="custom-select custom-select-sm border-0 bg-light text-primary font-weight-bold shadow-sm" style="width: auto; cursor: pointer; font-size: 0.85rem;" onchange="updateTrendChart(this.value)">
+                        <option value="3">Last 3 Months</option>
+                        <option value="6" selected>Last 6 Months</option>
+                        <option value="9">Last 9 Months</option>
+                        <option value="12">Last 12 Months</option>
+                    </select>
                 </div>
                 <div class="card-body">
                     <div class="chart-container">
@@ -328,38 +344,43 @@
             </div>
         </div>
 
-        <!-- Recent Users -->
+        <!-- Pending KYC Requests -->
         <div class="col-xl-6 col-lg-6">
             <div class="card dashboard-card mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        <i class="fas fa-user-friends mr-2"></i>Recent Users
+                    <h6 class="m-0 font-weight-bold text-danger">
+                        <i class="fas fa-id-card mr-2"></i>Pending KYC Reviews
                     </h6>
-                    <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-primary">View All</a>
+                    <a href="{{ route('admin.kyc.index') ?? '#' }}" class="btn btn-sm btn-danger">Manage KYC</a>
                 </div>
                 <div class="card-body">
-                    @if($recent_users->count() > 0)
+                    @if(isset($recent_kycs) && $recent_kycs->count() > 0)
                         <div class="table-responsive">
                             <table class="table table-sm table-hover">
                                 <thead class="thead-light">
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Joined</th>
+                                        <th>User</th>
+                                        <th>ID Type</th>
+                                        <th>Submitted</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($recent_users as $user)
+                                    @foreach($recent_kycs as $kyc)
                                         <tr>
-                                            <td>{{ $user->name }}</td>
-                                            <td>{{ $user->email }}</td>
                                             <td>
-                                                <small class="text-muted">{{ $user->created_at->diffForHumans() }}</small>
+                                                <div class="font-weight-bold">{{ $kyc->user->name ?? 'Unknown' }}</div>
+                                                <small class="text-muted">{{ $kyc->user->email ?? '' }}</small>
                                             </td>
                                             <td>
-                                                <a href="{{ route('admin.users.show', $user->id) }}" class="btn btn-sm btn-info">
-                                                    <i class="fas fa-eye"></i>
+                                                <span class="badge badge-secondary">{{ strtoupper($kyc->id_type) }}</span>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">{{ $kyc->created_at->diffForHumans() }}</small>
+                                            </td>
+                                            <td>
+                                                <a href="{{ url('admin/kyc/' . $kyc->id) }}" class="btn btn-sm btn-info">
+                                                    Review
                                                 </a>
                                             </td>
                                         </tr>
@@ -368,7 +389,10 @@
                             </table>
                         </div>
                     @else
-                        <p class="text-center text-muted py-4">No users yet</p>
+                        <div class="text-center py-4">
+                            <i class="fas fa-check-circle fa-3x text-success mb-3 opacity-50"></i>
+                            <p class="text-muted mb-0">All clear! No pending KYC requests.</p>
+                        </div>
                     @endif
                 </div>
             </div>
@@ -386,26 +410,42 @@
                 </div>
                 <div class="card-body">
                     <div class="row text-center">
-                        <div class="col-md-3 mb-3">
-                            <a href="{{ route('admin.auctions.index') }}" class="btn btn-primary btn-block quick-action-btn shadow-sm">
+                        <div class="col-md-auto col-lg mb-3">
+                            <a href="{{ route('admin.auctions.index') }}" class="btn btn-block quick-action-btn shadow-sm h-100">
                                 <i class="fas fa-gavel fa-2x mb-2"></i>
                                 <div class="font-weight-bold">Manage Auctions</div>
                             </a>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="{{ route('admin.users.index') }}" class="btn btn-info btn-block quick-action-btn shadow-sm">
+                        <div class="col-md-auto col-lg mb-3">
+                            <a href="{{ route('admin.users.index') }}" class="btn btn-block quick-action-btn shadow-sm h-100">
                                 <i class="fas fa-users fa-2x mb-2"></i>
                                 <div class="font-weight-bold">Manage Users</div>
                             </a>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="{{ route('admin.categories.index') }}" class="btn btn-warning btn-block quick-action-btn shadow-sm">
+                        <div class="col-md-auto col-lg mb-3">
+                            <a href="{{ route('admin.kyc.index') ?? '#' }}" class="btn btn-block quick-action-btn shadow-sm position-relative h-100">
+                                <i class="fas fa-id-card fa-2x mb-2"></i>
+                                <div class="font-weight-bold">Manage KYC</div>
+                                @if(isset($stats['pending_kycs']) && $stats['pending_kycs'] > 0)
+                                    <span class="badge badge-danger position-absolute" style="top: -5px; right: -5px; border: 2px solid #fff;">{{ $stats['pending_kycs'] }}</span>
+                                @endif
+                            </a>
+                        </div>
+                        <div class="col-md-auto col-lg mb-3">
+                            <a href="#" class="btn btn-block quick-action-btn shadow-sm h-100" title="Coming Soon: PayU Integration">
+                                <i class="fas fa-wallet fa-2x mb-2"></i>
+                                <div class="font-weight-bold">Manage Payments</div>
+                                <span class="badge badge-warning mt-1">PayU Ready</span>
+                            </a>
+                        </div>
+                        <div class="col-md-auto col-lg mb-3">
+                            <a href="{{ route('admin.categories.index') }}" class="btn btn-block quick-action-btn shadow-sm h-100">
                                 <i class="fas fa-tags fa-2x mb-2"></i>
                                 <div class="font-weight-bold">Manage Categories</div>
                             </a>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="{{ route('admin.contacts.index') }}" class="btn btn-success btn-block quick-action-btn shadow-sm position-relative">
+                        <div class="col-md-auto col-lg mb-3">
+                            <a href="{{ route('admin.contacts.index') }}" class="btn btn-block quick-action-btn shadow-sm position-relative h-100">
                                 <i class="fas fa-envelope fa-2x mb-2"></i>
                                 <div class="font-weight-bold">View Contacts</div>
                                 @if($stats['unread_contacts'] > 0)
@@ -474,7 +514,7 @@
 
     // Monthly Auctions Line Chart
     const monthlyAuctionsCtx = document.getElementById('monthlyAuctionsChart').getContext('2d');
-    const monthlyAuctionsChart = new Chart(monthlyAuctionsCtx, {
+    let monthlyAuctionsChart = new Chart(monthlyAuctionsCtx, {
         type: 'line',
         data: {
             labels: {!! json_encode($monthly_chart_data['labels']) !!},
@@ -521,6 +561,25 @@
             }
         }
     });
+
+    function updateTrendChart(months) {
+        document.getElementById('trendChartTitle').innerHTML = '<i class="fas fa-chart-line mr-2"></i>Auctions Trend (Last ' + months + ' Months)';
+        
+        document.getElementById('monthlyAuctionsChart').style.opacity = '0.5';
+
+        fetch("{{ route('admin.dashboard.chart_data') }}?months=" + months)
+            .then(response => response.json())
+            .then(data => {
+                monthlyAuctionsChart.data.labels = data.labels;
+                monthlyAuctionsChart.data.datasets[0].data = data.data;
+                monthlyAuctionsChart.update();
+                document.getElementById('monthlyAuctionsChart').style.opacity = '1';
+            })
+            .catch(error => {
+                console.error('Error fetching chart data:', error);
+                document.getElementById('monthlyAuctionsChart').style.opacity = '1';
+            });
+    }
 </script>
 @endpush
 
