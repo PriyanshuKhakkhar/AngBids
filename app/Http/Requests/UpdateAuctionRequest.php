@@ -45,12 +45,13 @@ class UpdateAuctionRequest extends FormRequest
             'category_id' => ['sometimes', 'exists:categories,id'],
             'start_time' => ['sometimes', 'date'],
             'end_time' => ['sometimes', 'date', 'after:start_time'],
-            'min_increment' => ['sometimes', 'numeric', 'min:100.00', 'max:100000.00'],
+            'min_increment' => 'nullable|numeric|min:0.01',
             'specifications' => ['nullable', 'array'],
             'images' => ['nullable', 'array', 'max:5'],
             'images.*' => ['image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'deleted_images' => ['nullable', 'array'],
             'deleted_images.*' => ['exists:auction_images,id'],
+            'reserve_price' => 'nullable|numeric|gte:starting_price',
             'location' => ['nullable', 'string', 'max:255'],
         ];
 

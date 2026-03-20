@@ -30,6 +30,7 @@ class Auction extends Model
         'cancellation_reason',
         'min_increment',
         'winner_id',
+        'reserve_price',
         'location',
     ];
 
@@ -187,6 +188,14 @@ class Auction extends Model
     }
 
     /**
+     * Check if the reserve price has been met
+     */
+    public function isReserveMet(): bool
+    {
+        return !$this->reserve_price || $this->current_price >= $this->reserve_price;
+    }
+
+    /**
      * Finalize the auction (Select winner and close)
      */
     public function finalize(): bool
@@ -198,15 +207,16 @@ class Auction extends Model
 
         // 2. Determine highest bidder
         $highestBid = $this->highestBid();
+        $reserveMet = $this->isReserveMet();
 
-        // 3. Update status and winner_id
+        // 3. Update status and winner_id (only if reserve is met)
         $this->update([
-            'winner_id' => $highestBid ? $highestBid->user_id : null,
+            'winner_id' => ($highestBid && $reserveMet) ? $highestBid->user_id : null,
             'status' => 'closed'
         ]);
 
-        // 4. Notify winner if exists
-        if ($highestBid && $highestBid->user) {
+        // 4. Notify winner if exists AND reserve is met
+        if ($highestBid && $highestBid->user && $reserveMet) {
             $highestBid->user->notify(new \App\Notifications\WinnerNotification($this));
             
             // Also notify the seller

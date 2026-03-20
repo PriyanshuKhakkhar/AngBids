@@ -15,6 +15,7 @@ use App\Http\Controllers\User\WatchlistController;
 use App\Http\Controllers\User\NotificationController;
 use App\Http\Controllers\User\KycController;
 use App\Http\Controllers\User\BidController;
+use App\Http\Controllers\Payment\PayUController;
 
 // Admin Controllers
 use App\Http\Controllers\Admin\DashboardController;
@@ -93,6 +94,10 @@ Route::middleware('auth')->group(function () {
         // Auction Registration Routes
         Route::post('/auctions/{auction}/register', [\App\Http\Controllers\User\AuctionRegistrationController::class, 'register'])->name('auctions.register');
     });
+
+    // Payment Routes (Outside 'user.' prefix to keep names clean)
+    Route::get('/payment/payu/{auction}', [PayUController::class, 'checkout'])->name('payment.payu.checkout');
+    Route::post('/payment/payu/callback', [PayUController::class, 'callback'])->name('payment.payu.callback');
 });
 
 // Parameterized Routes

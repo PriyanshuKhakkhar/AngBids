@@ -91,6 +91,7 @@
                                     <input type="number" name="starting_price" step="0.01" min="0.01" class="form-control bg-light border-0 shadow-none @error('starting_price') is-invalid @enderror" 
                                         placeholder="0.00" value="{{ old('starting_price', $auction->starting_price) }}" {{ $hasBids ? 'disabled' : '' }}>
                                 </div>
+                                <small class="text-muted"><i class="fas fa-info-circle me-1"></i>The initial amount at which bidding will open.</small>
                                 @if($hasBids)
                                     <small class="text-muted mt-1 d-block"><i class="fas fa-lock me-1"></i> Locked due to active bids.</small>
                                 @endif
@@ -103,11 +104,24 @@
                                 <label class="form-label fw-bold text-dark small">Min Bid Increment (₹)</label>
                                 <div class="input-group input-group-lg">
                                     <span class="input-group-text bg-light border-0 text-primary fw-bold border-end">₹</span>
-                                    <input type="number" name="min_increment" step="1" min="1" max="100000.00" class="form-control bg-light border-0 shadow-none @error('min_increment') is-invalid @enderror" 
+                                    <input type="number" name="min_increment" step="0.01" min="0.01" class="form-control bg-light border-0 shadow-none @error('min_increment') is-invalid @enderror" 
                                         placeholder="100" value="{{ old('min_increment', $auction->min_increment) }}">
                                 </div>
                                 <small class="text-muted">Minimum amount each next bid must increase by.</small>
                                 @error('min_increment')
+                                    <div class="invalid-feedback d-block" data-server-error>{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-dark small">Reserve Price (₹) <span class="text-muted fw-normal">(Optional)</span></label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text bg-light border-0 text-primary fw-bold border-end">₹</span>
+                                    <input type="number" name="reserve_price" step="0.01" min="0.01" class="form-control bg-light border-0 shadow-none @error('reserve_price') is-invalid @enderror" 
+                                        placeholder="0.00" value="{{ old('reserve_price', $auction->reserve_price) }}" {{ $hasBids ? 'disabled' : '' }}>
+                                </div>
+                                <small class="text-muted"><i class="fas fa-eye-slash me-1"></i>The minimum acceptable price. If the final bid is lower, the item remains unsold. (Hidden from buyers) {{ $hasBids ? 'Locked due to active bids.' : '' }}</small>
+                                @error('reserve_price')
                                     <div class="invalid-feedback d-block" data-server-error>{{ $message }}</div>
                                 @enderror
                             </div>
@@ -119,6 +133,7 @@
                                     <input type="text" name="location" class="form-control bg-light border-0 shadow-none @error('location') is-invalid @enderror" 
                                         placeholder="e.g. Mumbai, India or Local Pickup Only" value="{{ old('location', $auction->location) }}">
                                 </div>
+                                <small class="text-muted"><i class="fas fa-info-circle me-1"></i>Where the item is physically located, or 'Online / Ships Worldwide'.</small>
                                 @error('location')
                                     <div class="invalid-feedback d-block" data-server-error>{{ $message }}</div>
                                 @enderror
@@ -160,7 +175,7 @@
                                     <input type="text" name="end_time" id="end_time_picker" class="form-control bg-light border-0 shadow-none @error('end_time') is-invalid @enderror" 
                                         placeholder="Select end date & time" value="{{ old('end_time', $auction->end_time->format('Y-m-d h:i A')) }}">
                                 </div>
-                                <small class="text-muted d-block mt-2">Update whenever you need more exposure.</small>
+                                <small class="text-muted d-block mt-2"><i class="fas fa-info-circle me-1"></i>The exact moment your auction will automatically close to new bids.</small>
                                 @error('end_time')
                                     <div class="invalid-feedback d-block" data-server-error>{{ $message }}</div>
                                 @enderror

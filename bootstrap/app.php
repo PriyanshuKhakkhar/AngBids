@@ -23,6 +23,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\CheckKickedOut::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            '/payment/payu/callback',
+        ]);
+
         $middleware->redirectTo(
             guests: '/login',
             users: '/',

@@ -173,7 +173,18 @@
 
                         <div class="hibid-bid-info mb-3">
                             <div class="hibid-bid-row hibid-bid-row--current">
-                                <span class="hibid-bid-label">Current Bid</span>
+                                <span class="hibid-bid-label">
+                                    Current Bid
+                                    @if($auction->reserve_price)
+                                        <div class="mt-1 fw-bold">
+                                            @if($auction->isReserveMet())
+                                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-1" style="font-size: 0.65rem;"><i class="fas fa-check-circle me-1"></i>Reserve met</span>
+                                            @else
+                                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-2 py-1" style="font-size: 0.65rem;"><i class="fas fa-exclamation-circle me-1"></i>Reserve not met</span>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </span>
                                 <span class="hibid-bid-value hibid-bid-value--primary" id="current-bid-display">₹{{ number_format($auction->current_price, 2) }}</span>
                             </div>
                             <div class="hibid-bid-row">
@@ -310,6 +321,7 @@
                                                     <button type="button" class="hibid-shortcut-btn bid-shortcut" data-amount="{{ $amount }}">+₹{{ $amount }}</button>
                                                 @endforeach
                                             </div>
+                                            <p class="text-muted small mt-2 mb-0"><i class="fas fa-info-circle me-1"></i>Enter the exact amount you wish to add on top of the current bid.</p>
                                         </div>
 
                                         <!-- Auto Bid Pane -->
@@ -327,7 +339,7 @@
                                                     value="{{ old('max_bid_amount') }}"
                                                     min="{{ $auction->current_price + ($auction->min_increment ?? 100.00) }}" step="0.01">
                                             </div>
-                                            <p class="text-muted small mb-2"><i class="fas fa-robot me-1"></i> We'll bid for you up to this limit.</p>
+                                            <p class="text-muted small mt-2 mb-0"><i class="fas fa-robot me-1"></i>Enter the absolute maximum price you are willing to pay. Our system will automatically bid the absolute minimum increments perfectly needed to keep you in the lead, only up to your limit.</p>
                                         </div>
                                     </div>
 

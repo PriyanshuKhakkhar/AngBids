@@ -350,11 +350,24 @@ class UserDashboardController extends Controller
                     return '<span class="text-muted small">'.$auction->end_time->format('M d, Y').'</span>';
                 })
                 ->addColumn('payment_status', function($auction) {
-                    return '<span class="badge rounded-pill bg-success-subtle text-success border border-success px-3">Won</span>';
+                    $payment = \App\Models\Payment::where('auction_id', $auction->id)->where('status', 'success')->first();
+                    if ($payment) {
+                        return '<span class="badge rounded-pill bg-success-subtle text-success border border-success px-3">Paid</span>';
+                    }
+                    return '<span class="badge rounded-pill bg-warning-subtle text-warning border border-warning px-3">Unpaid</span>';
                 })
                 ->addColumn('action', function($auction) {
-                    $url = route('auctions.show', $auction->id);
-                    return '<a href="'.$url.'" class="btn btn-outline-primary btn-sm rounded-circle shadow-sm" title="View" style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center;"><i class="fas fa-eye"></i></a>';
+                    $viewUrl = route('auctions.show', $auction->id);
+                    $payment = \App\Models\Payment::where('auction_id', $auction->id)->where('status', 'success')->first();
+                    
+                    $html = '<a href="'.$viewUrl.'" class="btn btn-outline-primary btn-sm rounded-circle shadow-sm me-2" title="View" style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center;"><i class="fas fa-eye"></i></a>';
+                    
+                    if (!$payment) {
+                        $payUrl = route('payment.payu.checkout', $auction->id);
+                        $html .= '<a href="'.$payUrl.'" class="btn btn-success btn-sm px-3 rounded-pill shadow-sm" title="Pay Now"><i class="fas fa-credit-card me-1"></i> Pay Now</a>';
+                    }
+                    
+                    return '<div class="d-flex align-items-center">'.$html.'</div>';
                 })
                 ->rawColumns(['item', 'winning_bid', 'won_date', 'payment_status', 'action'])
                 ->make(true);
