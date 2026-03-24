@@ -1,0 +1,7 @@
+- Implemented strict username validation (alpha_dash) and persistence across Web, API, and Admin controllers.
+- Integrated @username handles in dashboard, seller profiles, and auction pages with real-time JS validation.
+- Enhanced platform privacy by removing public bid history and using usernames to identify winners in seller dashboards.
+- Fully updated Admin Panel user management (Create, Edit, Show) to support the new username system.
+- Troubleshooting Google Socialite integration: Resolved SSL certificate issue (cURL error 60) in local PHP environment.
+- solved database migrations to fix "column not found" error in Socialite login.
+- Verified final social authentication flow.

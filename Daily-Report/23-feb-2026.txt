@@ -1,0 +1,4 @@
+- Implemented Proxy Bidding (Automatic Bidding) backend engine allowing users to set maximum bid limits.
+- Created AutoBids model and migration to track and manage automatic bidding commitments.
+- Overhauled BidService logic to handle automated "bidding wars" and calculate lowest fair winners.
+- Prepared PlaceBidRequest and BidController to support proxy limits.

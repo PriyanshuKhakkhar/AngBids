@@ -1,0 +1,4 @@
+- Watched APi tutorials.
+- Watched how angular and laravel work together using api.
+- Explored postman features.
+- converted auctions index method to return json data and tested it using postman.

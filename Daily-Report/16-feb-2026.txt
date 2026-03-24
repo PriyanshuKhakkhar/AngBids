@@ -1,0 +1,6 @@
+- Added advanced searching and filter API.
+- Created database indexes for faster search results and scalability.
+- Created Api profile controller for user profile.
+- Added profile update, avatar update and remove and change password apis.
+- Created api for listing all bids of authenticated user.
+- Created api for listing only active bids of authenticated user.

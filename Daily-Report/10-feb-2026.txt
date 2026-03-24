@@ -1,0 +1,8 @@
+- Updated api auctionscontroller index method.
+- Added filters and search in index method.
+- Created a auctions api resource file to manage data to be fetched.
+- Added show method in api auctions controller.
+- Updated auctions services to fetch single auction and return json response.
+- Added store method in api auctions controller.
+
+tomorrow's plan :- installing sanctam and solving auth issues in api routes.

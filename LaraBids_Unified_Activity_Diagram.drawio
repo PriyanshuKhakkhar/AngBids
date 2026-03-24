@@ -1,0 +1,138 @@
+<mxfile host="electron" modified="2026-03-05T07:10:00.000Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.6.8 Chrome/114.0.5735.289 Electron/25.5.0 Safari/537.36" version="21.6.8" type="device">
+  <diagram id="LaraBidsActivity" name="Unified Activity Flow">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Swimlanes -->
+        <mxCell id="UserLane" value="Registered User / Seller" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fillColor=#EDF5FF;strokeColor=#4A90E2;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="360" height="960" as="geometry" />
+        </mxCell>
+        <mxCell id="AdminLane" value="System Administrator" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fillColor=#F8F9FA;strokeColor=#6C757D;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="400" y="40" width="360" height="960" as="geometry" />
+        </mxCell>
+
+        <!-- Start Node -->
+        <mxCell id="StartNode" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="UserLane">
+          <mxGeometry x="165" y="50" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Auth -->
+        <mxCell id="AuthAction" value="Login / Register" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFFFFF;strokeColor=#4A90E2;strokeWidth=2;" vertex="1" parent="UserLane">
+          <mxGeometry x="110" y="110" width="140" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Browse -->
+        <mxCell id="BrowseAction" value="Browse Items &amp; Dashboard" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFFFFF;strokeColor=#4A90E2;strokeWidth=2;" vertex="1" parent="UserLane">
+          <mxGeometry x="110" y="200" width="140" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Sell Item -->
+        <mxCell id="SellItemAction" value="Initiate &quot;Sell Item&quot;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFFFFF;strokeColor=#4A90E2;strokeWidth=2;" vertex="1" parent="UserLane">
+          <mxGeometry x="110" y="290" width="140" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Details Decision -->
+        <mxCell id="DetailsDecision" value="All Details&lt;br&gt;Provided?" style="rhombus;whiteSpace=wrap;html=1;rounded=0;fillColor=#FFF8E1;strokeColor=#FBC02D;strokeWidth=2;" vertex="1" parent="UserLane">
+          <mxGeometry x="120" y="380" width="120" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Review Part -->
+        <mxCell id="UserReviewPart" value="Final Review &amp; Submit" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFFFFF;strokeColor=#4A90E2;strokeWidth=2;" vertex="1" parent="UserLane">
+          <mxGeometry x="110" y="510" width="140" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Flows in User Lane -->
+        <mxCell id="f1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#4A90E2;strokeWidth=2;" edge="1" parent="UserLane" source="StartNode" target="AuthAction">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#4A90E2;strokeWidth=2;" edge="1" parent="UserLane" source="AuthAction" target="BrowseAction">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#4A90E2;strokeWidth=2;" edge="1" parent="UserLane" source="BrowseAction" target="SellItemAction">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#4A90E2;strokeWidth=2;" edge="1" parent="UserLane" source="SellItemAction" target="DetailsDecision">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f5_no" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#D32F2F;strokeWidth=2;labelBackgroundColor=#FDECEA;fontColor=#D32F2F;fontStyle=1" edge="1" parent="UserLane" source="DetailsDecision" target="SellItemAction">
+          <mxGeometry x="-0.8" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="300" y="420" />
+              <mxPoint x="300" y="315" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f6_yes" value="YES" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2E7D32;strokeWidth=2;labelBackgroundColor=#E8F5E9;fontColor=#2E7D32;fontStyle=1" edge="1" parent="UserLane" source="DetailsDecision" target="UserReviewPart">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Admin Actions -->
+        <mxCell id="AdminReviewAction" value="Moderation Review" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFFFFF;strokeColor=#6C757D;strokeWidth=2;" vertex="1" parent="AdminLane">
+          <mxGeometry x="110" y="600" width="140" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Admin Decision -->
+        <mxCell id="AdminDecision" value="Approved?" style="rhombus;whiteSpace=wrap;html=1;rounded=0;fillColor=#FFF8E1;strokeColor=#FBC02D;strokeWidth=2;" vertex="1" parent="AdminLane">
+          <mxGeometry x="120" y="690" width="120" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Rejected State -->
+        <mxCell id="RejectedState" value="Item Rejected&lt;br&gt;(Notification Sent)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FDECEA;strokeColor=#D32F2F;strokeWidth=2;" vertex="1" parent="AdminLane">
+          <mxGeometry x="110" y="810" width="140" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Success State -->
+        <mxCell id="AuctionLiveAction" value="Auction Published&lt;br&gt;(Live)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=2;" vertex="1" parent="UserLane">
+          <mxGeometry x="110" y="810" width="140" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- End Nodes -->
+        <mxCell id="EndNodeSuccess" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="UserLane">
+          <mxGeometry x="165" y="900" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="EndNodeRejected" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="AdminLane">
+          <mxGeometry x="165" y="900" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Cross-Lane Flows -->
+        <mxCell id="f7_submit" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#4A90E2;strokeWidth=2;entryX=0.5;entryY=0;entryDx=0;entryDy=0" edge="1" parent="1" source="UserReviewPart" target="AdminReviewAction">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="620" />
+              <mxPoint x="580" y="620" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="f8_review" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6C757D;strokeWidth=2;" edge="1" parent="AdminLane" source="AdminReviewAction" target="AdminDecision">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="f9_no" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#D32F2F;strokeWidth=2;labelBackgroundColor=#FDECEA;fontColor=#D32F2F;fontStyle=1" edge="1" parent="AdminLane" source="AdminDecision" target="RejectedState">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="f10_yes" value="YES" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2E7D32;strokeWidth=2;labelBackgroundColor=#E8F5E9;fontColor=#2E7D32;fontStyle=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0" edge="1" parent="1" source="AdminDecision" target="AuctionLiveAction">
+          <mxGeometry x="-0.7" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="580" y="770" />
+              <mxPoint x="220" y="770" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="f11_end_reject" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6C757D;strokeWidth=2;" edge="1" parent="AdminLane" source="RejectedState" target="EndNodeRejected">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f12_end_success" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#4A90E2;strokeWidth=2;" edge="1" parent="UserLane" source="AuctionLiveAction" target="EndNodeSuccess">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

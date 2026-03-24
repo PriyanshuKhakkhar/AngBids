@@ -1,0 +1,6 @@
+- Resolved issue where notification was firing for all users without any bid participation.
+- Implemented Auto Bid REST API to allow users to manage proxy bids externally.
+- Created AutoBidResource for standardized API responses including auction details and active status.
+- Developed AutoBidController with endpoints for listing, setting/updating, and deactivating auto-bids.
+- Registered new API routes: GET /api/user/auto-bids, POST /api/user/auto-bids, and DELETE /api/user/auto-bids/{id}.
+- Re-used core BidService logic to ensure API-placed bids follow the same rules as website bids.

@@ -1,0 +1,5 @@
+- Redid the homepage, went for a 4-column look.
+- Sorted out dynamic specs API for all the categories.
+- Added anti-sniping feature to stop last-second bidders.
+- Cleaned up API calls - added bid status and watchlist fixes.
+- Got the auction update feature working (with price locks for fairness).

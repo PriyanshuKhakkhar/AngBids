@@ -1,0 +1,5 @@
+- Improved the auction winner system to automatically finalize auctions and notify winners as soon as they end.
+- Updated the "Winning Items" section on the dashboard to load faster and show correct information using a more efficient database search.
+- Added a restriction to prevent bidding on upcoming auctions before their start time and added a "Starting Soon" badge on the UI.
+- Fixed a bug where sellers could see bidding options on their own auctions, and added a specific "Seller" tag for them instead.
+- Created new API endpoints that allow users to submit their KYC verification documents and check their status from a mobile app.

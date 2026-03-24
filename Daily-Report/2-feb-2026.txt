@@ -1,0 +1,6 @@
+- migrations and models relationship created for bids.
+- Created bidservices to create and store bids.
+- created request for bidding.
+- updated auctioncontorller to accept bid from users.
+- updated userdashbaord controller to fetch all active bids of the user.
+- updated my-bids section to show all the active bids in dashboard.

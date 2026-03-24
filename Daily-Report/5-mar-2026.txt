@@ -1,0 +1,5 @@
+- Completed project report.
+- Created DFD diagrams for report.
+- Updated ER diagram.
+- Added data dictionary tables with proper formatting.
+- Created presentation for college review.

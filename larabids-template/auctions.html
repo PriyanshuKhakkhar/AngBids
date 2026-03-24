@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auctions | LaraBids</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- AOS Animations -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Custom Theme CSS -->
+    <link rel="stylesheet" href="assets/css/theme.css">
+</head>
+
+<body>
+
+    <!-- Header Holder -->
+    <div id="header-holder"></div>
+
+    <!-- Breadcrumb -->
+    <section class="breadcrumb-elite">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-2">Browse Auctions</h1>
+            <p class="text-secondary mb-0">Discover exceptional items from our curated collection.</p>
+        </div>
+    </section>
+
+    <!-- Auctions Filter & Grid -->
+    <section class="py-5">
+        <div class="container py-lg-5">
+            <div class="row g-4 mb-5" data-aos="fade-up">
+                <div class="col-lg-3">
+                    <button class="btn btn-outline-gold w-100 mb-4 d-lg-none" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#filterCollapse">
+                        <i class="fas fa-filter me-2"></i> Refine Selection
+                    </button>
+                    <div class="glass-panel p-4 h-100 collapse d-lg-block" id="filterCollapse">
+                        <h5
+                            class="text-white mb-4 display-font border-bottom border-white border-opacity-10 pb-2 d-none d-lg-block">
+                            Filter Auctions</h5>
+
+                        <div class="mb-4">
+                            <label class="badge-elite mb-2">Categories</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input bg-transparent border-secondary" type="checkbox"
+                                    id="cat1" checked>
+                                <label class="form-check-label small text-secondary" for="cat1">Electronics</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input bg-transparent border-secondary" type="checkbox"
+                                    id="cat2">
+                                <label class="form-check-label small text-secondary" for="cat2">Luxury Watches</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input bg-transparent border-secondary" type="checkbox"
+                                    id="cat3">
+                                <label class="form-check-label small text-secondary" for="cat3">Vintage Cars</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input bg-transparent border-secondary" type="checkbox"
+                                    id="cat4">
+                                <label class="form-check-label small text-secondary" for="cat4">Jewelry</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="badge-elite mb-2">Price Range</label>
+                            <input type="range" class="form-range custom-range" id="priceRange">
+                            <div class="d-flex justify-content-between small text-secondary">
+                                <span>$1k</span>
+                                <span>$1M+</span>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-gold w-100 mt-2">Apply Filters</button>
+                    </div>
+                </div>
+
+                <div class="col-lg-9">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <p class="text-secondary mb-0">Showing <span class="text-white fw-bold">12</span> Active
+                            Auctions</p>
+                        <select class="form-select-elite bg-transparent border-secondary text-secondary small p-2"
+                            style="border-radius: 4px;">
+                            <option>Newest First</option>
+                            <option>Closing Soon</option>
+                            <option>Price: High - Low</option>
+                        </select>
+                    </div>
+
+                    <div class="row g-4">
+                        <!-- Repeated Item (Auction Card) -->
+                        <div class="col-md-6" data-aos="fade-up">
+                            <div class="card card-elite h-100">
+                                <div class="position-relative overflow-hidden"
+                                    style="height: 240px; border-radius: 12px 12px 0 0;">
+                                    <img src="https://images.unsplash.com/photo-1542281286-9e0a16bb7366?auto=format&fit=crop&w=1200"
+                                        class="card-img-top h-100 object-fit-cover" alt="Item">
+                                </div>
+                                <div class="card-body p-4">
+                                    <div class="glass-timer text-center py-2 timer-val mb-3" data-days="00"
+                                        data-hours="08" data-min="12" data-sec="34">
+                                        <div class="row g-0 px-3">
+                                            <div class="col">
+                                                <div class="fw-bold fs-6" data-days>00</div><small class="opacity-50"
+                                                    style="font-size: 0.6rem;">DAYS</small>
+                                            </div>
+                                            <div class="col">
+                                                <div class="fw-bold fs-6" data-hours>08</div><small class="opacity-50"
+                                                    style="font-size: 0.6rem;">HRS</small>
+                                            </div>
+                                            <div class="col">
+                                                <div class="fw-bold fs-6" data-min>12</div><small class="opacity-50"
+                                                    style="font-size: 0.6rem;">MIN</small>
+                                            </div>
+                                            <div class="col">
+                                                <div class="fw-bold fs-6" data-sec>34</div><small class="opacity-50"
+                                                    style="font-size: 0.6rem;">SEC</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h3 class="h6 mb-2">Midnight Sapphire GT</h3>
+                                    <p class="text-secondary small mb-4">V12 Twin-Turbo Heritage Edition</p>
+                                    <div
+                                        class="d-flex justify-content-between align-items-center mb-4 pt-3 border-top border-white border-opacity-10">
+                                        <span class="small text-secondary">CURRENT BID</span>
+                                        <span class="h5 mb-0 text-gold fw-bold">$210,000</span>
+                                    </div>
+                                    <a href="auction-details.html" class="btn btn-gold w-100 py-2 btn-sm">Bid
+                                        Now</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- More Cards... -->
+                        <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+                            <div class="card card-elite h-100">
+                                <div class="position-relative overflow-hidden"
+                                    style="height: 240px; border-radius: 12px 12px 0 0;">
+                                    <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200"
+                                        class="card-img-top h-100 object-fit-cover" alt="Item">
+                                </div>
+                                <div class="card-body p-4">
+                                    <div class="glass-timer text-center py-2 timer-val mb-3" data-days="04"
+                                        data-hours="19" data-min="05" data-sec="56">
+                                        <div class="row g-0 px-3">
+                                            <div class="col">
+                                                <div class="fw-bold fs-6" data-days>04</div><small class="opacity-50"
+                                                    style="font-size: 0.6rem;">DAYS</small>
+                                            </div>
+                                            <div class="col">
+                                                <div class="fw-bold fs-6" data-hours>19</div><small class="opacity-50"
+                                                    style="font-size: 0.6rem;">HRS</small>
+                                            </div>
+                                            <div class="col">
+                                                <div class="fw-bold fs-6" data-min>05</div><small class="opacity-50"
+                                                    style="font-size: 0.6rem;">MIN</small>
+                                            </div>
+                                            <div class="col">
+                                                <div class="fw-bold fs-6" data-sec>56</div><small class="opacity-50"
+                                                    style="font-size: 0.6rem;">SEC</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h3 class="h6 mb-2">The Crystal Pavillion</h3>
+                                    <p class="text-secondary small mb-4">6-Bedroom Ultra-Modern Estate</p>
+                                    <div
+                                        class="d-flex justify-content-between align-items-center mb-4 pt-3 border-top border-white border-opacity-10">
+                                        <span class="small text-secondary">CURRENT BID</span>
+                                        <span class="h5 mb-0 text-gold fw-bold">$3.45M</span>
+                                    </div>
+                                    <a href="auction-details.html" class="btn btn-gold w-100 py-2 btn-sm">Submit
+                                        Bid</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <nav class="mt-5">
+                        <ul class="pagination justify-content-center gap-2">
+                            <li class="page-item disabled">
+                                <a class="page-link glass-panel border-0 text-secondary px-3" href="#"><i
+                                        class="fas fa-chevron-left"></i></a>
+                            </li>
+                            <li class="page-item active">
+                                <a class="page-link btn-gold border-0 px-3" href="#">1</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link glass-panel border-0 text-white px-3" href="#">2</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link glass-panel border-0 text-white px-3" href="#"><i
+                                        class="fas fa-chevron-right"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Holder -->
+    <div id="footer-holder"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+
+</html>

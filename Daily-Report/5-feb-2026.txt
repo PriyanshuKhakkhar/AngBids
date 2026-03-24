@@ -1,0 +1,7 @@
+- added session limitations to max 3 devices.
+- created new middleware to renove oldest session when new one is created.
+- created new sub category section.
+- made relationship between parent and child category.
+- updated create form to show subcategories now.
+- updated auctions page to fetch category using sub category filter also.
+- Improved pagination UI.

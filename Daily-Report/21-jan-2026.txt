@@ -1,0 +1,5 @@
+- Create auction form to store auctions dynamically.
+- Bidding feature for auctions .
+- Check for highest bid and show it in the auction view.
+- Admin template integration with static data.
+- New template theme integrated for better look.

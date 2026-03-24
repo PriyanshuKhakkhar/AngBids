@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard | LaraBids</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom Theme CSS -->
+    <link rel="stylesheet" href="assets/css/theme.css">
+</head>
+
+<body>
+
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <aside class="sidebar-elite p-4" style="width: 280px;">
+            <div class="text-center mb-5">
+                <a href="index.html"><img src="assets/images/logo/logo.png" alt="Logo" height="50"></a>
+            </div>
+
+            <nav>
+                <a href="dashboard.html" class="sidebar-link active rounded mb-2">
+                    <i class="fas fa-th-large me-3"></i> Overview
+                </a>
+                <a href="my-bids.html" class="sidebar-link rounded mb-2">
+                    <i class="fas fa-gavel me-3"></i> My Active Bids
+                </a>
+                <a href="winning-items.html" class="sidebar-link rounded mb-2">
+                    <i class="fas fa-trophy me-3"></i> Won Items
+                </a>
+                <a href="wishlist.html" class="sidebar-link rounded mb-2">
+                    <i class="fas fa-heart me-3"></i> Watchlist
+                </a>
+                <a href="profile.html" class="sidebar-link rounded mb-2">
+                    <i class="fas fa-user-edit me-3"></i> Profile Settings
+                </a>
+                <div class="mt-5 pt-5">
+                    <a href="index.html" class="sidebar-link rounded text-danger opacity-75">
+                        <i class="fas fa-sign-out-alt me-3"></i> Secure Logout
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay"></div>
+
+        <!-- Sidebar Toggle Button -->
+        <button class="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Main Content -->
+        <main class="flex-grow-1"
+            style="background: radial-gradient(at top left, #0e0e0e 0%, #000000 100%); min-height: 100vh;">
+
+            <!-- Dynamic Header for Consistency -->
+            <div id="header-holder"></div>
+
+            <div class="p-4 p-lg-5">
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <div>
+                        <span class="badge-elite mb-1 d-block opacity-75">Welcome Back,</span>
+                        <h1 class="h3 text-white fw-bold mb-0">LaraBids Member #402</h1>
+                    </div>
+                    <div class="d-flex align-items-center gap-4">
+                        <div class="glass-panel p-2 px-3 small border-0">
+                            <i class="fas fa-wallet text-gold me-2"></i> Balance: <span
+                                class="text-white fw-bold">$1.2M</span>
+                        </div>
+                        <img src="https://ui-avatars.com/api/?name=LaraBids+User&background=d4af37&color=0a192f"
+                            class="rounded-circle border border-gold border-opacity-25" height="45" alt="Avatar">
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="row g-4 mb-5">
+                    <div class="col-md-4">
+                        <div class="glass-panel p-4 border-0">
+                            <p class="small text-secondary mb-1">Active Bids</p>
+                            <h4 class="h2 text-white fw-bold mb-0">12</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="glass-panel p-4 border-0">
+                            <p class="small text-secondary mb-1">Total Wins</p>
+                            <h4 class="h2 text-gold fw-bold mb-0">08</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="glass-panel p-4 border-0">
+                            <p class="small text-secondary mb-1">Items Selling</p>
+                            <h4 class="h2 text-white fw-bold mb-0">02</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Table -->
+                <div class="glass-panel p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="display-font text-white h6 mb-0">Active Bids Monitoring</h5>
+                        <a href="#" class="small text-gold text-decoration-none">Live Updates</a>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover mb-0" style="--bs-table-bg: transparent;">
+                            <thead class="text-secondary small">
+                                <tr>
+                                    <th class="border-secondary border-opacity-10 py-3">AUCTION ITEM</th>
+                                    <th class="border-secondary border-opacity-10 py-3">STATUS</th>
+                                    <th class="border-secondary border-opacity-10 py-3">CURRENT BID</th>
+                                    <th class="border-secondary border-opacity-10 py-3 text-end">ACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-white align-middle">
+                                <tr style="border-bottom: 2px solid rgba(255,255,255,0.02);">
+                                    <td class="py-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-secondary rounded me-3"
+                                                style="width: 45px; height: 45px; background: url('https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100') center/cover;">
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold small">Grand Complication</div>
+                                                <div class="text-secondary" style="font-size: 0.7rem;">Closing in 2h 14m
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span
+                                            class="badge bg-success bg-opacity-10 text-success small border border-success border-opacity-25 px-2">Winning</span>
+                                    </td>
+                                    <td class="fw-bold">$45,200</td>
+                                    <td class="text-end"><button class="btn btn-outline-gold btn-sm">Increase</button>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 2px solid rgba(255,255,255,0.02);">
+                                    <td class="py-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-secondary rounded me-3"
+                                                style="width: 45px; height: 45px; background: url('https://images.unsplash.com/photo-1542281286-9e0a16bb7366?w=100') center/cover;">
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold small">Midnight Sapphire GT</div>
+                                                <div class="text-secondary" style="font-size: 0.7rem;">Closing in 1d 08h
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span
+                                            class="badge bg-danger bg-opacity-10 text-danger small border border-danger border-opacity-25 px-2">Outbid</span>
+                                    </td>
+                                    <td class="fw-bold">$210,000</td>
+                                    <td class="text-end"><button class="btn btn-gold btn-sm text-dark">Regain
+                                            Lead</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+
+</html>

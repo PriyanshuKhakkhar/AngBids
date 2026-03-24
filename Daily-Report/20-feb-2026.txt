@@ -1,0 +1,9 @@
+- Fixed the critical bug in UpdateAuctionRequest causing 500 errors on invalid/missing auctions.
+- Resolved the category deselection issue in the auction edit form.
+- Enforced a strict 5-image limit across both frontend and backend validation.
+- Added image deletion functionality to the edit view to manage the image limit.
+- Added Profile Avatar deletion functionality to the web interface.
+- Improved auction creation form with smart validation messaging and UI highlighting for sub-categories.
+
+
+

@@ -1,0 +1,5 @@
+- Added social sharing for auctions.
+- Prevented repeat bids on winning items.
+- Added proxy labels in bidding history.
+- Improved live status badges for mobile.
+- Completed week 7 internship report.
