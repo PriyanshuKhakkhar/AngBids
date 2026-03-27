@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { Auction, Bid } from '../../../core/models/auction.model';
+import { AuctionService } from '../../../core/services/auction.service';
 import { CountdownTimer } from '../../../shared/components/countdown-timer/countdown-timer';
 import { CommonModule } from '@angular/common';
 
@@ -10,25 +11,30 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [RouterLink, CountdownTimer, CommonModule],
 })
-export class AuctionDetails {
+export class AuctionDetails implements OnInit {
   private route = inject(ActivatedRoute);
+  private auctionService = inject(AuctionService);
 
-  // Mock auction data
-  auction: Auction = {
-    id: 1,
-    title: 'Vintage Chronograph Masterpiece',
-    description: 'A timeless addition to any collection. Featuring original parts, meticulous craftsmanship, and a verified heritage certificate.',
-    imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200',
-    currentBid: 45200,
-    startingPrice: 40000,
-    endDate: new Date(Date.now() + 1000 * 60 * 60 * 48), // 2 days from now
-    category: 'Watches',
-    status: 'active'
-  };
+  // States
+  auction = signal<Auction | null>(null);
+  isLoading = signal(true);
 
-  // Mock bid history
-  bids: Bid[] = [
-    { id: 1, auctionId: 1, amount: 45200, bidderName: 'Bidder ID #402', time: new Date() },
-    { id: 2, auctionId: 1, amount: 44800, bidderName: 'Bidder ID #011', time: new Date(Date.now() - 1000 * 60 * 15) },
-  ];
+  // Mock bid history (could also be fetched via a dedicated service later)
+  bids: Bid[] = [];
+
+  ngOnInit(): void {
+    const id = this.route.snapshot.params['id'];
+    this.loadAuction(id);
+  }
+
+  loadAuction(id: string | number): void {
+    this.isLoading.set(true);
+    this.auctionService.getAuctionById(id).subscribe({
+      next: (data) => {
+        this.auction.set(data);
+        this.isLoading.set(false);
+      },
+      error: () => this.isLoading.set(false)
+    });
+  }
 }

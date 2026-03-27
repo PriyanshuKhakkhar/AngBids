@@ -22,6 +22,16 @@ export class AuctionService {
   }
 
   /**
+   * Fetch a single auction by its ID.
+   * @param id The auction identifier.
+   */
+  getAuctionById(id: string | number): Observable<Auction> {
+    return this.http.get<Auction>(`${this.apiUrl}/${id}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /**
    * Handle API errors gracefully.
    */
   private handleError(error: HttpErrorResponse) {

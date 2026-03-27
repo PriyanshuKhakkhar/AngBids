@@ -38,7 +38,7 @@
             </div>
 
             <div class="row g-4">
-                @for (auction of liveAuctions; track auction.id) {
+                @for (auction of liveAuctions(); track auction.id) {
                     <div class="col-md-6 col-lg-4">
                         <app-auction-card [auction]="auction"></app-auction-card>
                     </div>
@@ -59,7 +59,7 @@
                 <p class="text-secondary opacity-75">Find your perfect item across our specialized auction categories.</p>
             </div>
             <div class="row g-4">
-                @for (category of categories; track category.name) {
+                @for (category of categories(); track category.id) {
                     <div class="col-6 col-lg-3">
                         <div class="glass-panel p-4 text-center h-100 border-0 transition-hover shadow-sm">
                             <div class="rounded-circle bg-gold bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 70px; height: 70px;">
@@ -188,7 +188,7 @@
     <section class="py-5 bg-dark-elite text-white">
         <div class="container py-4">
             <div class="row g-4 text-center">
-                @for (stat of stats; track stat.label) {
+                @for (stat of statsArray; track stat.label) {
                     <div class="col-md-3">
                         <h3 class="display-Font h2 fw-bold text-white mb-1">{{ stat.value }}</h3>
                         <p class="small opacity-75 mb-0 text-uppercase" style="letter-spacing: 1px;">{{ stat.label }}</p>
@@ -207,7 +207,7 @@
                 <p class="text-secondary opacity-75">Mark your calendars for these highly anticipated events.</p>
             </div>
             <div class="row g-4">
-                @for (upcoming of upcomingAuctions; track upcoming.title) {
+                @for (upcoming of upcomingAuctions(); track upcoming.id) {
                     <div class="col-lg-4">
                         <div class="card card-elite glass-panel border-0 hover-up shadow-sm">
                             <div class="p-4">
