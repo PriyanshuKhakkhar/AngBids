@@ -1,0 +1,8 @@
+.otp-card {
+    border-radius: 20px;
+}
+
+.otp-input::placeholder {
+    letter-spacing: 0.2rem;
+    opacity: 0.3;
+}

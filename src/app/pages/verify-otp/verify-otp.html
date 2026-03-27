@@ -1,0 +1,38 @@
+<!-- Verify OTP Section -->
+<section class="py-5 mt-4 d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="container py-lg-5">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="glass-panel p-5 text-center shadow-lg otp-card">
+                    <a routerLink="/"><img src="assets/images/logo/angbids-logo.png" alt="AngBids" height="60" class="mb-4"></a>
+                    <h2 class="display-font h4 mb-2">Verify OTP</h2>
+                    <p class="small text-secondary mb-4 px-3">We've sent a 6-digit verification code to your email. Please enter it below to continue.</p>
+
+                    <form>
+                        <div class="mb-4 text-center">
+                            <!-- Standard single input for simplicity in this frontend UI stage -->
+                            <div class="d-flex justify-content-center gap-2 mb-2">
+                                <input type="text" 
+                                    class="form-control form-control-elite text-center otp-input shadow-none" 
+                                    maxlength="6" 
+                                    placeholder="0 0 0 0 0 0" 
+                                    style="letter-spacing: 0.5rem; font-size: 1.5rem; font-weight: 700; height: 60px;">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-gold w-100 py-3 mb-4 shadow-none fw-bold">VERIFY ACCOUNT</button>
+
+                        <div class="d-flex flex-column gap-2">
+                            <p class="small text-secondary mb-0">Didn't receive the code? 
+                                <a href="javascript:void(0)" class="text-gold text-decoration-none fw-bold ms-1">Resend OTP</a>
+                            </p>
+                            <a routerLink="/login" class="small text-secondary text-decoration-none opacity-75 mt-2">
+                                <i class="fas fa-arrow-left me-1"></i> Back to Login
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
