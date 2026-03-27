@@ -1,16 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CountdownTimer } from '../countdown-timer/countdown-timer';
-
-export interface Auction {
-  id: number;
-  title: string;
-  description: string;
-  imageUrl: string;
-  currentBid: string;
-  endDate: string | Date; // Added for the new timer
-  buttonText: string;
-}
+import { Auction } from '../../../core/models/auction.model';
 
 @Component({
   selector: 'app-auction-card',

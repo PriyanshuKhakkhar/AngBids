@@ -18,10 +18,10 @@ export class AuctionDetails {
     id: 1,
     title: 'Vintage Chronograph Masterpiece',
     description: 'A timeless addition to any collection. Featuring original parts, meticulous craftsmanship, and a verified heritage certificate.',
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200',
+    imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200',
     currentBid: 45200,
     startingPrice: 40000,
-    endTime: new Date(Date.now() + 1000 * 60 * 60 * 48), // 2 days from now
+    endDate: new Date(Date.now() + 1000 * 60 * 60 * 48), // 2 days from now
     category: 'Watches',
     status: 'active'
   };

@@ -70,9 +70,33 @@
                 </div>
 
                 <div class="row g-4">
-                    <div class="col-md-6" *ngFor="let auction of auctions">
-                        <app-auction-card [auction]="auction"></app-auction-card>
+                    <!-- Loading State -->
+                    <div *ngIf="isLoading()" class="col-12 text-center py-5">
+                        <div class="spinner-border text-gold" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="text-secondary mt-3">Fetching the latest auctions...</p>
                     </div>
+
+                    <!-- Error State -->
+                    <div *ngIf="errorMessage()" class="col-12 text-center py-5">
+                        <div class="alert alert-danger bg-transparent border-danger text-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i> {{ errorMessage() }}
+                        </div>
+                        <button class="btn btn-outline-gold mt-3" (click)="fetchAuctions()">Try Again</button>
+                    </div>
+
+                    <!-- Auctions Grid -->
+                    <ng-container *ngIf="!isLoading() && !errorMessage()">
+                        <div class="col-md-6" *ngFor="let auction of auctions()">
+                            <app-auction-card [auction]="auction"></app-auction-card>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div *ngIf="auctions().length === 0" class="col-12 text-center py-5">
+                            <p class="text-secondary">No auctions found matching your criteria.</p>
+                        </div>
+                    </ng-container>
                 </div>
 
                 <!-- Pagination -->

@@ -19,12 +19,12 @@
             <!-- Product Gallery -->
             <div class="col-lg-7">
                 <div class="glass-panel p-2 mb-4">
-                    <img [src]="auction.image"
+                    <img [src]="auction.imageUrl"
                         class="img-fluid rounded w-100" style="height: 500px; object-fit: cover;" [alt]="auction.title">
                 </div>
                 <!-- Gallery Thumbnails (Static for now but utilizing primary image) -->
                 <div class="row g-3">
-                    <div class="col-3"><img [src]="auction.image" class="img-fluid rounded border border-secondary" alt="Thumb"></div>
+                    <div class="col-3"><img [src]="auction.imageUrl" class="img-fluid rounded border border-secondary" alt="Thumb"></div>
                 </div>
             </div>
 
@@ -44,7 +44,7 @@
                             <div class="col">
                                 <small class="text-secondary d-block mb-1">ENDING IN</small>
                                 <div class="h4 fw-bold text-white d-flex justify-content-center">
-                                    <app-countdown-timer [endDate]="auction.endTime"></app-countdown-timer>
+                                    <app-countdown-timer [endDate]="auction.endDate"></app-countdown-timer>
                                 </div>
                             </div>
                         </div>
@@ -55,7 +55,7 @@
                         <div class="input-group">
                             <span class="input-group-text bg-transparent border-secondary text-secondary">$</span>
                             <input type="number" class="form-control form-control-elite"
-                                [placeholder]="'Minimum ' + ((auction.currentBid + 100) | currency)">
+                                [placeholder]="'Enter bid higher than ' + (auction.currentBid | currency)">
                             <button class="btn btn-gold fw-bold px-4 shadow-none">PLACE BID</button>
                         </div>
                         <small class="text-secondary mt-2 d-block opacity-50 px-1">* Highest bidder will be notified

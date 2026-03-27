@@ -1,29 +1,28 @@
 /**
- * Defines the core structure of an Auction item in AngBids.
- * This ensures consistency across components like AuctionCard and AuctionDetails.
+ * Unified Auction Interface for AngBids.
+ * Matches UI components and API responses.
  */
 export interface Auction {
-  id: string | number;
+  id: number;
   title: string;
   description: string;
-  image: string;
-  currentBid: number;
-  startingPrice: number;
-  endTime: Date | string;
-  category: string;
-  status: 'active' | 'closed' | 'pending';
-  sellerId?: string | number;
-  totalBids?: number;
+  imageUrl: string;
+  currentBid: string | number; // Support both for flexibility
+  startingPrice?: number;
+  endDate: string | Date;
+  buttonText?: string;
+  status?: 'active' | 'closed' | 'pending';
+  category?: string;
+  sellerId?: number;
 }
 
 /**
- * Defines a Bid record on an auction.
+ * Defines a Bid record.
  */
 export interface Bid {
-  id: string | number;
-  auctionId: string | number;
+  id: number;
+  auctionId: number;
   amount: number;
   bidderName: string;
-  bidderAvatar?: string;
-  time: Date | string;
+  time: string | Date;
 }

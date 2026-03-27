@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AuctionCard, Auction } from '../../../shared/components/auction-card/auction-card';
+import { AuctionCard } from '../../../shared/components/auction-card/auction-card';
+import { Auction } from '../../../core/models/auction.model';
 
 export interface Category {
   name: string;
