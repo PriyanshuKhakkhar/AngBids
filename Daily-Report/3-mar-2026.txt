@@ -1,0 +1,5 @@
+- Integrated Yajra db in watchlist and won item sections.
+- added swal alerts for those sections.
+- Continued project report making.
+- formatted report layout to match college guidelines.
+- created activity, DFD, ER diagram.

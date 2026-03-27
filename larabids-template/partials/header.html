@@ -1,0 +1,56 @@
+<nav class="navbar navbar-expand-lg navbar-elite sticky-top py-3">
+    <div class="container">
+        <a class="navbar-brand" href="index.html">
+            <img src="assets/images/logo/logo.png" alt="LaraBids" height="50">
+        </a>
+        <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarNav">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item px-3"><a class="nav-link" href="index.html" data-page="home">Home</a></li>
+                <li class="nav-item px-3"><a class="nav-link" href="auctions.html" data-page="auctions">Auctions</a>
+                </li>
+                <li class="nav-item px-3"><a class="nav-link" href="about.html" data-page="about">About</a></li>
+                <li class="nav-item px-3"><a class="nav-link" href="contact.html" data-page="contact">Contact</a></li>
+            </ul>
+            <div class="d-flex gap-3 align-items-center">
+                <!-- Search Bar -->
+                <div class="nav-search d-none d-lg-block me-3">
+                    <i class="fas fa-search"></i>
+                    <input type="text" class="form-control" placeholder="Search auctions...">
+                </div>
+
+                <!-- Template Toggle: Guest State -->
+                <div class="d-none d-sm-flex gap-2 guest-only">
+                    <a href="login.html" class="btn btn-outline-gold px-4 btn-sm">Sign In</a>
+                    <a href="register.html" class="btn btn-gold px-4 btn-sm text-dark fw-bold">Join Now</a>
+                </div>
+
+                <!-- Template Toggle: Member State -->
+                <div class="dropdown member-only">
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-white"
+                        data-bs-toggle="dropdown">
+                        <img src="https://ui-avatars.com/api/?name=LaraBids+User&background=d4af37&color=0a192f"
+                            class="rounded-circle border border-gold border-opacity-25 me-2" height="35" alt="Avatar">
+                        <span class="small d-none d-md-inline">Account</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end glass-panel border-gold border-opacity-25">
+                        <li><a class="dropdown-item text-white small" href="dashboard.html"><i
+                                    class="fas fa-th-large me-2 text-gold"></i> Dashboard</a></li>
+                        <li><a class="dropdown-item text-white small" href="profile.html"><i
+                                    class="fas fa-user-edit me-2 text-gold"></i> Profile</a></li>
+                        <li><a class="dropdown-item text-white small" href="wishlist.html"><i
+                                    class="fas fa-heart me-2 text-gold"></i> Watchlist</a></li>
+                        <li>
+                            <hr class="dropdown-divider border-white border-opacity-10">
+                        </li>
+                        <li><a class="dropdown-item text-danger small" href="index.html"><i
+                                    class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

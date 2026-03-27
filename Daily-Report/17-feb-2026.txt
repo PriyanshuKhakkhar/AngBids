@@ -1,0 +1,6 @@
+- Added won api method to fetch all bids won by user.
+- Added lost api method to list all bids lost by user.
+- Added myauctions api method to list all auctions created by user with bids done by other users.
+- Added Contact Form API for public and authenticated users.
+- Added sellerProfile api method to fetch public seller info and active auctions.
+- Enhanced home page api to include Testimonials data.

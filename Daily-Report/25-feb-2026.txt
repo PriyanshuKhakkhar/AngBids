@@ -1,0 +1,9 @@
+- Enforced ₹100.00 minimum bid increment across all "Sell Item" forms and backend request validations.
+- Resolved "Numeric value out of range" error by increasing price column precision to decimal(18, 2) and adding validation limits.
+- Enhanced overall website UI by darkening and thickening borders/outlines on cards, buttons, and inputs for a cleaner, more defined look.
+- Refactored core bidding logic in BidService.php to accurately handle proxy bidding competition, tie-breaking, and numeric precision.
+- Implemented pessimistic locking (lockForUpdate) on auction records to ensure data integrity and prevent race conditions during concurrent bidding.
+- Introduced a tabbed bidding interface on the auction page, allowing users to choose between "Quick Bid" and "Auto Bid (Proxy)".
+- Added a clear "Your Auto-Bid Limit" display so users can track their active max bid.
+- Enhanced bidding transparency with a real-time "Winning/Outbid" status badge and educational feedback messages.
+- Created OutbidNotification system (Email & Dashboard) to alert users immediately when they are outbid by a competitor or an auto-bidder.

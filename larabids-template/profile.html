@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Settings | LaraBids</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom Theme CSS -->
+    <link rel="stylesheet" href="assets/css/theme.css">
+</head>
+
+<body>
+
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <aside class="sidebar-elite p-4" style="width: 280px;">
+            <div class="text-center mb-5">
+                <a href="index.html"><img src="assets/images/logo/logo.png" alt="Logo" height="50"></a>
+            </div>
+
+            <nav>
+                <a href="dashboard.html" class="sidebar-link rounded mb-2">
+                    <i class="fas fa-th-large me-3"></i> Overview
+                </a>
+                <a href="my-bids.html" class="sidebar-link rounded mb-2">
+                    <i class="fas fa-gavel me-3"></i> My Active Bids
+                </a>
+                <a href="winning-items.html" class="sidebar-link rounded mb-2">
+                    <i class="fas fa-trophy me-3"></i> Won Items
+                </a>
+                <a href="wishlist.html" class="sidebar-link rounded mb-2">
+                    <i class="fas fa-heart me-3"></i> Watchlist
+                </a>
+                <a href="profile.html" class="sidebar-link active rounded mb-2">
+                    <i class="fas fa-user-edit me-3"></i> Profile Settings
+                </a>
+                <div class="mt-5 pt-5">
+                    <a href="index.html" class="sidebar-link rounded text-danger opacity-75">
+                        <i class="fas fa-sign-out-alt me-3"></i> Secure Logout
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay"></div>
+
+        <!-- Sidebar Toggle Button -->
+        <button class="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Main Content -->
+        <main class="flex-grow-1"
+            style="background: radial-gradient(at top left, #0e0e0e 0%, #000000 100%); min-height: 100vh;">
+
+            <!-- Dynamic Header for Consistency -->
+            <div id="header-holder"></div>
+
+            <div class="p-4 p-lg-5">
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <div>
+                        <span class="badge-elite mb-1 d-block opacity-75">Member Account</span>
+                        <h1 class="h3 text-white fw-bold mb-0">Profile Management</h1>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="glass-panel p-5 text-center mb-4">
+                            <div class="position-relative d-inline-block mb-4">
+                                <img src="https://ui-avatars.com/api/?name=LaraBids+User&background=d4af37&color=0a192f&size=150"
+                                    class="rounded-circle border border-gold border-opacity-25 shadow-lg" alt="Avatar">
+                                <button
+                                    class="btn btn-gold btn-sm rounded-circle position-absolute bottom-0 end-0 p-2 border-3 border-navy"
+                                    style="width: 40px; height: 40px;">
+                                    <i class="fas fa-camera"></i>
+                                </button>
+                            </div>
+                            <h5 class="text-white mb-1">LaraBids Member #402</h5>
+                            <p class="small text-secondary mb-4">Verification Level: <span class="text-gold">Verified
+                                    User</span></p>
+                            <button class="btn btn-outline-gold btn-sm w-100">Update Portrait</button>
+                        </div>
+
+                        <div class="glass-panel p-4">
+                            <h6 class="text-white mb-3 small opacity-75">Security Standing</h6>
+                            <div class="d-flex justify-content-between mb-2 small text-secondary">
+                                <span>2FA Status:</span>
+                                <span class="text-success"><i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i>
+                                    Enabled</span>
+                            </div>
+                            <div class="d-flex justify-content-between small text-secondary">
+                                <span>KYC Verified:</span>
+                                <span class="text-success">Verified</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div class="glass-panel p-5">
+                            <h5 class="display-font h4 text-white mb-4">Account Information</h5>
+                            <form>
+                                <div class="row g-4 mb-4">
+                                    <div class="col-md-6">
+                                        <label class="small text-secondary mb-2">Display Name</label>
+                                        <input type="text" class="form-control form-control-elite"
+                                            value="LaraBids Member #402">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="small text-secondary mb-2">Email Address</label>
+                                        <input type="email" class="form-control form-control-elite"
+                                            value="user@larabids.com">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="small text-secondary mb-2">Phone Number</label>
+                                        <input type="text" class="form-control form-control-elite"
+                                            value="+1 800-LARA-BIDS">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="small text-secondary mb-2">Primary Region</label>
+                                        <select
+                                            class="form-select bg-transparent border-secondary text-white border-opacity-25 p-2 px-3">
+                                            <option class="bg-dark text-white">North America</option>
+                                            <option class="bg-dark text-white">Europe</option>
+                                            <option class="bg-dark text-white">Asia</option>
+                                            <option class="bg-dark text-white">Global</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="small text-secondary mb-2">Default Shipping Address</label>
+                                    <textarea class="form-control form-control-elite"
+                                        rows="3">123 Auction Lane, San Francisco, CA 94105, USA</textarea>
+                                </div>
+
+                                <div class="d-flex justify-content-end pt-3">
+                                    <button class="btn btn-gold px-5 py-3 fw-bold underline-none">SAVE
+                                        CHANGES</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+
+</html>

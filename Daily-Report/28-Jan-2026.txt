@@ -1,0 +1,11 @@
+- created auction create form
+- changed website color palette to match admin panel
+- added assets from available template
+- added dynamic fields in auction create form based on categories
+- updated auction card design and auction detail page layout
+- added stretched-link to auction card for full card click
+
+By Sandeep:-
+
+- added soft delete to auctions, users, categories.
+- added cancel and approvel buttons.

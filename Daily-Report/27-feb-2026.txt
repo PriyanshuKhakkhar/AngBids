@@ -1,0 +1,6 @@
+- Worked on the "Winning Items" part of the project so users can see what they won.
+- Made a new page to show the list of items that are finished and where the user was the winner.
+- Wrote some code to find who had the highest bid when the time ran out. 
+- Added notifications on the dashboard to tell the user "You won!" or "Your item sold!"
+- Fixed a small issue where winning items weren't showing up because their status changed to "closed".
+- Updated the dashboard stats so it actually shows how many things a user has won.

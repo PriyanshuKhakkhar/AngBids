@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Auction Admin - Create Auction</title>
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+    <div id="wrapper">
+
+        <!-- Sidebar (Omitted for brevity in this tool call, but in real life it should be consistent) -->
+        <!-- I will include it to make it a complete working page -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-gavel"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">Auction Admin</div>
+            </a>
+
+            <hr class="sidebar-divider my-0">
+
+            <li class="nav-item">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span></a>
+            </li>
+
+            <hr class="sidebar-divider">
+
+            <div class="sidebar-heading">Management</div>
+
+            <!-- Nav Item - Auctions -->
+            <!-- Nav Item - Auctions -->
+            <li class="nav-item active">
+                <a class="nav-link" href="manage-auctions.html">
+                    <i class="fas fa-fw fa-hammer"></i>
+                    <span>Auctions</span></a>
+            </li>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="recent-bids.html">
+                    <i class="fas fa-fw fa-hand-holding-usd"></i>
+                    <span>Bids History</span></a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="manage-users.html">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Manage Users</span></a>
+            </li>
+
+            <hr class="sidebar-divider">
+
+            <div class="sidebar-heading">Finance & Reports</div>
+
+            <li class="nav-item">
+                <a class="nav-link" href="payments.html">
+                    <i class="fas fa-fw fa-wallet"></i>
+                    <span>Payments</span></a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="charts.html">
+                    <i class="fas fa-fw fa-chart-line"></i>
+                    <span>Reports</span></a>
+            </li>
+
+            <hr class="sidebar-divider">
+
+            <div class="sidebar-heading">System Config</div>
+
+            <li class="nav-item">
+                <a class="nav-link" href="categories.html">
+                    <i class="fas fa-fw fa-list"></i>
+                    <span>Categories</span></a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="settings.html">
+                    <i class="fas fa-fw fa-cogs"></i>
+                    <span>Settings</span></a>
+            </li>
+
+        </ul>
+        <script>
+            if (localStorage.getItem('sb|sidebar-toggle') === 'true') {
+                document.body.classList.add('sidebar-toggled');
+                var sidebar = document.getElementById('accordionSidebar');
+                if (sidebar) sidebar.classList.add('toggled');
+            }
+        </script>
+
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <div id="content">
+
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <!-- Topbar Search -->
+                    <form
+                        class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+                                aria-label="Search" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button">
+                                    <i class="fas fa-search fa-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto">
+
+                        <!-- Nav Item - Alerts -->
+                        <li class="nav-item dropdown no-arrow mx-1">
+                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-bell fa-fw"></i>
+                                <!-- Counter - Alerts -->
+                                <span class="badge badge-danger badge-counter">3+</span>
+                            </a>
+                            <!-- Dropdown - Alerts -->
+                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="alertsDropdown">
+                                <h6 class="dropdown-header">
+                                    Alerts Center
+                                </h6>
+                                <a class="dropdown-item d-flex align-items-center" href="notifications.html">
+                                    <div class="mr-3">
+                                        <div class="icon-circle bg-primary">
+                                            <i class="fas fa-hammer text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="small text-gray-500">December 12, 2023</div>
+                                        <span class="font-weight-bold">New high bid on "Vintage Watch"!</span>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center" href="notifications.html">
+                                    <div class="mr-3">
+                                        <div class="icon-circle bg-success">
+                                            <i class="fas fa-donate text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="small text-gray-500">December 7, 2023</div>
+                                        Payment received for Auction #4502
+                                    </div>
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center" href="notifications.html">
+                                    <div class="mr-3">
+                                        <div class="icon-circle bg-warning">
+                                            <i class="fas fa-exclamation-triangle text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="small text-gray-500">December 2, 2023</div>
+                                        Item #220 has been reported for violation.
+                                    </div>
+                                </a>
+                                <a class="dropdown-item text-center small text-gray-500" href="notifications.html">Show
+                                    All Alerts</a>
+                            </div>
+                        </li>
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+                        <!-- Nav Item - User Information -->
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Admin User</span>
+                                <img class="img-profile rounded-circle" src="img/undraw_profile.svg">
+                            </a>
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="profile.html">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profile
+                                </a>
+                                <a class="dropdown-item" href="settings.html">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Settings
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </li>
+
+                    </ul>
+                </nav>
+
+                <div class="container-fluid">
+
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Create New Auction</h1>
+                    </div>
+
+                    <form>
+                        <div class="row">
+                            <!-- Left Column - Details -->
+                            <div class="col-lg-8">
+                                <div class="card shadow mb-4">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary">Item Information</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <label for="auctionTitle">Auction Title <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" class="form-control form-control-lg" id="auctionTitle"
+                                                placeholder="e.g. Vintage 1967 Mustang Shelby GT500">
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="auctionCategory">Category <span
+                                                        class="text-danger">*</span></label>
+                                                <select id="auctionCategory" class="form-control">
+                                                    <option selected>Choose...</option>
+                                                    <option>Electronics</option>
+                                                    <option>Watches & Jewelry</option>
+                                                    <option>Collectibles</option>
+                                                    <option>Art & Antiques</option>
+                                                    <option>Vehicles</option>
+                                                    <option>Real Estate</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="itemCondition">Condition</label>
+                                                <select id="itemCondition" class="form-control">
+                                                    <option>New / Unopened</option>
+                                                    <option>Used - Like New</option>
+                                                    <option>Used - Good</option>
+                                                    <option>Used - Fair</option>
+                                                    <option>For Parts / Not Working</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="auctionDescription">Description <span
+                                                    class="text-danger">*</span></label>
+                                            <textarea class="form-control" id="auctionDescription" rows="6"
+                                                placeholder="Provide a detailed description of the item, including any defects or authentications..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card shadow mb-4">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary">Media Gallery</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="border dashed-border p-5 text-center rounded bg-light"
+                                            style="border: 2px dashed #d1d3e2;">
+                                            <i class="fas fa-cloud-upload-alt fa-3x text-gray-400 mb-3"></i>
+                                            <h5>Drag and drop photos here</h5>
+                                            <p class="text-muted small">or</p>
+                                            <button type="button" class="btn btn-primary btn-sm">Browse Files</button>
+                                            <p class="text-muted mt-3 small">Supported formats: JPG, PNG, WEBP (Max 5MB
+                                                each)</p>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <!-- Preview Placeholders -->
+                                            <div class="col-6 col-md-3 mb-3">
+                                                <div class="card">
+                                                    <img src="https://dummyimage.com/150x150/e0e0e0/ffffff&text=Preview"
+                                                        class="card-img-top" alt="...">
+                                                    <div class="card-body p-1 text-center">
+                                                        <button type="button"
+                                                            class="btn btn-danger btn-sm btn-circle"><i
+                                                                class="fas fa-trash"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column - Settings -->
+                            <div class="col-lg-4">
+                                <div class="card shadow mb-4">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary">Pricing & Dates</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <label for="startPrice">Starting Price ($) <span
+                                                    class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">$</span>
+                                                </div>
+                                                <input type="number" class="form-control" id="startPrice"
+                                                    placeholder="0.00">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="reservePrice">Reserve Price ($)</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">$</span>
+                                                </div>
+                                                <input type="number" class="form-control" id="reservePrice"
+                                                    placeholder="Optional">
+                                            </div>
+                                            <small class="form-text text-muted">Minimum price to sell.</small>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="buyNowPrice">Buy Now Price ($)</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">$</span>
+                                                </div>
+                                                <input type="number" class="form-control" id="buyNowPrice"
+                                                    placeholder="Optional">
+                                            </div>
+                                        </div>
+
+                                        <hr>
+
+                                        <div class="form-group">
+                                            <label for="startDate">Start Date & Time</label>
+                                            <input type="datetime-local" class="form-control" id="startDate">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="endDate">End Date & Time</label>
+                                            <input type="datetime-local" class="form-control" id="endDate">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card shadow mb-4">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary">Publish Actions</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <button type="submit" class="btn btn-success btn-block btn-lg mb-3">
+                                            <i class="fas fa-hammer mr-2"></i> Launch Auction
+                                        </button>
+                                        <button type="button" class="btn btn-secondary btn-block">
+                                            <i class="fas fa-save mr-2"></i> Save as Draft
+                                        </button>
+                                        <a href="manage-auctions.html" class="btn btn-light btn-block text-danger mt-3">
+                                            Cancel
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="js/sb-admin-2.min.js"></script>
+
+</body>
+
+</html>

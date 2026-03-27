@@ -1,0 +1,7 @@
+- Solved time settings issue.
+- added my-auctions section in user dashboard to show all auctions of user.
+- added past auctions category to show closed auctions.
+- Added watchlist functionality.
+- Updated watchlist section in user-dashbaord.
+- Updated watchlist button to form to make it Ajax.
+- Updated search box input handling for better user experience.

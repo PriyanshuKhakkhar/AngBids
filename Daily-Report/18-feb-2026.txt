@@ -1,0 +1,7 @@
+- Created API for user registration with automatic token generation.
+- Added API for forgot password and reset password functionality.
+- Registered new authentication routes in api.php for mobile/SPA integration.
+- Created CategorySpecificationService to centralize dynamic field metadata.
+- Integrated specifications into CategoryResource to allow dynamic frontend forms.
+- Updated AuctionResource to include full specification details in responses.
+- Created and verified API route list for all new endpoints.
