@@ -1,7 +1,0 @@
-- Merged the KYC verification section into the User Profile page and removed the extra link from the sidebar.
-- Fixed an issue where rejected users were unable to re-submit their documents for verification.
-- Implemented automatic deletion of old files from storage when a user re-uploads their documents.
-- Integrated Yajra DataTables in the Admin KYC panel to allow quick searching and sorting of requests.
-- Updated the design of the Admin KYC table to match the layout and styling of other admin pages.
-- Excluded Admin accounts from KYC verification to speed up the testing process.
-- Streamlined the auction details page by removing seller location and bio information.

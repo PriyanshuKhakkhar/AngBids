@@ -1,3 +1,0 @@
-- Added automated "Starting Soon" notifications for registered users.
-- Implemented automated notifications for KYC status updates (Approved/Rejected).
-- Added "Ending Soon" (1 hour) automated alerts for users who have an item in their Watchlist.

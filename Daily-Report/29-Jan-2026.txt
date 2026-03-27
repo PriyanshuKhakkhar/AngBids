@@ -1,4 +1,0 @@
-- Added validations in login and register form with custom messages.
-- Added validations in auction create form with custom messages.
-- Navbar UI redesign.
-- Shifted logics from auctioncontroller to service and request layers for better structuring. 

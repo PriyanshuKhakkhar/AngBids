@@ -1,5 +1,0 @@
-- Project Setup
-- Laravel Installation
-- Database Setup
-- Authentication System
-- Auction listing on home page.

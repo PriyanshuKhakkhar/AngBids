@@ -1,8 +1,0 @@
-- Watched Sanctum Api tutorial.
-- Created authcontroller for auth api.
-- Added login, logout, uer methods.
-- Created new API website conrtoller and added index method to fetch latest 3 auctions.
-- Added bids method in api auctioncontroller to fetch all bids of single auction.
-- created bids resource file.
-- solved route conflicts occured by api routes.
-- tested all api endpoints using postman. 

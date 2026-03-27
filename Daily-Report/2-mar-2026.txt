@@ -1,5 +1,0 @@
-- Fixed bidding logic bug so proxy bids don't clash when 2 users bid at same time.
-- Updated winning dashboard design to look better on mobile phones.
-- Fixed the auction timer issue so it stays accurate even when page is not refreshed.
-- Created project report upto chapter 4 for college submission.
-- Made diagrams like Activity, ER, and DFD level 0 and 1 for report in drawio.

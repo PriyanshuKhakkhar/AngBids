@@ -1,3 +1,0 @@
-- added place bid api method in user/auctions controller.
-- created watchlists api controller.
-- added index, store, destroy methods to handle watchlist request.

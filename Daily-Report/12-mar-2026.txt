@@ -1,6 +1,0 @@
-- Added a new feature where users must register for an auction before they can start bidding.
-- Created a database table `auction_registrations` to keep track of which user has registered for which auction.
-- Made a new controller `AuctionRegistrationController` to handle the registration process logic.
-- Added a check so only KYC verified users can register for auctions.
-- Updated the bidding system to block users from placing bids if they haven't registered for that auction yet.
-- Designed a "Register" button and a nice UI section on the auction details page for easy registration.

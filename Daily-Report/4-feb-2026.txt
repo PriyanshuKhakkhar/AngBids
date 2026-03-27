@@ -1,6 +1,0 @@
-- Improved validations and UI/UX.
-- Implemented user profile section in dashboard.
-- Updated header and top for fetching user profile image.
-- Created new public profile controller to manage public profiles.
-- Designed public profile page
-- Implemented dynamic data fetch for public profile.

@@ -1,4 +1,0 @@
-- Resolved auction timer bug (2s reduction) by consolidating all countdown logic into the global `main.js` script.
-- Removed redundant inline scripts and implemented "Urgent Timer" styling for auctions ending within 1 hour.
-- Successfully implemented **PayU Payment Gateway** integration (test mode) for secure auction deposits and registrations.
-- Implemented the "Pay Now" feature in the User Dashboard for winners to complete auction transactions via PayU.

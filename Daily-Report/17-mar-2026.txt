@@ -1,7 +1,0 @@
-- Implemented advanced filters for My Auctions, My Bids, and Watchlist.
-- Updated API validation for "live" and "upcoming" auction statuses.
-- Added category, date, and sort filters to dashboard API endpoints.
-- Fixed category filter to include all sub-category items.
-- Implemented API for auction registration and status check.
-- Enabled early registration for "Upcoming" auctions.
-

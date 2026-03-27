@@ -1,4 +1,0 @@
-- Role check added using spatie/laravel-permissions.
-- Auctions CRUD done.
-- New views for auctions created. 
-- Index page integrated.

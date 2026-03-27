@@ -1,3 +1,0 @@
-- Implemented min bid amount and max bid increment logic.
-- Added proper validations for that.
-- Added quick bid buttons with fixed amount to increase like 100, 300, 500,ETC.

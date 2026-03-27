@@ -1,8 +1,0 @@
-- Implemented a complete manual KYC verification system with document upload and admin review.
-- Created `kycs` table migration and associated `Kyc` model with User relationships.
-- Created `KycController` and `AdminKycController` to handle verification workflows.
-- Built Blade views for KYC submission form, status tracking, and admin dashboard.
-- Integrated dynamic KYC status badges into the user dashboard header and sidebar.
-- Enforced security restrictions to prevent unverified users from bidding or creating auctions.
-- Fixed admin sidebar HTML structural errors and updated icons for verification links.
-

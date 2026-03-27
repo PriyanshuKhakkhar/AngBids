@@ -1,5 +1,0 @@
-- Enabled multiple image in create form.
-- Added re=ordering, delete and image gallery in auction details page.
-- Solved image gallery issue(Images not showing).
-- Added testimonials table and seeder.
-- Created testimonials section dynamic to show them on home page.  
