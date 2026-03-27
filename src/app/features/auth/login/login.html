@@ -1,0 +1,44 @@
+<!-- Login Section -->
+<section class="py-5 mt-4 d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="container py-lg-5">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="glass-panel p-5 text-center shadow-lg">
+                    <a routerLink="/"><img src="assets/images/logo/angbids-logo.png" alt="AngBids" height="60" class="mb-4"></a>
+                    <h2 class="display-font h3 mb-4">Login to AngBids</h2>
+
+                    <form [formGroup]="loginForm" (ngSubmit)="onLogin($event)">
+                        <div class="mb-3 text-start">
+                            <label class="small text-secondary mb-2">Email Address</label>
+                            <input type="email" class="form-control form-control-elite" 
+                                   formControlName="email" placeholder="name@example.com">
+                            <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="text-danger small mt-1">
+                                Please enter a valid email.
+                            </div>
+                        </div>
+                        <div class="mb-4 text-start">
+                            <div class="d-flex justify-content-between">
+                                <label class="small text-secondary mb-2">Password</label>
+                                <a href="javascript:void(0)" class="small text-gold text-decoration-none">Forgotten?</a>
+                            </div>
+                            <input type="password" class="form-control form-control-elite" 
+                                   formControlName="password" placeholder="••••••••">
+                            <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="text-danger small mt-1">
+                                Password must be at least 6 characters.
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-gold w-100 py-3 mb-4" [disabled]="isLoading() || loginForm.invalid">
+                            <span *ngIf="!isLoading()">SIGN IN</span>
+                            <span *ngIf="isLoading()" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <span *ngIf="isLoading()">SIGNING IN...</span>
+                        </button>
+
+                        <p class="small text-secondary mb-0 text-center">Don't have an account? <a routerLink="/register"
+                                class="text-gold text-decoration-none fw-bold">Register Now</a></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
