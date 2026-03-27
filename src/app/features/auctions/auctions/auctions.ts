@@ -31,17 +31,24 @@ export class Auctions implements OnInit {
     
     // Fetch Auctions
     this.auctionService.getAuctions().subscribe({
-      next: (data) => {
+      next: (data: Auction[]) => {
+        console.log('Normalized Auctions:', data);
         this.auctions.set(data);
         this.isLoading.set(false);
       },
       error: (err) => {
+        console.error('Auction Fetch Error:', err);
         this.errorMessage.set(err.message);
         this.isLoading.set(false);
       }
     });
 
     // Fetch Categories
-    this.categoryService.getCategories().subscribe(data => this.categories.set(data));
+    this.categoryService.getCategories().subscribe({
+      next: (data: Category[]) => {
+        this.categories.set(data);
+      },
+      error: (err) => console.error('Category Fetch Error:', err)
+    });
   }
 }

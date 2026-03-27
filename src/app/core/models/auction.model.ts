@@ -7,9 +7,13 @@ export interface Auction {
   title: string;
   description: string;
   imageUrl: string;
-  currentBid: string | number; // Support both for flexibility
+  images?: { url: string }[]; // Support Laravel's nested image arrays
+  current_price?: string | number; // Laravel's default naming
+  currentBid?: string | number; // UI compatibility
   startingPrice?: number;
+  starting_price?: number; // Laravel compatibility
   endDate: string | Date;
+  end_date?: string | Date; // Laravel compatibility
   buttonText?: string;
   status?: 'active' | 'closed' | 'pending';
   category?: string;

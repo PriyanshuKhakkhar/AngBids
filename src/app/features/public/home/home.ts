@@ -5,7 +5,7 @@ import { Auction } from '../../../core/models/auction.model';
 import { AuctionService } from '../../../core/services/auction.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { HomeService } from '../../../core/services/home.service';
-import { Category, HomeStats, UpcomingAuction } from '../../../core/models/home.model';
+import { Category, HomeStats, UpcomingAuction, Partner } from '../../../core/models/home.model';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -24,6 +24,7 @@ export class Home implements OnInit {
   categories = signal<Category[]>([]);
   stats = signal<HomeStats | null>(null);
   upcomingAuctions = signal<UpcomingAuction[]>([]);
+  partners = signal<Partner[]>([]);
   isLoading = signal(true);
 
   // Computed array for the stats loop in HTML
@@ -46,17 +47,29 @@ export class Home implements OnInit {
     this.isLoading.set(true);
     
     // Fetch Live Auctions
-    this.auctionService.getAuctions().subscribe(data => this.liveAuctions.set(data.slice(0, 3)));
+    this.auctionService.getAuctions().subscribe({
+      next: (data: Auction[]) => this.liveAuctions.set(data.slice(0, 3)),
+      error: (err) => console.error('Live Auctions Fetch Error:', err)
+    });
     
     // Fetch Categories
-    this.categoryService.getCategories().subscribe(data => this.categories.set(data));
+    this.categoryService.getCategories().subscribe({
+      next: (data: Category[]) => this.categories.set(data),
+      error: (err) => console.error('Categories Fetch Error:', err)
+    });
     
-    // Fetch Home Specific Data (Stats + Upcoming)
-    this.homeService.getHomeData().subscribe(data => {
-      // Mocking the mapping if the API structure differs
-      this.stats.set(data.stats[0]); // Assumes stats is an array or object
-      this.upcomingAuctions.set(data.upcoming);
-      this.isLoading.set(false);
+    // Fetch Home Specific Data (Stats + Upcoming + Partners)
+    this.homeService.getHomeData().subscribe({
+      next: (data) => {
+        if (data.stats) this.stats.set(data.stats[0]);
+        if (data.upcoming) this.upcomingAuctions.set(data.upcoming);
+        if (data.partners) this.partners.set(data.partners);
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Home Data Fetch Error:', err);
+        this.isLoading.set(false);
+      }
     });
   }
 
@@ -66,13 +79,5 @@ export class Home implements OnInit {
     { label: 'Watches', icon: 'fas fa-clock', active: false },
     { label: 'Vintage Cars', icon: 'fas fa-car', active: false },
     { label: 'Jewelry', icon: 'fas fa-gem', active: false },
-  ];
-
-  partners = [
-    { icon: 'fab fa-fedex' },
-    { icon: 'fab fa-ups' },
-    { icon: 'fab fa-dhl' },
-    { icon: 'fab fa-stripe' },
-    { icon: 'fab fa-apple-pay' },
   ];
 }

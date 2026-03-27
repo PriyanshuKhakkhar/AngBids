@@ -13,7 +13,7 @@ import { Overview } from './features/user-dash/dashboard/overview';
 export const routes: Routes = [
   { path: '', component: Home },
   { path: 'auctions', component: Auctions },
-  { path: 'auction-details', component: AuctionDetails },
+  { path: 'auctions/:id', component: AuctionDetails },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
   { path: 'verify-otp', component: VerifyOtp },

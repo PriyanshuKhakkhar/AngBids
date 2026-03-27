@@ -26,3 +26,7 @@ export interface UpcomingAuction {
   description: string;
   date: string;
 }
+
+export interface Partner {
+  icon: string;
+}

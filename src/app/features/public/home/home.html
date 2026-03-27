@@ -245,7 +245,7 @@
     <section class="py-5 border-top border-dark border-opacity-10">
         <div class="container py-4">
             <div class="row g-4 align-items-center justify-content-center opacity-50 px-lg-5">
-                @for (partner of partners; track partner.icon) {
+                @for (partner of partners(); track partner.icon) {
                     <div class="col-6 col-md-2 text-center">
                         <i [class]="partner.icon + ' fs-1 text-dark'"></i>
                     </div>
