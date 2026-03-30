@@ -25,7 +25,7 @@
 </section>
 
 <!-- Mission / Vision / Values Section -->
-<section class="py-5 position-relative">
+<section id="about-content" class="py-5 position-relative">
     <div class="container py-5">
         <div class="row g-4 text-center">
             
@@ -38,7 +38,7 @@
                             <i [class]="card.iconClass + ' fa-2x'"></i>
                         </div>
                     </div>
-                    <h3 class="h4 text-white mb-3 fw-bold">{{ card.title }}</h3>
+                    <h3 class="h4 text-dark mb-3 fw-bold">{{ card.title }}</h3>
                     <p class="text-secondary mb-0 lh-base">{{ card.description }}</p>
                 </div>
             </div>
@@ -112,6 +112,173 @@
                 </div>
             </div>
             
+        </div>
+    </div>
+</section>
+
+<!-- ================= STATS COUNTER ================= -->
+<section class="py-5 bg-primary text-white position-relative overflow-hidden">
+    <!-- Subtle SVG dotted pattern background -->
+    <div class="position-absolute top-0 start-0 w-100 h-100" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4='); opacity: 0.3;"></div>
+
+    <div class="container position-relative z-1 py-4">
+        <div class="row g-4 text-center">
+            
+            <div class="col-6 col-md-3">
+                <!-- Vertical separator applied only up to md screens -->
+                <div class="p-3 border-end border-white border-opacity-10 h-100">
+                    <h2 class="display-4 fw-bold mb-0 text-white">10K+</h2>
+                    <p class="opacity-75 mb-0 text-uppercase small" style="letter-spacing: 0.1em;">Active Users</p>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-3">
+                <div class="p-3 border-end border-white border-opacity-10 h-100">
+                    <h2 class="display-4 fw-bold mb-0 text-white">50K+</h2>
+                    <p class="opacity-75 mb-0 text-uppercase small" style="letter-spacing: 0.1em;">Auctions Closed</p>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-3">
+                <div class="p-3 border-end border-white border-opacity-10 h-100">
+                    <h2 class="display-4 fw-bold mb-0 text-white">₹10M+</h2>
+                    <p class="opacity-75 mb-0 text-uppercase small" style="letter-spacing: 0.1em;">Volume Traded</p>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-3">
+                <div class="p-3 h-100">
+                    <h2 class="display-4 fw-bold mb-0 text-white">99%</h2>
+                    <p class="opacity-75 mb-0 text-uppercase small" style="letter-spacing: 0.1em;">Happy Customers</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ================= WHY CHOOSE US ================= -->
+<section class="py-5 bg-light">
+    <div class="container py-lg-5">
+        <div class="text-center mb-5">
+            <span class="text-primary fw-bold text-uppercase small" style="letter-spacing: 0.1em;">Features</span>
+            <h2 class="display-5 fw-bold text-dark">Why Choose <span class="text-primary">LaraBids?</span></h2>
+            <p class="text-muted mx-auto" style="max-width: 600px;">
+                We provide the most comprehensive suite of tools for serious collectors and casual buyers alike.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Feature 1 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 hover-lift" style="transition: all 0.3s ease;">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="icon-box-md bg-white shadow-sm text-primary rounded-circle me-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                            <i class="fas fa-gavel"></i>
+                        </div>
+                        <h4 class="h5 fw-bold mb-0 text-dark">Real-Time Bidding</h4>
+                    </div>
+                    <p class="text-secondary mb-0 small">
+                        Experience the adrenaline of live auctions with zero latency. Our websocket technology ensures you never miss a bid.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 hover-lift" style="transition: all 0.3s ease;">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="icon-box-md bg-white shadow-sm text-warning rounded-circle me-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h4 class="h5 fw-bold mb-0 text-dark">Buyer Protection</h4>
+                    </div>
+                    <p class="text-secondary mb-0 small">
+                        Your funds are held in escrow until you receive your item as described. We mediate all disputes fairly.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 hover-lift" style="transition: all 0.3s ease;">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="icon-box-md bg-white shadow-sm text-success rounded-circle me-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4 class="h5 fw-bold mb-0 text-dark">Market Insights</h4>
+                    </div>
+                    <p class="text-secondary mb-0 small">
+                        Get access to historical pricing data and trends to make informed decisions on your investments.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 hover-lift" style="transition: all 0.3s ease;">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="icon-box-md bg-white shadow-sm text-danger rounded-circle me-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h4 class="h5 fw-bold mb-0 text-dark">Mobile Optimized</h4>
+                    </div>
+                    <p class="text-secondary mb-0 small">
+                        Bid on the go with our fully responsive design. Manage your watchlist and bids from anywhere.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 5 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 hover-lift" style="transition: all 0.3s ease;">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="icon-box-md bg-white shadow-sm text-info rounded-circle me-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h4 class="h5 fw-bold mb-0 text-dark">VIP Program</h4>
+                    </div>
+                    <p class="text-secondary mb-0 small">
+                        Exclusive access to high-value auctions and lower fees for our most active members.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 6 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 hover-lift" style="transition: all 0.3s ease;">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="icon-box-md bg-white shadow-sm text-secondary rounded-circle me-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: #6f42c1 !important;">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h4 class="h5 fw-bold mb-0 text-dark">Community Forums</h4>
+                    </div>
+                    <p class="text-secondary mb-0 small">
+                        Connect with other collectors, discuss items, and share your finds in our active community.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= CTA SECTION ================= -->
+<section class="py-5 position-relative overflow-hidden bg-cta-gradient">
+    <!-- Background Glow -->
+    <div class="position-absolute top-50 start-50 translate-middle bg-white rounded-circle z-0" style="width: 500px; height: 500px; filter: blur(150px); opacity: 0.1;"></div>
+
+    <div class="container position-relative z-1 py-4 text-center">
+        <h2 class="display-5 fw-bold text-white mb-4">Ready to Start Your Collection?</h2>
+        <p class="lead text-white-50 mb-5 mx-auto" style="max-width: 600px;">
+            Join thousands of collectors who trust AngBids for their buying and selling. Sign up today and get access to exclusive auctions.
+        </p>
+        <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+            <a routerLink="/register" class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow-lg fw-bold">
+                Join Now - It's Free
+            </a>
+            <a routerLink="/auctions" class="btn btn-outline-light btn-lg rounded-pill px-5 py-3 fw-bold">
+                Browse Auctions
+            </a>
         </div>
     </div>
 </section>
