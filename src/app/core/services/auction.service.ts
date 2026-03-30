@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, throwError, retry } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { Auction } from '../models/auction.model';
+import { Auction, Bid } from '../models/auction.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -50,6 +50,16 @@ export class AuctionService {
       }),
       catchError(this.handleError)
     );
+  }
+
+  /**
+   * Place a bid on an auction.
+   */
+  placeBid(auctionId: number, amount: number): Observable<{ message: string; bid: Bid }> {
+    return this.http.post<{ message: string; bid: Bid }>(
+      `${this.apiUrl}/${auctionId}/bids`,
+      { amount }
+    ).pipe(catchError(this.handleError));
   }
 
   /**

@@ -1,0 +1,53 @@
+<div class="glass-panel p-5 h-100">
+    <h2 class="display-font h3 mb-4">My Bids</h2>
+
+    <div *ngIf="isLoading()" class="text-center py-4">
+        <div class="spinner-border text-gold" role="status"></div>
+        <p class="text-secondary mt-3 small">Loading your bids...</p>
+    </div>
+
+    <div *ngIf="errorMessage()" class="alert alert-danger bg-transparent border-danger text-danger small">
+        <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMessage() }}
+        <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadBids()">Retry</button>
+    </div>
+
+    <div *ngIf="!isLoading() && !errorMessage()">
+        <div *ngIf="bids().length === 0" class="text-center py-5">
+            <p class="text-secondary">You haven't placed any bids yet.</p>
+            <a routerLink="/auctions" class="btn btn-outline-gold btn-sm mt-2">Browse Auctions</a>
+        </div>
+
+        <div class="table-responsive" *ngIf="bids().length > 0">
+            <table class="table table-dark table-borderless align-middle">
+                <thead>
+                    <tr class="border-bottom border-white border-opacity-10">
+                        <th class="text-secondary small fw-bold text-uppercase">Auction</th>
+                        <th class="text-secondary small fw-bold text-uppercase">Your Bid</th>
+                        <th class="text-secondary small fw-bold text-uppercase">Status</th>
+                        <th class="text-secondary small fw-bold text-uppercase">Ends</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let bid of bids()" class="border-bottom border-white border-opacity-5">
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <img [src]="bid.auction_image || 'assets/images/logo/angbids-logo.png'"
+                                    class="rounded" width="50" height="50" style="object-fit:cover;" alt="">
+                                <span class="small text-white fw-bold">{{ bid.auction_title }}</span>
+                            </div>
+                        </td>
+                        <td class="text-gold fw-bold">{{ bid.amount | currency }}</td>
+                        <td>
+                            <span class="badge small" [class]="getStatusClass(bid.status)">{{ bid.status }}</span>
+                        </td>
+                        <td class="text-secondary small">{{ bid.end_date | date:'mediumDate' }}</td>
+                        <td>
+                            <a [routerLink]="['/auctions', bid.auction_id]" class="btn btn-outline-gold btn-sm">View</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

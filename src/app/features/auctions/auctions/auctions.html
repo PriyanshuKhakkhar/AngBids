@@ -55,13 +55,29 @@
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
                     <p class="text-secondary mb-0">Showing <span class="text-white fw-bold">{{ auctions().length }}</span> Active
                         Auctions</p>
-                    <select class="form-select-elite bg-transparent border-secondary text-secondary small p-2"
-                        style="border-radius: 4px; max-width: 200px;" (change)="onSortChange($event)">
+                    <div class="d-flex gap-2 align-items-center">
+                        <!-- Search -->
+                        <div class="input-group" style="max-width: 220px;">
+                            <input type="text" class="form-control form-control-elite bg-transparent border-secondary text-white small p-2"
+                                placeholder="Search auctions..."
+                                [value]="searchQuery()"
+                                (input)="searchQuery.set($any($event.target).value)"
+                                (keyup.enter)="onSearch()">
+                            <button class="btn btn-outline-secondary px-2 shadow-none" (click)="onSearch()" type="button">
+                                <i class="fas fa-search text-secondary"></i>
+                            </button>
+                            <button *ngIf="searchQuery()" class="btn btn-outline-secondary px-2 shadow-none" (click)="clearSearch()" type="button">
+                                <i class="fas fa-times text-secondary"></i>
+                            </button>
+                        </div>
+                        <select class="form-select-elite bg-transparent border-secondary text-secondary small p-2"
+                            style="border-radius: 4px; max-width: 200px;" (change)="onSortChange($event)">
                         <option value="newest" [selected]="sortOption() === 'newest' || !sortOption()">Newest First</option>
                         <option value="closing_soon" [selected]="sortOption() === 'closing_soon'">Closing Soon</option>
                         <option value="price_desc" [selected]="sortOption() === 'price_desc'">Price: High - Low</option>
                         <option value="price_asc" [selected]="sortOption() === 'price_asc'">Price: Low - High</option>
                     </select>
+                    </div>
                 </div>
 
                 <div class="row g-4">

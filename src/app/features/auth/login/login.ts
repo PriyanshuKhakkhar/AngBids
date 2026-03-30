@@ -15,25 +15,33 @@ export class Login {
   private router = inject(Router);
 
   isLoading = signal(false);
+  errorMessage = signal<string | null>(null);
 
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required, Validators.minLength(6)])
   });
 
-  onLogin(event: Event) {
-    if (this.loginForm.invalid) return;
-    
+  onLogin(event: Event): void {
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
+
     this.isLoading.set(true);
+    this.errorMessage.set(null);
+
     const { email, password } = this.loginForm.value;
 
     this.authService.login(email!, password!).subscribe({
-      next: (res) => {
+      next: () => {
         this.isLoading.set(false);
-        this.authService.currentUser.set(res.user);
-        this.router.navigate(['/']);
+        this.router.navigate(['/dashboard']);
       },
-      error: () => this.isLoading.set(false)
+      error: (err: Error) => {
+        this.isLoading.set(false);
+        this.errorMessage.set(err.message);
+      }
     });
   }
 }

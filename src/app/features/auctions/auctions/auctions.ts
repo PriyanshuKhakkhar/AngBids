@@ -16,23 +16,21 @@ export class Auctions implements OnInit {
   private auctionService = inject(AuctionService);
   private categoryService = inject(CategoryService);
 
-  // Original State signals
   auctions = signal<Auction[]>([]);
   categories = signal<Category[]>([]);
   isLoading = signal<boolean>(true);
   errorMessage = signal<string | null>(null);
 
-  // Filter & Pagination signals
+  // Filters
   selectedCategory = signal<number | null>(null);
   sortOption = signal<string | null>(null);
   currentPage = signal<number>(1);
   lastPage = signal<number>(1);
   maxPrice = signal<number | null>(null);
+  searchQuery = signal<string>('');
 
   ngOnInit(): void {
     this.fetchData();
-    
-    // Fetch Categories
     this.categoryService.getCategories().subscribe({
       next: (data: Category[]) => this.categories.set(data),
       error: (err) => console.error('Category Fetch Error:', err)
@@ -42,44 +40,53 @@ export class Auctions implements OnInit {
   fetchData(): void {
     this.isLoading.set(true);
     this.errorMessage.set(null);
-    
-    // Build parameters from state
-    const params = {
+
+    this.auctionService.getAuctions({
       page: this.currentPage(),
       category: this.selectedCategory(),
       sort: this.sortOption(),
-      maxPrice: this.maxPrice()
-    };
-    
-    // Fetch Auctions
-    this.auctionService.getAuctions(params).subscribe({
+      maxPrice: this.maxPrice(),
+    }).subscribe({
       next: (response) => {
-        this.auctions.set(response.data);
+        // Apply client-side keyword filter on top of server results
+        const query = this.searchQuery().toLowerCase().trim();
+        const filtered = query
+          ? response.data.filter(a => a.title.toLowerCase().includes(query))
+          : response.data;
+
+        this.auctions.set(filtered);
         this.currentPage.set(response.current_page || 1);
         this.lastPage.set(response.last_page || 1);
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.error('Auction Fetch Error:', err);
         this.errorMessage.set(err.message);
         this.isLoading.set(false);
       }
     });
   }
 
-  onCategoryChange(categoryId: number): void {
-    // Toggle active category
-    if (this.selectedCategory() === categoryId) {
-      this.selectedCategory.set(null); 
-    } else {
-      this.selectedCategory.set(categoryId);
-    }
+  onSearch(): void {
     this.currentPage.set(1);
     this.fetchData();
   }
 
-  onPriceChange(event: any): void {
-    this.maxPrice.set(Number(event.target.value));
+  clearSearch(): void {
+    this.searchQuery.set('');
+    this.currentPage.set(1);
+    this.fetchData();
+  }
+
+  onCategoryChange(categoryId: number): void {
+    this.selectedCategory.set(
+      this.selectedCategory() === categoryId ? null : categoryId
+    );
+    this.currentPage.set(1);
+    this.fetchData();
+  }
+
+  onPriceChange(event: Event): void {
+    this.maxPrice.set(Number((event.target as HTMLInputElement).value));
   }
 
   applyFilters(): void {
@@ -87,15 +94,14 @@ export class Auctions implements OnInit {
     this.fetchData();
   }
 
-  onSortChange(event: any): void {
-    const val = event.target.value;
-    let sortValue = 'newest';
-    
-    if (val.includes('High - Low')) sortValue = 'price_desc';
-    else if (val.includes('Low - High')) sortValue = 'price_asc';
-    else if (val.includes('Closing')) sortValue = 'closing_soon';
-    
-    this.sortOption.set(sortValue);
+  onSortChange(event: Event): void {
+    const val = (event.target as HTMLSelectElement).value;
+    const map: Record<string, string> = {
+      'price_desc': 'price_desc',
+      'price_asc': 'price_asc',
+      'closing_soon': 'closing_soon',
+    };
+    this.sortOption.set(map[val] ?? 'newest');
     this.currentPage.set(1);
     this.fetchData();
   }

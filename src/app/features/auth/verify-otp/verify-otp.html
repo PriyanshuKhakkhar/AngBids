@@ -6,25 +6,55 @@
                 <div class="glass-panel p-5 text-center shadow-lg otp-card">
                     <a routerLink="/"><img src="assets/images/logo/angbids-logo.png" alt="AngBids" height="60" class="mb-4"></a>
                     <h2 class="display-font h4 mb-2">Verify OTP</h2>
-                    <p class="small text-secondary mb-4 px-3">We've sent a 6-digit verification code to your email. Please enter it below to continue.</p>
+                    <p class="small text-secondary mb-4 px-3">
+                        We've sent a 6-digit verification code to
+                        <span *ngIf="email()" class="text-gold fw-bold">{{ email() }}</span>
+                        <span *ngIf="!email()">your email</span>.
+                        Please enter it below to continue.
+                    </p>
 
-                    <form>
+                    <!-- Success Message -->
+                    <div *ngIf="successMessage()" class="alert alert-success bg-transparent border-success text-success small mb-3">
+                        <i class="fas fa-check-circle me-2"></i>{{ successMessage() }}
+                    </div>
+
+                    <!-- Error Message -->
+                    <div *ngIf="errorMessage()" class="alert alert-danger bg-transparent border-danger text-danger small mb-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMessage() }}
+                    </div>
+
+                    <form (ngSubmit)="onVerify()">
                         <div class="mb-4 text-center">
-                            <!-- Standard single input for simplicity in this frontend UI stage -->
                             <div class="d-flex justify-content-center gap-2 mb-2">
-                                <input type="text" 
-                                    class="form-control form-control-elite text-center otp-input shadow-none" 
-                                    maxlength="6" 
-                                    placeholder="0 0 0 0 0 0" 
-                                    style="letter-spacing: 0.5rem; font-size: 1.5rem; font-weight: 700; height: 60px;">
+                                <input type="text"
+                                    class="form-control form-control-elite text-center otp-input shadow-none"
+                                    maxlength="6"
+                                    placeholder="0 0 0 0 0 0"
+                                    style="letter-spacing: 0.5rem; font-size: 1.5rem; font-weight: 700; height: 60px;"
+                                    [formControl]="otpControl">
+                            </div>
+                            <div *ngIf="otpControl.invalid && otpControl.touched" class="text-danger small mt-1">
+                                Please enter the 6-digit code sent to your email.
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-gold w-100 py-3 mb-4 shadow-none fw-bold">VERIFY ACCOUNT</button>
+                        <button type="submit" class="btn btn-gold w-100 py-3 mb-4 shadow-none fw-bold"
+                            [disabled]="isLoading()">
+                            <span *ngIf="!isLoading()">VERIFY ACCOUNT</span>
+                            <span *ngIf="isLoading()">
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                VERIFYING...
+                            </span>
+                        </button>
 
                         <div class="d-flex flex-column gap-2">
-                            <p class="small text-secondary mb-0">Didn't receive the code? 
-                                <a href="javascript:void(0)" class="text-gold text-decoration-none fw-bold ms-1">Resend OTP</a>
+                            <p class="small text-secondary mb-0">Didn't receive the code?
+                                <a href="javascript:void(0)" class="text-gold text-decoration-none fw-bold ms-1"
+                                    (click)="onResend()"
+                                    [class.opacity-50]="isResending()">
+                                    <span *ngIf="!isResending()">Resend OTP</span>
+                                    <span *ngIf="isResending()">Sending...</span>
+                                </a>
                             </p>
                             <a routerLink="/login" class="small text-secondary text-decoration-none opacity-75 mt-2">
                                 <i class="fas fa-arrow-left me-1"></i> Back to Login

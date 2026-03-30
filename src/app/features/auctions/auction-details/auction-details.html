@@ -21,6 +21,14 @@
             <p class="text-secondary mt-3">Loading auction details...</p>
         </div>
 
+        <!-- Load Error State -->
+        <div *ngIf="!isLoading() && errorMessage()" class="text-center py-5">
+            <div class="alert alert-danger bg-transparent border-danger text-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMessage() }}
+            </div>
+            <a routerLink="/auctions" class="btn btn-outline-gold mt-3">Back to Auctions</a>
+        </div>
+
         <div class="row g-5" *ngIf="!isLoading() && auction() as a">
             <!-- Product Gallery -->
             <div class="col-lg-7">
@@ -61,8 +69,26 @@
                         <div class="input-group">
                             <span class="input-group-text bg-transparent border-secondary text-secondary">$</span>
                             <input type="number" class="form-control form-control-elite"
-                                [placeholder]="'Enter bid higher than ' + (a.currentBid | currency)">
-                            <button class="btn btn-gold fw-bold px-4 shadow-none">PLACE BID</button>
+                                [placeholder]="'Min: ' + (minBid() | currency)"
+                                [formControl]="bidControl">
+                            <button class="btn btn-gold fw-bold px-4 shadow-none"
+                                (click)="placeBid()"
+                                [disabled]="bidControl.invalid || isBidding()">
+                                <span *ngIf="!isBidding()">PLACE BID</span>
+                                <span *ngIf="isBidding()">
+                                    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                                    BIDDING...
+                                </span>
+                            </button>
+                        </div>
+                        <div *ngIf="bidControl.invalid && bidControl.touched" class="text-danger small mt-1 px-1">
+                            Please enter a valid bid amount (min: {{ minBid() | currency }}).
+                        </div>
+                        <div *ngIf="bidSuccess()" class="text-success small mt-2 px-1">
+                            <i class="fas fa-check-circle me-1"></i>{{ bidSuccess() }}
+                        </div>
+                        <div *ngIf="bidError()" class="text-danger small mt-2 px-1">
+                            <i class="fas fa-exclamation-triangle me-1"></i>{{ bidError() }}
                         </div>
                         <small class="text-secondary mt-2 d-block opacity-50 px-1">* Highest bidder will be notified
                             via automated secure alerts.</small>
@@ -70,8 +96,8 @@
 
                     <div class="border-top border-white border-opacity-10 pt-4 mt-4">
                         <h5 class="h6 text-white mb-3">Bid History</h5>
-                        <div *ngIf="bids.length === 0" class="text-secondary small opacity-50">No bids placed yet.</div>
-                        <div *ngFor="let bid of bids" class="d-flex justify-content-between mb-2 small" [class.opacity-75]="bid.amount === a.currentBid" [class.opacity-50]="bid.amount !== a.currentBid">
+                        <div *ngIf="bids().length === 0" class="text-secondary small opacity-50">No bids placed yet.</div>
+                        <div *ngFor="let bid of bids()" class="d-flex justify-content-between mb-2 small" [class.opacity-75]="bid.amount === a.currentBid" [class.opacity-50]="bid.amount !== a.currentBid">
                             <span>{{ bid.bidderName }}</span>
                             <span>{{ bid.amount | currency }}</span>
                         </div>

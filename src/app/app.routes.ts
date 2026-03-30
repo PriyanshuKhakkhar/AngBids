@@ -1,30 +1,22 @@
 import { Routes } from '@angular/router';
-import { Home } from './features/public/home/home';
-import { About } from './features/public/about/about';
-import { Contact } from './features/public/contact/contact';
-import { Auctions } from './features/auctions/auctions/auctions';
-import { AuctionDetails } from './features/auctions/auction-details/auction-details';
-import { Login } from './features/auth/login/login';
-import { Register } from './features/auth/register/register';
-import { VerifyOtp } from './features/auth/verify-otp/verify-otp';
-import { Dashboard } from './features/user-dash/dashboard/dashboard';
-import { Overview } from './features/user-dash/dashboard/overview';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
-  { path: '', component: Home },
-  { path: 'auctions', component: Auctions },
-  { path: 'auctions/:id', component: AuctionDetails },
-  { path: 'login', component: Login },
-  { path: 'register', component: Register },
-  { path: 'verify-otp', component: VerifyOtp },
+  {
+    path: '',
+    loadChildren: () => import('./features/public/public.routes').then(m => m.PUBLIC_ROUTES),
+  },
+  {
+    path: '',
+    loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES),
+  },
+  {
+    path: 'auctions',
+    loadChildren: () => import('./features/auctions/auctions.routes').then(m => m.AUCTIONS_ROUTES),
+  },
   {
     path: 'dashboard',
-    component: Dashboard,
-    children: [
-      { path: '', component: Overview },
-      // Later: { path: 'bids', component: MyBidsComponent }
-    ]
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/user-dash/dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES),
   },
-  { path: 'about', component: About },
-  { path: 'contact', component: Contact },
 ];

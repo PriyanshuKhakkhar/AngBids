@@ -1,0 +1,55 @@
+<div class="glass-panel p-5 h-100">
+    <h2 class="display-font h3 mb-4">Profile</h2>
+
+    <div *ngIf="successMessage()" class="alert alert-success bg-transparent border-success text-success small mb-4">
+        <i class="fas fa-check-circle me-2"></i>{{ successMessage() }}
+    </div>
+    <div *ngIf="errorMessage()" class="alert alert-danger bg-transparent border-danger text-danger small mb-4">
+        <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMessage() }}
+    </div>
+
+    <!-- Avatar -->
+    <div class="d-flex align-items-center gap-4 mb-5 pb-4 border-bottom border-white border-opacity-10">
+        <img [src]="'https://ui-avatars.com/api/?name=' + (user?.firstName || 'U') + '+' + (user?.lastName || '') + '&background=d4af37&color=0a192f'"
+            class="rounded-circle border border-gold border-opacity-25" width="80" alt="Avatar">
+        <div>
+            <h5 class="text-white mb-0">{{ user?.firstName }} {{ user?.lastName }}</h5>
+            <small class="text-secondary">{{ user?.email }}</small>
+            <div class="mt-1">
+                <span class="badge bg-success small" *ngIf="user?.isVerified">Verified</span>
+                <span class="badge bg-warning small" *ngIf="!user?.isVerified">Unverified</span>
+            </div>
+        </div>
+    </div>
+
+    <form [formGroup]="profileForm" (ngSubmit)="onSave()">
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="small text-secondary mb-2">First Name</label>
+                <input type="text" class="form-control form-control-elite" formControlName="first_name">
+                <div *ngIf="profileForm.get('first_name')?.invalid && profileForm.get('first_name')?.touched" class="text-danger small mt-1">Required.</div>
+            </div>
+            <div class="col-md-6">
+                <label class="small text-secondary mb-2">Last Name</label>
+                <input type="text" class="form-control form-control-elite" formControlName="last_name">
+                <div *ngIf="profileForm.get('last_name')?.invalid && profileForm.get('last_name')?.touched" class="text-danger small mt-1">Required.</div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="small text-secondary mb-2">Phone Number</label>
+            <input type="tel" class="form-control form-control-elite" formControlName="phone" placeholder="+1 234 567 8900">
+        </div>
+        <div class="mb-4">
+            <label class="small text-secondary mb-2">Address</label>
+            <input type="text" class="form-control form-control-elite" formControlName="address" placeholder="123 Main St, City">
+        </div>
+
+        <button type="submit" class="btn btn-gold px-5 py-2 fw-bold" [disabled]="isLoading()">
+            <span *ngIf="!isLoading()">SAVE CHANGES</span>
+            <span *ngIf="isLoading()">
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                SAVING...
+            </span>
+        </button>
+    </form>
+</div>

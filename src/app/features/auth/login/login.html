@@ -7,6 +7,11 @@
                     <a routerLink="/"><img src="assets/images/logo/angbids-logo.png" alt="AngBids" height="60" class="mb-4"></a>
                     <h2 class="display-font h3 mb-4">Login to AngBids</h2>
 
+                    <!-- Error Message -->
+                    <div *ngIf="errorMessage()" class="alert alert-danger bg-transparent border-danger text-danger small mb-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMessage() }}
+                    </div>
+
                     <form [formGroup]="loginForm" (ngSubmit)="onLogin($event)">
                         <div class="mb-3 text-start">
                             <label class="small text-secondary mb-2">Email Address</label>
@@ -19,7 +24,7 @@
                         <div class="mb-4 text-start">
                             <div class="d-flex justify-content-between">
                                 <label class="small text-secondary mb-2">Password</label>
-                                <a href="javascript:void(0)" class="small text-gold text-decoration-none">Forgotten?</a>
+                                <a routerLink="/forgot-password" class="small text-gold text-decoration-none">Forgotten?</a>
                             </div>
                             <input type="password" class="form-control form-control-elite" 
                                    formControlName="password" placeholder="••••••••">
