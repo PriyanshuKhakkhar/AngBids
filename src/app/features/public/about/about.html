@@ -1,59 +1,118 @@
-<!-- Breadcrumb -->
-<section class="breadcrumb-elite">
-    <div class="container text-center">
-        <h1 class="display-4 fw-bold mb-2">The AngBids Journey</h1>
-        <p class="text-secondary mb-0">Democratizing high-value auctions with transparency.</p>
-    </div>
-</section>
-
-<!-- Content -->
-<section class="py-5">
-    <div class="container py-lg-5">
-        <div class="row g-5 align-items-center">
-            <div class="col-lg-6">
-                <!-- Using a more modern shadow-lg and rounded-5 for visual polish -->
-                <div class="position-relative">
-                    <img src="assets/images/about/office.jpg"
-                        class="about-image img-fluid rounded-4 shadow-lg border border-white border-opacity-10" alt="Office">
-                    <div class="verified-badge d-none d-md-block">
-                        <div class="glass-panel p-3 text-center" style="min-width: 150px;">
-                            <h4 class="h2 text-gold mb-0 fw-bold">100%</h4>
-                            <small class="text-secondary">Verified</small>
-                        </div>
-                    </div>
-                </div>
+<!-- Hero Section -->
+<section class="hero-section text-white d-flex align-items-center py-5 pt-lg-0 mb-5 border-bottom border-white border-opacity-10" style="min-height: 80vh;">
+    <div class="container pt-5 mt-4">
+        <div class="row g-5 align-items-center flex-column-reverse flex-lg-row">
+            <!-- Left Side: Content -->
+            <div class="col-lg-6 text-center text-lg-start">
+                <span class="badge-elite mb-3 d-inline-block">The Future of Bidding</span>
+                <h1 class="display-2 fw-bold mb-4 text-white">About AngBids</h1>
+                <p class="fs-5 text-light mb-5 lh-lg" style="max-width: 600px;">
+                    We are revolutionizing the luxury marketplace. Experience a seamless, secure, and exclusive platform designed for serious buyers and elite sellers worldwide. Discover unparalleled assets with total transparency.
+                </p>
+                <a href="#about-content" class="btn btn-gold btn-lg px-5 py-3 shadow-lg fw-bold transition-hover hover-glow">
+                    Explore Our Journey
+                </a>
             </div>
-            <div class="col-lg-6">
-                <span class="badge-elite mb-3 d-inline-block">Established 2026</span>
-                <h2 class="display-font h1 mb-4">Innovation in <span class="gold-text text-gold">Bidding</span></h2>
-                <p class="text-secondary mb-4 fs-5 lh-base">AngBids was founded on the principle that rare assets deserve
-                    a stage as exceptional as they are. From high-tech electronics to classic collectibles, we
-                    provide a secure, high-tech environment for bidders worldwide.</p>
-                <div class="row g-4 mt-2">
-                    <div class="col-md-6">
-                        <div class="glass-panel about-feature-card p-4 h-100 border-0 transition-hover">
-                            <h5 class="text-white mb-3 d-flex align-items-center">
-                                <span class="badge rounded-circle bg-gold bg-opacity-10 p-2 me-2">
-                                    <i class="fas fa-shield-alt text-gold"></i>
-                                </span>
-                                Unrivaled Security
-                            </h5>
-                            <p class="small text-secondary mb-0">Advanced verification protocols for every Elite transaction, ensuring complete peace of mind.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="glass-panel about-feature-card p-4 h-100 border-0 transition-hover">
-                            <h5 class="text-white mb-3 d-flex align-items-center">
-                                <span class="badge rounded-circle bg-gold bg-opacity-10 p-2 me-2">
-                                    <i class="fas fa-globe text-gold"></i>
-                                </span>
-                                Global Reach
-                            </h5>
-                            <p class="small text-secondary mb-0">Connecting prestigious sellers with international liquidity and a diverse pool of authenticated buyers.</p>
-                        </div>
-                    </div>
-                </div>
+            
+            <!-- Right Side: Image -->
+            <div class="col-lg-6 text-center position-relative">
+                <!-- Soft glow effect behind image -->
+                <div class="position-absolute top-50 start-50 translate-middle bg-gold rounded-circle shadow-glow" style="width: 300px; height: 300px; filter: blur(100px); opacity: 0.15;"></div>
+                <img src="/assets/images/banner-2.png" alt="AngBids Platform Presentation" class="img-fluid position-relative z-1" style="max-height: 550px; object-fit: contain;">
             </div>
         </div>
     </div>
 </section>
+
+<!-- Mission / Vision / Values Section -->
+<section class="py-5 position-relative">
+    <div class="container py-5">
+        <div class="row g-4 text-center">
+            
+            <!-- Dynamic Loop for aboutCards -->
+            <div class="col-md-4" *ngFor="let card of aboutCards">
+                <div class="glass-panel p-5 h-100 rounded shadow-sm border border-white border-opacity-10 transition-hover mb-4">
+                    <div class="mb-4">
+                        <!-- Dynamic color text via ngClass -->
+                        <div class="d-inline-flex bg-white bg-opacity-10 rounded-circle p-4" [ngClass]="card.colorClass">
+                            <i [class]="card.iconClass + ' fa-2x'"></i>
+                        </div>
+                    </div>
+                    <h3 class="h4 text-white mb-3 fw-bold">{{ card.title }}</h3>
+                    <p class="text-secondary mb-0 lh-base">{{ card.description }}</p>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<!-- ================= ABOUT STORY SECTION ================= -->
+<section class="py-5 bg-white">
+    <div class="container py-lg-5">
+        <div class="row align-items-center g-5">
+            
+            <!-- Left Side Image Column -->
+            <div class="col-lg-6">
+                <div class="position-relative">
+                    <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="Our Journey" class="img-fluid rounded-4 shadow-lg position-relative z-1">
+                    
+                    <!-- Decorative Elements -->
+                    <div class="position-absolute top-0 start-0 translate-middle bg-primary rounded-circle" style="width: 100px; height: 100px; z-index: 0; opacity: 0.1;"></div>
+                    <div class="position-absolute bottom-0 end-0 translate-middle-x bg-warning rounded-circle" style="width: 80px; height: 80px; z-index: 2; transform: translate(30%, 30%); opacity: 0.8;"></div>
+                    
+                    <div class="position-absolute bottom-0 start-0 bg-white p-4 rounded-4 shadow-lg mb-n4 ms-n4 d-none d-md-block" style="z-index: 2;">
+                        <div class="d-flex align-items-center">
+                            <h2 class="display-4 fw-bold text-primary mb-0 me-3">10+</h2>
+                            <div class="lh-1">
+                                <span class="d-block fw-bold text-dark">Years of</span>
+                                <span class="text-muted small">Excellence</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side Content Column -->
+            <div class="col-lg-6">
+                <span class="text-primary fw-bold text-uppercase small mb-2 d-block" style="letter-spacing: 0.1em;">Our Journey</span>
+                <h2 class="display-5 fw-bold mb-4 text-dark">From a Simple Idea to a <span class="text-primary">Global Marketplace</span></h2>
+                
+                <p class="lead text-secondary mb-4">
+                    Founded in 2024, LaraBids started with a simple question: "Why should high-end auctions be exclusive?"
+                </p>
+                <p class="text-secondary mb-4">
+                    What began as a small project to help local collectors trade items has grown into a comprehensive platform serving thousands of users. We've bridged the gap between traditional auction houses and the digital age, bringing the thrill of the gavel to your screen.
+                </p>
+                <p class="text-secondary mb-5">
+                    Today, LaraBids handles millions in transactions, but our core promise remains the same: <strong>Authenticity Guaranteed.</strong> Every item, every bid, and every user is verified to ensure a safe ecosystem.
+                </p>
+
+                <div class="row g-4">
+                    <div class="col-6">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2 d-flex align-items-center">
+                                <i class="fas fa-check-circle text-success me-2"></i> Verified Sellers
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <i class="fas fa-check-circle text-success me-2"></i> Secure Payments
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-6">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2 d-flex align-items-center">
+                                <i class="fas fa-check-circle text-success me-2"></i> Global Shipping
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <i class="fas fa-check-circle text-success me-2"></i> 24/7 Expert Support
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+

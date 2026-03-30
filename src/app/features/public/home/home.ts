@@ -48,7 +48,7 @@ export class Home implements OnInit {
     
     // Fetch Live Auctions
     this.auctionService.getAuctions().subscribe({
-      next: (data: Auction[]) => this.liveAuctions.set(data.slice(0, 3)),
+      next: (response) => this.liveAuctions.set(response.data.slice(0, 3)),
       error: (err) => console.error('Live Auctions Fetch Error:', err)
     });
     

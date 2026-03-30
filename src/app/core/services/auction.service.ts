@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, throwError, retry } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Auction } from '../models/auction.model';
@@ -14,14 +14,39 @@ export class AuctionService {
   private baseUrl = 'http://127.0.0.1:8000'; // Base for image normalization
 
   /**
-   * Fetch all auctions from the Laravel API.
+  /**
+   * Fetch all auctions from the Laravel API with optional filtering.
    */
-  getAuctions(): Observable<Auction[]> {
-    return this.http.get<any>(this.apiUrl).pipe(
+  getAuctions(queryParams?: {
+    category?: number | null;
+    minPrice?: number | null;
+    maxPrice?: number | null;
+    sort?: string | null;
+    page?: number;
+  }): Observable<{ data: Auction[], current_page?: number, last_page?: number }> {
+    
+    let params = new HttpParams();
+    
+    if (queryParams) {
+      if (queryParams.category) params = params.set('category', queryParams.category.toString());
+      if (queryParams.minPrice !== undefined && queryParams.minPrice !== null) params = params.set('minPrice', queryParams.minPrice.toString());
+      if (queryParams.maxPrice !== undefined && queryParams.maxPrice !== null) params = params.set('maxPrice', queryParams.maxPrice.toString());
+      if (queryParams.sort) params = params.set('sort', queryParams.sort);
+      if (queryParams.page) params = params.set('page', queryParams.page.toString());
+    }
+
+    return this.http.get<any>(this.apiUrl, { params }).pipe(
       retry(1),
       map(response => {
-        const data = response.data || response;
-        return Array.isArray(data) ? data.map(item => this.mapToModel(item)) : [];
+        // Handle paginated or non-paginated data
+        const rawData = response.data || response;
+        const parsedData = Array.isArray(rawData) ? rawData.map(item => this.mapToModel(item)) : [];
+        
+        return {
+          data: parsedData,
+          current_page: response.current_page || 1,
+          last_page: response.last_page || 1
+        };
       }),
       catchError(this.handleError)
     );
@@ -45,17 +70,18 @@ export class AuctionService {
     // 1. Smart Image URL Resolution
     const placeholder = `${this.baseUrl}/assets/images/banner-3.png`;
     let imageUrl = placeholder;
-    const rawImage = raw.imageUrl || (raw.images && raw.images.length > 0 ? (raw.images[0].url || raw.images[0]) : null);
+    const rawImage = raw.imageUrl || raw.image || (raw.images && raw.images.length > 0 ? (raw.images[0].url || raw.images[0]) : null);
     
     if (rawImage && typeof rawImage === 'string' && rawImage.trim() !== '') {
-      // Handle malformed/escaped URLs like "storage/https://remote.com/img.jpg"
-      if (rawImage.includes('http') && !rawImage.startsWith('http')) {
-        const urlMatch = rawImage.match(/https?:\/\/[^\s]+/);
-        if (urlMatch) {
-          imageUrl = urlMatch[0];
-        }
+      // Handle malformed/escaped URLs like "http://127.0.0.1:8000/storage/https://remote.com/img.jpg"
+      const lastHttpIndex = rawImage.lastIndexOf('http');
+      
+      if (lastHttpIndex > 0) {
+        // Extract the nested external URL
+        imageUrl = rawImage.substring(lastHttpIndex);
       } 
       else if (rawImage.startsWith('http')) {
+        // Clean URL
         imageUrl = rawImage;
       } 
       else {
