@@ -1,0 +1,81 @@
+<div class="card border-0 shadow-sm rounded-4 h-100">
+    <div class="card-body p-4 p-xl-5">
+        <h3 class="fw-bold mb-4 text-dark">Send Us a Message</h3>
+        <p class="text-secondary mb-5">
+            Fill out the secure form below and one of our dedicated associates will respond shortly.
+        </p>
+
+        <!-- Success Message -->
+        <div *ngIf="submitSuccess" class="alert alert-success alert-dismissible fade show mb-4 border-0 shadow-sm" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            Your message has been sent successfully! We'll get back to you soon.
+            <button type="button" class="btn-close" (click)="submitSuccess = false"></button>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="submitError" class="alert alert-danger alert-dismissible fade show mb-4 border-0 shadow-sm" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            {{ submitError }}
+            <button type="button" class="btn-close" (click)="submitError = ''"></button>
+        </div>
+
+        <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="needs-validation">
+            
+            <div class="mb-4">
+                <label for="full_name" class="form-label fw-bold text-dark small text-uppercase" style="letter-spacing: 0.05em;">Full Name</label>
+                <div class="input-group input-group-lg shadow-sm">
+                    <span class="input-group-text bg-white border-end-0 text-secondary" id="name-addon">
+                        <i class="fas fa-user"></i>
+                    </span>
+                    <input type="text" class="form-control border-start-0 ps-0" id="full_name" formControlName="full_name" placeholder="John Doe" aria-describedby="name-addon" [ngClass]="{'is-invalid': contactForm.get('full_name')?.invalid && contactForm.get('full_name')?.touched}">
+                </div>
+                <div class="text-danger small mt-2 fw-medium" *ngIf="contactForm.get('full_name')?.invalid && contactForm.get('full_name')?.touched">
+                    <i class="fas fa-exclamation-circle me-1"></i> Full Name is required (min 2 characters)
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="email" class="form-label fw-bold text-dark small text-uppercase" style="letter-spacing: 0.05em;">Email Address</label>
+                <div class="input-group input-group-lg shadow-sm">
+                    <span class="input-group-text bg-white border-end-0 text-secondary" id="email-addon">
+                        <i class="fas fa-envelope"></i>
+                    </span>
+                    <input type="email" class="form-control border-start-0 ps-0" id="email" formControlName="email" placeholder="john@example.com" aria-describedby="email-addon" [ngClass]="{'is-invalid': contactForm.get('email')?.invalid && contactForm.get('email')?.touched}">
+                </div>
+                <div class="text-danger small mt-2 fw-medium" *ngIf="contactForm.get('email')?.invalid && contactForm.get('email')?.touched">
+                    <i class="fas fa-exclamation-circle me-1"></i> Please enter a valid email address
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="subject" class="form-label fw-bold text-dark small text-uppercase" style="letter-spacing: 0.05em;">Subject</label>
+                <div class="input-group input-group-lg shadow-sm">
+                    <span class="input-group-text bg-white border-end-0 text-secondary" id="subject-addon">
+                        <i class="fas fa-tag"></i>
+                    </span>
+                    <input type="text" class="form-control border-start-0 ps-0" id="subject" formControlName="subject" placeholder="Inquiry Subject" aria-describedby="subject-addon" [ngClass]="{'is-invalid': contactForm.get('subject')?.invalid && contactForm.get('subject')?.touched}">
+                </div>
+                <div class="text-danger small mt-2 fw-medium" *ngIf="contactForm.get('subject')?.invalid && contactForm.get('subject')?.touched">
+                    <i class="fas fa-exclamation-circle me-1"></i> A subject is required
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <label for="message" class="form-label fw-bold text-dark small text-uppercase" style="letter-spacing: 0.05em;">Your Message</label>
+                <textarea class="form-control form-control-lg shadow-sm rounded-3" id="message" formControlName="message" rows="5" placeholder="How can we assist you?" [ngClass]="{'is-invalid': contactForm.get('message')?.invalid && contactForm.get('message')?.touched}"></textarea>
+                <div class="text-danger small mt-2 fw-medium" *ngIf="contactForm.get('message')?.invalid && contactForm.get('message')?.touched">
+                    <i class="fas fa-exclamation-circle me-1"></i> Please provide a detailed message (min 10 characters)
+                </div>
+            </div>
+
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary btn-lg rounded-pill py-3 fw-bold shadow-lg d-flex justify-content-center align-items-center transition-hover" [disabled]="isSubmitting">
+                    <i *ngIf="!isSubmitting" class="fas fa-paper-plane me-2"></i>
+                    <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    {{ isSubmitting ? 'Sending...' : 'Send Message' }}
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>

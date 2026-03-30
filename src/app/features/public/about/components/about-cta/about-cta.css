@@ -1,0 +1,45 @@
+.cta-section {
+  background: linear-gradient(135deg, #4e73df, #224abe);
+  padding: 80px 0;
+  text-align: center;
+}
+
+.cta-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  /* Prevent overriding from global theme */
+  color: #ffffff !important;
+}
+
+.cta-text {
+  max-width: 600px;
+  margin: 0 auto 20px;
+  /* Soft white layout */
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.cta-btn-primary {
+  background-color: #2563eb !important;
+  border: none !important;
+  padding: 12px 30px;
+  border-radius: 50px;
+  color: #ffffff !important;
+}
+
+.cta-btn-primary:hover {
+  background-color: #1d4ed8 !important;
+}
+
+.cta-btn-outline {
+  background-color: transparent !important;
+  border: 2px solid #ffffff !important;
+  color: #ffffff !important;
+  padding: 12px 30px;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+}
+
+.cta-btn-outline:hover {
+  background-color: #ffffff !important;
+  color: #224abe !important;
+}

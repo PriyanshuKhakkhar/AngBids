@@ -2,32 +2,29 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
+import { AboutHero } from './components/about-hero/about-hero';
+import { AboutFeatures } from './components/about-features/about-features';
+import { AboutMissionValues } from './components/about-mission-values/about-mission-values';
+import { AboutJourney } from './components/about-journey/about-journey';
+import { AboutStats } from './components/about-stats/about-stats';
+import { AboutCta } from './components/about-cta/about-cta';
+
 @Component({
   selector: 'app-about',
   templateUrl: './about.html',
   styleUrl: './about.css',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    AboutHero,
+    AboutFeatures,
+    AboutMissionValues,
+    AboutJourney,
+    AboutStats,
+    AboutCta
+  ],
 })
 export class About {
-  aboutCards = [
-    {
-      title: 'Our Mission',
-      iconClass: 'fas fa-bullseye',
-      description: 'To completely democratize access to high-value assets by providing a transparent, elite, and frictionless platform.',
-      colorClass: 'text-primary'
-    },
-    {
-      title: 'Our Vision',
-      iconClass: 'fas fa-eye',
-      description: 'To become the gold standard and premier destination worldwide for verifying and trading extraordinary collectibles.',
-      colorClass: 'text-warning'
-    },
-    {
-      title: 'Our Values',
-      iconClass: 'fas fa-heart',
-      description: 'Total transparency, unshakable security, rigorous elite curation, and delivering the highest quality user experience.',
-      colorClass: 'text-success'
-    }
-  ];
+  // Master container component connecting independent sections
 }

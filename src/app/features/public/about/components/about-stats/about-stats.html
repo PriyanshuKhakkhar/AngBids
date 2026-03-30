@@ -1,0 +1,17 @@
+<!-- ================= STATS COUNTER ================= -->
+<section class="py-5 bg-primary text-white position-relative overflow-hidden">
+    <div class="position-absolute top-0 start-0 w-100 h-100" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4='); opacity: 0.3;"></div>
+
+    <div class="container position-relative z-1 py-4">
+        <div class="row g-4 text-center">
+            
+            <div class="col-6 col-md-3" *ngFor="let stat of stats; let last = last">
+                <div class="p-3 h-100" [ngClass]="{'border-end border-white border-opacity-10': !last}">
+                    <h2 class="display-4 fw-bold mb-0 text-white">{{ stat.value }}</h2>
+                    <p class="opacity-75 mb-0 text-uppercase small" style="letter-spacing: 0.1em;">{{ stat.label }}</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>

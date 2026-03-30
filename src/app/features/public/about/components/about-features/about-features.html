@@ -1,0 +1,32 @@
+<!-- ================= WHY CHOOSE US ================= -->
+<section class="py-5 bg-light">
+    <div class="container py-lg-5">
+        <div class="text-center mb-5">
+            <span class="text-primary fw-bold text-uppercase small" style="letter-spacing: 0.1em;">Features</span>
+            <h2 class="display-5 fw-bold text-dark">Why Choose <span class="text-primary">AngBids?</span></h2>
+            <p class="text-muted mx-auto" style="max-width: 600px;">
+                We provide the most comprehensive suite of tools for serious collectors and casual buyers alike.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Dynamic Features Loop -->
+            <div class="col-lg-4 col-md-6" *ngFor="let feature of features">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 hover-lift" style="transition: all 0.3s ease;">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="icon-box-md bg-white shadow-sm rounded-circle me-3" 
+                             [ngClass]="feature.colorClass"
+                             [style]="feature.styleOverride ? feature.styleOverride : ''"
+                             style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                            <i [class]="feature.iconClass"></i>
+                        </div>
+                        <h4 class="h5 fw-bold mb-0 text-dark">{{ feature.title }}</h4>
+                    </div>
+                    <p class="text-secondary mb-0 small">
+                        {{ feature.description }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

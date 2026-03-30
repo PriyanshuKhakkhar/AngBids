@@ -1,96 +1,16 @@
-<!-- Breadcrumb -->
-<section class="breadcrumb-elite pb-0">
-    <div class="container text-center">
-        <h1 class="display-4 fw-bold mb-2">Connect With <span class="text-gold">Us</span></h1>
-        <p class="text-secondary mb-0 text-uppercase" style="letter-spacing: 1px; font-size: 0.85rem;">Elite Support 24/7 for Registered Bidders</p>
-    </div>
-</section>
+<app-contact-hero></app-contact-hero>
 
-<!-- Content -->
-<section class="pt-4 pb-5">
-    <div class="container pb-lg-5">
-        <div class="row g-4 g-lg-5">
-            <!-- Info Cards -->
-            <div class="col-lg-4">
-                <!-- Contact Items Card -->
-                <div class="glass-panel p-4 mb-4 border-0 shadow-sm">
-                    <h5 class="text-white mb-3 display-font">Global Headquarters</h5>
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="bg-gold bg-opacity-10 rounded p-2 me-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                            <i class="fas fa-location-arrow text-gold" style="font-size: 0.85rem;"></i>
-                        </div>
-                        <p class="small text-secondary mb-0">1201 Broadway, Suite 402, NY</p>
-                    </div>
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="bg-gold bg-opacity-10 rounded p-2 me-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                            <i class="fas fa-phone-alt text-gold" style="font-size: 0.85rem;"></i>
-                        </div>
-                        <p class="small text-secondary mb-0">(+1) 800-LARA-BIDS</p>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <div class="bg-gold bg-opacity-10 rounded p-2 me-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                            <i class="fas fa-envelope text-gold" style="font-size: 0.85rem;"></i>
-                        </div>
-                        <p class="small text-secondary mb-0">support@angbids.com</p>
-                    </div>
-                </div>
-                
-                <!-- Support Hours Card -->
-                <div class="glass-panel p-4 border-0 shadow-sm">
-                    <h5 class="text-white mb-3 display-font">Support Response</h5>
-                    <div class="row g-3">
-                        <div class="col-6">
-                            <div class="p-3 bg-dark bg-opacity-25 rounded text-center border border-white border-opacity-5">
-                                <h6 class="text-gold mb-1 small fw-bold">MON - FRI</h6>
-                                <p class="text-secondary mb-0" style="font-size: 0.75rem;">24 HOURS</p>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="p-3 bg-dark bg-opacity-25 rounded text-center border border-white border-opacity-5">
-                                <h6 class="text-gold mb-1 small fw-bold">SAT - SUN</h6>
-                                <p class="text-secondary mb-0" style="font-size: 0.75rem;">PRIORITY</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<section class="bg-light position-relative" id="contact-wrapper" style="padding: 70px 0;">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Left Side: Information Card -->
+            <div class="col-lg-5">
+                <app-contact-info></app-contact-info>
             </div>
-
-            <!-- Form -->
-            <div class="col-lg-8">
-                <div class="glass-panel p-4 p-md-5 border-0 shadow-lg">
-                    <div class="mb-4">
-                        <h2 class="display-font h3 mb-2">Send an <span class="gold-text text-gold">Inquiry</span></h2>
-                        <p class="text-secondary small">Connect with our team. We usually respond within 2 hours.</p>
-                    </div>
-                    
-                    <form>
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6 text-start">
-                                <label class="small text-secondary mb-2 px-1">Full Name</label>
-                                <input type="text" class="form-control form-control-elite shadow-none" placeholder="Enter name">
-                            </div>
-                            <div class="col-md-6 text-start">
-                                <label class="small text-secondary mb-2 px-1">Email Address</label>
-                                <input type="email" class="form-control form-control-elite shadow-none"
-                                    placeholder="name@domain.com">
-                            </div>
-                        </div>
-                        <div class="mb-3 text-start">
-                            <label class="small text-secondary mb-2 px-1">Subject</label>
-                            <input type="text" class="form-control form-control-elite shadow-none" placeholder="How can we help?">
-                        </div>
-                        <div class="mb-4 text-start">
-                            <label class="small text-secondary mb-2 px-1">Message</label>
-                            <textarea class="form-control form-control-elite shadow-none" rows="4"
-                                placeholder="Describe your request..."></textarea>
-                        </div>
-                        <div class="text-start">
-                            <button type="submit" class="btn btn-gold w-100 py-3 fw-bold shadow-none text-uppercase" style="letter-spacing: 1px; font-size: 0.9rem;">
-                                Send Message <i class="fas fa-paper-plane ms-2 small"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
+            
+            <!-- Right Side: Contact Form -->
+            <div class="col-lg-7">
+                <app-contact-form></app-contact-form>
             </div>
         </div>
     </div>

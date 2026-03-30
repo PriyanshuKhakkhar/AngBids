@@ -1,0 +1,22 @@
+<!-- Mission / Vision / Values Section -->
+<section id="about-content" class="py-5 position-relative">
+    <div class="container py-5">
+        <div class="row g-4 text-center">
+            
+            <!-- Dynamic Loop for aboutCards -->
+            <div class="col-md-4" *ngFor="let card of aboutCards">
+                <div class="glass-panel p-5 h-100 rounded shadow-sm border border-white border-opacity-10 transition-hover mb-4">
+                    <div class="mb-4">
+                        <!-- Dynamic color text via ngClass -->
+                        <div class="d-inline-flex bg-white bg-opacity-10 rounded-circle p-4" [ngClass]="card.colorClass">
+                            <i [class]="card.iconClass + ' fa-2x'"></i>
+                        </div>
+                    </div>
+                    <h3 class="h4 text-dark mb-3 fw-bold">{{ card.title }}</h3>
+                    <p class="text-secondary mb-0 lh-base">{{ card.description }}</p>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
