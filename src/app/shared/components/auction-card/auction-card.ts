@@ -13,4 +13,5 @@ import { Auction } from '../../../core/models/auction.model';
 })
 export class AuctionCard {
   @Input({ required: true }) auction!: Auction;
+  placeholder = 'assets/images/banner-3.png';
 }

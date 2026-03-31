@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { finalize } from 'rxjs/operators';
+import { environment } from '../../../../../../environments/environment';
 
 @Component({
   selector: 'app-contact-form',
@@ -35,7 +36,7 @@ export class ContactForm {
       this.submitError = '';
       this.submitSuccess = false;
 
-      this.http.post('http://127.0.0.1:8000/api/contact', this.contactForm.value)
+      this.http.post(`${environment.apiUrl}/contact`, this.contactForm.value)
         .pipe(finalize(() => this.isSubmitting = false))
         .subscribe({
           next: () => {
