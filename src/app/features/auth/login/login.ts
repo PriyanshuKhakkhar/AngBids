@@ -22,7 +22,7 @@ export class Login {
     password: new FormControl('', [Validators.required, Validators.minLength(6)])
   });
 
-  onLogin(event: Event): void {
+  onLogin(): void {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;

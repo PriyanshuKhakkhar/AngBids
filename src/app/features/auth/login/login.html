@@ -12,7 +12,7 @@
                         <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMessage() }}
                     </div>
 
-                    <form [formGroup]="loginForm" (ngSubmit)="onLogin($event)">
+                    <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
                         <div class="mb-3 text-start">
                             <label class="small text-secondary mb-2">Email Address</label>
                             <input type="email" class="form-control form-control-elite" 

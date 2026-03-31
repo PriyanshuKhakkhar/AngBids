@@ -6,7 +6,7 @@
             <ol class="breadcrumb justify-content-center mb-0">
                 <li class="breadcrumb-item"><a routerLink="/" class="text-gold text-decoration-none">Home</a></li>
                 <li class="breadcrumb-item"><a routerLink="/auctions" class="text-gold text-decoration-none">Auctions</a></li>
-                <li class="breadcrumb-item active text-secondary" aria-current="page">Vintage Chronograph Masterpiece</li>
+                <li class="breadcrumb-item active text-secondary" aria-current="page">{{ auction()?.title || 'Auction Details' }}</li>
             </ol>
         </nav>
     </div>

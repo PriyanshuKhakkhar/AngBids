@@ -76,10 +76,10 @@ export class AuctionDetails implements OnInit {
       next: (res) => {
         this.bidSuccess.set(res.message || 'Bid placed successfully!');
         this.bids.update(prev => [res.bid, ...prev]);
-        // Refresh auction to get updated current bid
-        this.loadAuction(auctionId);
         this.bidControl.reset();
         this.isBidding.set(false);
+        // Refresh auction to get updated current bid
+        this.loadAuction(auctionId);
       },
       error: (err: Error) => {
         this.bidError.set(err.message);

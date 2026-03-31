@@ -11,9 +11,8 @@ import { environment } from '../../../environments/environment';
 export class AuctionService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/auctions`;
-  private baseUrl = 'http://127.0.0.1:8000'; // Base for image normalization
+  private baseUrl = environment.apiUrl.replace('/api', '');
 
-  /**
   /**
    * Fetch all auctions from the Laravel API with optional filtering.
    */
@@ -109,17 +108,17 @@ export class AuctionService {
       }
     }
 
-    // 2. Map to Unified Model
+    // Map to Unified Model
     return {
       id: raw.id,
       title: raw.title || 'Elite Asset',
       description: raw.description || 'Premium details are currently being updated for this exclusive listing.',
-      imageUrl: imageUrl,
-      currentBid: raw.current_price || raw.currentBid || 0,
-      startingPrice: raw.starting_price || raw.startingPrice || 0,
-      endDate: raw.end_date || raw.endDate || raw.end_time || '',
-      status: raw.status || 'active',
-      category: raw.category?.name || raw.category || 'Luxury Collection'
+      imageUrl,
+      currentBid: raw.current_price ?? raw.currentBid ?? 0,
+      startingPrice: raw.starting_price ?? raw.startingPrice ?? 0,
+      endDate: raw.end_date ?? raw.endDate ?? raw.end_time ?? '',
+      status: raw.status ?? 'active',
+      category: raw.category?.name ?? raw.category ?? 'Luxury Collection',
     };
   }
 

@@ -11,7 +11,7 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrl: './dashboard.css'
 })
 export class Dashboard {
-  public authService = inject(AuthService);
+  private authService = inject(AuthService);
   private router = inject(Router);
 
   menuItems = [
