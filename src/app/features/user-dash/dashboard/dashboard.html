@@ -1,0 +1,40 @@
+<section class="py-5 mt-4">
+  <div class="container py-lg-5">
+    <div class="row g-4">
+      <!-- Sidebar Navigation -->
+      <div class="col-lg-3">
+        <div class="glass-panel p-4 h-100">
+          <div class="text-center mb-4 pb-3 border-bottom border-white border-opacity-10">
+            <div class="avatar-lg mx-auto mb-3">
+              <img [src]="avatarUrl" class="rounded-circle" width="80" alt="User">
+            </div>
+            <h5 class="text-white mb-0">{{ user?.firstName }} {{ user?.lastName }}</h5>
+            <small class="text-secondary">{{ user?.email }}</small>
+          </div>
+
+          <nav class="nav flex-column dash-nav h-100">
+            <a *ngFor="let item of menuItems"
+               [routerLink]="item.link"
+               routerLinkActive="active"
+               [routerLinkActiveOptions]="{exact: item.exact}"
+               class="nav-link d-flex align-items-center gap-3 py-3 px-3 rounded-3 mb-2">
+              <i [class]="item.icon"></i>
+              <span>{{ item.label }}</span>
+            </a>
+
+            <a href="javascript:void(0)" (click)="logout()"
+               class="nav-link text-danger d-flex align-items-center gap-3 mt-auto py-3 px-3">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </a>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Main Dashboard Content Area -->
+      <div class="col-lg-9">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
+</section>

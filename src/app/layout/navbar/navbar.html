@@ -1,0 +1,59 @@
+<nav class="navbar navbar-expand-lg navbar-elite sticky-top py-3">
+    <div class="container">
+        <a class="navbar-brand" routerLink="/">
+            <img src="assets/images/logo/angbids-logo.png" alt="AngBids" height="50">
+        </a>
+        <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarNav">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Main Navigation Links -->
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item px-lg-3"><a class="nav-link text-center" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a></li>
+                <li class="nav-item px-lg-3"><a class="nav-link text-center" routerLink="/auctions" routerLinkActive="active">Auctions</a></li>
+                <li class="nav-item px-lg-3"><a class="nav-link text-center" routerLink="/about" routerLinkActive="active">About</a></li>
+                <li class="nav-item px-lg-3"><a class="nav-link text-center" routerLink="/contact" routerLinkActive="active">Contact</a></li>
+                
+                <!-- Mobile Search (Visible on < lg) -->
+                <li class="nav-item d-lg-none mt-3 px-3">
+                    <div class="nav-search d-flex align-items-center px-3 w-100 mb-3">
+                        <i class="fas fa-search me-2"></i>
+                        <input type="text" class="form-control border-0 shadow-none bg-transparent" placeholder="Search auctions...">
+                    </div>
+                </li>
+            </ul>
+
+            <!-- Desktop Actions & Authentication -->
+            <div class="d-flex flex-column flex-lg-row gap-3 align-items-center mt-3 mt-lg-0">
+                <!-- Desktop Search Bar -->
+                <div class="nav-search d-none d-lg-flex align-items-center me-3 px-3">
+                    <i class="fas fa-search me-2"></i>
+                    <input type="text" class="form-control border-0 shadow-none bg-transparent" placeholder="Search auctions...">
+                </div>
+
+                <!-- Auth Actions (Guest) -->
+                <div class="d-flex gap-2 w-100 w-lg-auto justify-content-center" *ngIf="!currentUser">
+                    <a routerLink="/login" class="btn btn-outline-gold px-4 btn-sm flex-grow-1 flex-lg-grow-0">Sign In</a>
+                    <a routerLink="/register" class="btn btn-gold px-4 btn-sm text-dark fw-bold flex-grow-1 flex-lg-grow-0">Join Now</a>
+                </div>
+
+                <!-- Auth Actions (Member) -->
+                <div class="dropdown w-100 w-lg-auto" *ngIf="currentUser">
+                    <button class="d-flex align-items-center text-decoration-none dropdown-toggle text-white bg-transparent border-0 w-100 justify-content-center" data-bs-toggle="dropdown">
+                        <img src="https://ui-avatars.com/api/?name={{currentUser?.firstName}}+{{currentUser?.lastName}}&background=d4af37&color=0a192f" 
+                             class="rounded-circle border border-gold border-opacity-25 me-2" height="35" alt="Avatar">
+                        <span class="small">{{currentUser?.firstName}}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end glass-panel border-gold border-opacity-25 w-100 w-lg-auto">
+                        <li><a class="dropdown-item text-white small" routerLink="/dashboard"><i class="fas fa-th-large me-2 text-gold"></i> Dashboard</a></li>
+                        <li><a class="dropdown-item text-white small" routerLink="/dashboard/profile"><i class="fas fa-user-edit me-2 text-gold"></i> Profile</a></li>
+                        <li><a class="dropdown-item text-white small" routerLink="/dashboard/watchlist"><i class="fas fa-heart me-2 text-gold"></i> Watchlist</a></li>
+                        <li><hr class="dropdown-divider border-white border-opacity-10"></li>
+                        <li><a class="dropdown-item text-danger small" (click)="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

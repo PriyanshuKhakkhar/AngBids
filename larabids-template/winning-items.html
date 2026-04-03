@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Won Items | LaraBids</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom Theme CSS -->
+    <link rel="stylesheet" href="assets/css/theme.css">
+</head>
+
+<body>
+
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <aside class="sidebar-elite p-4" style="width: 280px;">
+            <div class="text-center mb-5">
+                <a href="index.html"><img src="assets/images/logo/logo.png" alt="Logo" height="50"></a>
+            </div>
+
+            <nav>
+                <a href="dashboard.html" class="sidebar-link rounded mb-2">
+                    <i class="fas fa-th-large me-3"></i> Overview
+                </a>
+                <a href="my-bids.html" class="sidebar-link rounded mb-2">
+                    <i class="fas fa-gavel me-3"></i> My Active Bids
+                </a>
+                <a href="winning-items.html" class="sidebar-link active rounded mb-2">
+                    <i class="fas fa-trophy me-3"></i> Won Items
+                </a>
+                <a href="wishlist.html" class="sidebar-link rounded mb-2">
+                    <i class="fas fa-heart me-3"></i> Watchlist
+                </a>
+                <a href="profile.html" class="sidebar-link rounded mb-2">
+                    <i class="fas fa-user-edit me-3"></i> Profile Settings
+                </a>
+                <div class="mt-5 pt-5">
+                    <a href="index.html" class="sidebar-link rounded text-danger opacity-75">
+                        <i class="fas fa-sign-out-alt me-3"></i> Secure Logout
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay"></div>
+
+        <!-- Sidebar Toggle Button -->
+        <button class="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Main Content -->
+        <main class="flex-grow-1"
+            style="background: radial-gradient(at top left, #0e0e0e 0%, #000000 100%); min-height: 100vh;">
+
+            <!-- Dynamic Header for Consistency -->
+            <div id="header-holder"></div>
+
+            <div class="p-4 p-lg-5">
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <div>
+                        <span class="badge-elite mb-1 d-block opacity-75">My Gallery</span>
+                        <h1 class="h3 text-white fw-bold mb-0">Won Items</h1>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Won Item 1 -->
+                    <div class="col-md-6">
+                        <div class="glass-panel p-0 overflow-hidden border-0">
+                            <div class="row g-0">
+                                <div class="col-4">
+                                    <div class="h-100"
+                                        style="background: url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400') center/cover;">
+                                    </div>
+                                </div>
+                                <div class="col-8">
+                                    <div class="p-4">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h5 class="text-white h6 mb-0">The Crystal Pavillion</h5>
+                                            <span class="badge bg-gold text-dark small">CLAIMED</span>
+                                        </div>
+                                        <p class="small text-secondary mb-3">Winning Bid: <span
+                                                class="text-white fw-bold">$3.45M</span></p>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-gold btn-sm px-4">Download Receipt</button>
+                                            <button class="btn btn-outline-gold btn-sm"><i
+                                                    class="fas fa-truck-fast"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Won Item 2 -->
+                    <div class="col-md-6">
+                        <div class="glass-panel p-0 overflow-hidden border-0">
+                            <div class="row g-0">
+                                <div class="col-4">
+                                    <div class="h-100"
+                                        style="background: url('https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400') center/cover;">
+                                    </div>
+                                </div>
+                                <div class="col-8">
+                                    <div class="p-4">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h5 class="text-white h6 mb-0">Studio Master Headphones</h5>
+                                            <span class="badge bg-gold text-dark small">CLAIMED</span>
+                                        </div>
+                                        <p class="small text-secondary mb-3">Winning Bid: <span
+                                                class="text-white fw-bold">$1,200</span></p>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-gold btn-sm px-4">View Receipt</button>
+                                            <button class="btn btn-outline-gold btn-sm"><i class="fas fa-check"></i>
+                                                Delivered</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+
+</html>

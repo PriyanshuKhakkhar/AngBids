@@ -1,0 +1,109 @@
+<!-- Breadcrumb -->
+<section class="breadcrumb-elite">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-2">Auction Details</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a routerLink="/" class="text-gold text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item"><a routerLink="/auctions" class="text-gold text-decoration-none">Auctions</a></li>
+                <li class="breadcrumb-item active text-secondary" aria-current="page">{{ auction()?.title || 'Auction Details' }}</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Content -->
+<section class="py-5 mt-4">
+    <div class="container py-lg-5">
+        <!-- Loading State -->
+        <div *ngIf="isLoading()" class="text-center py-5">
+            <div class="spinner-border text-gold" role="status"></div>
+            <p class="text-secondary mt-3">Loading auction details...</p>
+        </div>
+
+        <!-- Load Error State -->
+        <div *ngIf="!isLoading() && errorMessage()" class="text-center py-5">
+            <div class="alert alert-danger bg-transparent border-danger text-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMessage() }}
+            </div>
+            <a routerLink="/auctions" class="btn btn-outline-gold mt-3">Back to Auctions</a>
+        </div>
+
+        <div class="row g-5" *ngIf="!isLoading() && auction() as a">
+            <!-- Product Gallery -->
+            <div class="col-lg-7">
+                <div class="glass-panel p-2 mb-4">
+                    <img [src]="a.imageUrl"
+                        class="img-fluid rounded w-100" style="height: 500px; object-fit: cover;" [alt]="a.title">
+                </div>
+                <!-- Gallery Thumbnails (Static for now but utilizing primary image) -->
+                <div class="row g-3">
+                    <div class="col-3"><img [src]="a.imageUrl" class="img-fluid rounded border border-secondary" alt="Thumb"></div>
+                </div>
+            </div>
+
+            <!-- Bidding Panel -->
+            <div class="col-lg-5">
+                <div class="glass-panel p-5">
+                    <span class="badge-elite mb-2 d-inline-block">Premium Asset</span>
+                    <h1 class="h2 display-font mb-3">{{ a.title }}</h1>
+                    <p class="text-secondary small mb-4">{{ a.description }}</p>
+
+                    <div class="bg-dark bg-opacity-25 rounded p-4 mb-4 border border-white border-opacity-10">
+                        <div class="row text-center g-0">
+                            <div class="col border-end border-white border-opacity-10">
+                                <small class="text-secondary d-block mb-1">CURRENT BID</small>
+                                <span class="h3 fw-bold text-gold">{{ a.currentBid | currency }}</span>
+                            </div>
+                            <div class="col">
+                                <small class="text-secondary d-block mb-1">ENDING IN</small>
+                                <div class="h4 fw-bold text-white d-flex justify-content-center">
+                                    <app-countdown-timer [endDate]="a.endDate"></app-countdown-timer>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="small text-secondary mb-2 px-1">Your Bid Amount</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-secondary text-secondary">$</span>
+                            <input type="number" class="form-control form-control-elite"
+                                [placeholder]="'Min: ' + (minBid() | currency)"
+                                [formControl]="bidControl">
+                            <button class="btn btn-gold fw-bold px-4 shadow-none"
+                                (click)="placeBid()"
+                                [disabled]="bidControl.invalid || isBidding()">
+                                <span *ngIf="!isBidding()">PLACE BID</span>
+                                <span *ngIf="isBidding()">
+                                    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                                    BIDDING...
+                                </span>
+                            </button>
+                        </div>
+                        <div *ngIf="bidControl.invalid && bidControl.touched" class="text-danger small mt-1 px-1">
+                            Please enter a valid bid amount (min: {{ minBid() | currency }}).
+                        </div>
+                        <div *ngIf="bidSuccess()" class="text-success small mt-2 px-1">
+                            <i class="fas fa-check-circle me-1"></i>{{ bidSuccess() }}
+                        </div>
+                        <div *ngIf="bidError()" class="text-danger small mt-2 px-1">
+                            <i class="fas fa-exclamation-triangle me-1"></i>{{ bidError() }}
+                        </div>
+                        <small class="text-secondary mt-2 d-block opacity-50 px-1">* Highest bidder will be notified
+                            via automated secure alerts.</small>
+                    </div>
+
+                    <div class="border-top border-white border-opacity-10 pt-4 mt-4">
+                        <h5 class="h6 text-white mb-3">Bid History</h5>
+                        <div *ngIf="bids().length === 0" class="text-secondary small opacity-50">No bids placed yet.</div>
+                        <div *ngFor="let bid of bids()" class="d-flex justify-content-between mb-2 small" [class.opacity-75]="bid.amount === a.currentBid" [class.opacity-50]="bid.amount !== a.currentBid">
+                            <span>{{ bid.bidderName }}</span>
+                            <span>{{ bid.amount | currency }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

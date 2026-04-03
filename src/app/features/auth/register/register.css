@@ -1,0 +1,14 @@
+.register-card {
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.register-card .form-control-elite {
+    height: 48px;
+    border-radius: 10px;
+}
+
+.register-card .btn-gold {
+    border-radius: 10px;
+    letter-spacing: 0.5px;
+}

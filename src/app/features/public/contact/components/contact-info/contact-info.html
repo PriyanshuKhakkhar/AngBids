@@ -1,0 +1,26 @@
+<div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden" style="background: linear-gradient(135deg, #1a2a6c 0%, #4e73df 100%); color: white;">
+    <div class="card-body p-4 p-xl-5">
+        <div class="mb-5">
+            <h3 class="fw-bold mb-3 text-white">Contact Information</h3>
+            <p class="text-white opacity-75 mb-0">
+                Ready to elevate your portfolio? Reach out directly via any of our channels below. Our AngBids curators are standing by.
+            </p>
+        </div>
+
+        <ul class="list-unstyled mb-0">
+            <li class="d-flex align-items-start mb-4" *ngFor="let item of contactDetails; let last = last" [class.mb-4]="!last">
+                <div class="bg-white rounded-circle shadow-sm d-flex align-items-center justify-content-center flex-shrink-0" style="width: 45px; height: 45px;">
+                    <i [class]="item.icon + ' ' + item.color" style="font-size: 1.1rem;"></i>
+                </div>
+                <div class="ms-3">
+                    <h6 class="fw-bold mb-1 opacity-75 text-white" style="letter-spacing: 0.05em; text-transform: uppercase; font-size: 0.75rem;">
+                        {{ item.title }}
+                    </h6>
+                    <p class="mb-0 fw-medium text-white" style="font-size: 1rem;">
+                        {{ item.info }}
+                    </p>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
