@@ -68,17 +68,17 @@
 
                             <!-- OTP -->
                             <div class="col-md-6 mb-3">
-                                <label for="otp" class="form-label fw-bold">Email Verification OTP</label>
+                                <label for="verification_code" class="form-label fw-bold">Email Verification OTP</label>
                                 <input type="text" 
-                                       class="form-control @error('otp') is-invalid @enderror" 
-                                       id="otp" 
-                                       name="otp" 
-                                       value="{{ old('otp') }}" 
+                                       class="form-control @error('verification_code') is-invalid @enderror" 
+                                       id="verification_code" 
+                                       name="verification_code" 
+                                       value="{{ old('verification_code') }}" 
                                        placeholder="6-digit code"
                                        maxlength="6"
                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                        required>
-                                @error('otp')
+                                @error('verification_code')
                                     <div class="invalid-feedback" data-server-error="true">{{ $message }}</div>
                                 @enderror
                             </div>

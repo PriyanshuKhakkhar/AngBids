@@ -57,7 +57,7 @@ class RegisteredUserController extends Controller
             'username' => ['required', 'string', 'alpha_dash', 'max:255', 'unique:'.User::class],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class, 'not_regex:/\+/'],
             'password' => ['required', 'confirmed', 'min:8', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/'],
-            'otp'      => ['required', 'string', 'size:6'],
+            'verification_code'      => ['required', 'string', 'size:6'],
         ], [
             'name.required' => 'Full name is required.',
             'name.min' => 'Name must be at least 2 characters.',
@@ -75,16 +75,16 @@ class RegisteredUserController extends Controller
             'password.min' => 'Password must be at least 8 characters.',
             'password.confirmed' => 'Passwords do not match.',
             'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (symbol).',
-            'otp.required' => 'OTP verification code is required.',
-            'otp.size' => 'OTP must be exactly 6 digits.',
+            'verification_code.required' => 'OTP verification code is required.',
+            'verification_code.size' => 'OTP must be exactly 6 digits.',
         ]);
 
         $email = strtolower(trim($request->email));
         $sessionOtp = session('register_otp_' . $email);
         $sessionTime = session('register_otp_time_' . $email);
         
-        if (!$sessionOtp || $sessionOtp != $request->otp) {
-            return back()->withInput()->withErrors(['otp' => 'Invalid OTP verification code.']);
+        if (!$sessionOtp || $sessionOtp != $request->verification_code) {
+            return back()->withInput()->withErrors(['verification_code' => 'Invalid OTP verification code.']);
         }
 
         if (!$sessionTime || now()->diffInMinutes($sessionTime) > 10) {

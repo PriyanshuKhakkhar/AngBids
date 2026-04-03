@@ -20,8 +20,8 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'alpha_dash', 'max:255', 'unique:users'],
+            'first_name' => ['required', 'string', 'max:120'],
+            'last_name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
@@ -33,23 +33,43 @@ class RegisterController extends Controller
             ], 422);
         }
 
-        $user = User::create([
-            'name' => $request->name,
-            'username' => $request->username,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        try {
+            // Derive name and username from payload
+            $name = trim($request->first_name . ' ' . $request->last_name);
+            $username = strtolower(explode('@', $request->email)[0]) . rand(100, 999);
 
-        // Assign default role
-        $user->assignRole('user');
+            $user = User::create([
+                'name' => $name,
+                'username' => $username,
+                'email' => $request->email,
+                'password' => $request->password, // Handled by password => hashed cast in User model
+                'email_verified_at' => now(),
+            ]);
 
-        $token = $user->createToken('api_token')->plainTextToken;
+            // Assign default role safely
+            try {
+                if (!$user->hasRole('user')) {
+                    $user->assignRole('user');
+                }
+            } catch (\Exception $e) {
+                \Log::warning('Role "user" could not be assigned to user ID ' . $user->id . ': ' . $e->getMessage());
+            }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Registration successful',
-            'user' => $user,
-            'token' => $token
-        ], 201);
+            $token = $user->createToken('api_token')->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Registration successful',
+                'user' => $user,
+                'token' => $token
+            ], 201);
+
+        } catch (\Exception $e) {
+            \Log::error('Registration Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Registration failed. Please try again later.'
+            ], 500);
+        }
     }
 }

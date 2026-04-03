@@ -41,6 +41,10 @@ Route::get('/auctions/search', [AuctionController::class, 'search']);
 Route::get('/categories', [App\Http\Controllers\Api\Website\CategoryController::class, 'index']);
 Route::get('/categories/{slug}/specifications', [App\Http\Controllers\Api\Website\CategoryController::class, 'specifications']);
 
+// Auction Public Endpoints
+Route::get('/auctions', [AuctionController::class, 'index']);
+Route::get('/auctions/{auction}', [AuctionController::class, 'show']);
+
 // Public Website Routes
 Route::get('/home', [WebsiteController::class, 'index']);
 Route::post('/contact', [WebsiteController::class, 'contactStore']);
@@ -56,7 +60,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('auctions/{id}/bids', [AuctionController::class, 'bids']);
     Route::post('auctions/{id}/bid', [AuctionController::class, 'placeBid']);
 
-    Route::apiResource('auctions', AuctionController::class, ['as' => 'api']);
+    // Auction Management (Protected Actions)
+    Route::post('auctions', [AuctionController::class, 'store']);
+    Route::put('auctions/{auction}', [AuctionController::class, 'update']);
+    Route::delete('auctions/{auction}', [AuctionController::class, 'destroy']);
 
     // Watchlist
     Route::get('watchlist', [WatchlistController::class, 'index']);

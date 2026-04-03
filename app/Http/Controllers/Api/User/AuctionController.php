@@ -23,41 +23,46 @@ class AuctionController extends Controller
     }
     public function index(Request $request)
     {
-        $auctions = $this->auctionService
-            ->getFilteredAuctions($request)
-            ->with(['user', 'category']) // Eager load relationships
-            ->paginate(10);
+        try {
+            $auctions = $this->auctionService
+                ->getFilteredAuctions($request)
+                ->with(['user', 'category']) // Eager load relationships
+                ->paginate($request->input('per_page', 10));
 
-        $categories = Category::topLevel()->active()->get();
+            $categories = Category::topLevel()->active()->get();
 
-        $subcategories = collect();
-        $parentCategory = null;
+            $subcategories = collect();
+            $parentCategory = null;
 
-        if ($request->has('category')) {
-            $currentCategory = category::where('slug', $request->category)->first();
+            if ($request->has('category')) {
+                $currentCategory = Category::where('slug', $request->category)->first();
 
-            if ($currentCategory->parent_id) {
-                $parentCategory = $currentCategory->parent;
-
-                $subcategories = $currentCategory
-                    ->children()
-                    ->active()
-                    ->get();
-            } else {
-                $parentCategory = $currentCategory;
-
-                $subcategories = $currentCategory
-                    ->children()
-                    ->active()
-                    ->get();
+                if ($currentCategory) {
+                    if ($currentCategory->parent_id) {
+                        $parentCategory = $currentCategory->parent;
+                        $subcategories = $currentCategory->children()->active()->get();
+                    } else {
+                        $parentCategory = $currentCategory;
+                        $subcategories = $currentCategory->children()->active()->get();
+                    }
+                }
             }
+
+            return AuctionResource::collection($auctions)->additional([
+                'success' => true,
+                'categories' => $categories,
+                'parent_category' => $parentCategory,
+                'subcategories' => $subcategories,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error("API Error [Auctions Index]: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch auctions. Please try again later.',
+                'data' => [],
+                'errors' => config('app.debug') ? $e->getMessage() : null
+            ], 500); // We still return 500 but as a clean JSON with context
         }
-        return AuctionResource::collection($auctions)->additional([
-            'success' => true,
-            'categories' => $categories,
-            'parent_category' => $parentCategory,
-            'subcategories' => $subcategories,
-        ]);
     }
 
     // Get single auction
@@ -156,57 +161,67 @@ class AuctionController extends Controller
      */
     public function search(SearchAuctionRequest $request)
     {
-        $validated = $request->validated();
-        $perPage = $validated['per_page'] ?? 10;
+        try {
+            $validated = $request->validated();
+            $perPage = $validated['per_page'] ?? 10;
 
-        // Get filtered auctions using the service
-        $auctions = $this->auctionService
-            ->getFilteredAuctions($request, false) // false = don't force activeOnly
-            ->with(['user', 'category', 'images'])
-            ->paginate($perPage);
+            // Get filtered auctions using the service
+            $auctions = $this->auctionService
+                ->getFilteredAuctions($request, false) // false = don't force activeOnly
+                ->with(['user', 'category', 'images'])
+                ->paginate($perPage);
 
-        // Get statistics for metadata
-        $stats = $this->auctionService->getSearchStatistics($request);
+            // Get statistics for metadata
+            $stats = $this->auctionService->getSearchStatistics($request);
 
-        // Build filters applied object
-        $filtersApplied = [];
-        
-        if ($request->filled('q') || $request->filled('keyword')) {
-            $filtersApplied['keyword'] = $request->input('q') ?? $request->input('keyword');
-        }
-        
-        if ($request->filled('category')) {
-            $filtersApplied['category'] = $request->input('category');
-        }
-        
-        if ($request->filled('category_id')) {
-            $filtersApplied['category_id'] = $request->input('category_id');
-        }
-        
-        if ($request->filled('min_price') || $request->filled('max_price')) {
-            $filtersApplied['price_range'] = [
-                'min' => $request->input('min_price'),
-                'max' => $request->input('max_price'),
-            ];
-        }
-        
-        if ($request->filled('status')) {
-            $filtersApplied['status'] = $request->input('status');
-        }
-        
-        if ($request->filled('sort')) {
-            $filtersApplied['sort'] = $request->input('sort');
-        }
+            // Build filters applied object
+            $filtersApplied = [];
+            
+            if ($request->filled('q') || $request->filled('keyword')) {
+                $filtersApplied['keyword'] = $request->input('q') ?? $request->input('keyword');
+            }
+            
+            if ($request->filled('category')) {
+                $filtersApplied['category'] = $request->input('category');
+            }
+            
+            if ($request->filled('category_id')) {
+                $filtersApplied['category_id'] = $request->input('category_id');
+            }
+            
+            if ($request->filled('min_price') || $request->filled('max_price')) {
+                $filtersApplied['price_range'] = [
+                    'min' => $request->input('min_price'),
+                    'max' => $request->input('max_price'),
+                ];
+            }
+            
+            if ($request->filled('status')) {
+                $filtersApplied['status'] = $request->input('status');
+            }
+            
+            if ($request->filled('sort')) {
+                $filtersApplied['sort'] = $request->input('sort');
+            }
 
-        return AuctionResource::collection($auctions)->additional([
-            'success' => true,
-            'filters_applied' => $filtersApplied,
-            'statistics' => $stats,
-            'available_filters' => [
-                'statuses' => ['active', 'pending', 'closed', 'cancelled', 'past', 'all'],
-                'sort_options' => ['latest', 'price_asc', 'price_desc', 'ending_soon'],
-            ],
-        ]);
+            return AuctionResource::collection($auctions)->additional([
+                'success' => true,
+                'filters_applied' => $filtersApplied,
+                'statistics' => $stats,
+                'available_filters' => [
+                    'statuses' => ['active', 'pending', 'closed', 'cancelled', 'past', 'all'],
+                    'sort_options' => ['latest', 'price_asc', 'price_desc', 'ending_soon'],
+                ],
+            ]);
+        } catch (\Exception $e) {
+            \Log::error("API Error [Auctions Search]: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Search failed. Please try again later.',
+                'data' => [],
+                'errors' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+        }
     }
 
     //list auctions created by the authenticated user

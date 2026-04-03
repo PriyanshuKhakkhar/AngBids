@@ -385,30 +385,34 @@ class AuctionService
         return $auction->forceDelete();
     }
 
-    // Get search statistics for metadata
     public function getSearchStatistics(Request $request)
     {
-        // Reuse the existing filter logic instead of duplicating it
-        $query = $this->getFilteredAuctions($request, false);
+        try {
+            // 1. Get base query for total count (Laravel's count() usually clears orders)
+            $totalResults = $this->getFilteredAuctions($request, false)->count();
 
-        // Get total count
-        $totalResults = $query->count();
+            // 2. Get price range (MUST clear order by for aggregate queries)
+            $priceStats = $this->getFilteredAuctions($request, false)
+                ->reorder() // Clear any existing order by from the service
+                ->selectRaw('MIN(current_price) as min_price, MAX(current_price) as max_price')
+                ->toBase()
+                ->first();
 
-        // Get price range (need fresh query)
-        $priceQuery = $this->getFilteredAuctions($request, false);
-        
-        // Remove existing select and only select aggregates
-        $priceStats = $priceQuery
-            ->select(DB::raw('MIN(current_price) as min_price, MAX(current_price) as max_price'))
-            ->first();
-
-        return [
-            'total_results' => $totalResults,
-            'price_range' => [
-                'min' => $priceStats?->min_price ?? 0,
-                'max' => $priceStats?->max_price ?? 0,
-            ],
-        ];
+            return [
+                'total_results' => $totalResults,
+                'price_range' => [
+                    'min' => (float)($priceStats?->min_price ?? 0),
+                    'max' => (float)($priceStats?->max_price ?? 0),
+                ],
+            ];
+        } catch (\Exception $e) {
+            // Log and return fallback data instead of crashing with 500
+            \Log::error("Failed to generate search statistics: " . $e->getMessage());
+            return [
+                'total_results' => 0,
+                'price_range' => ['min' => 0, 'max' => 0],
+            ];
+        }
     }
 
     // Get single auction by ID

@@ -74,7 +74,7 @@ class FormValidator {
                 const password = input.form.querySelector('input[name="password"]').value;
                 error = this.validatePasswordConfirmation(value, password);
                 break;
-            case 'otp':
+            case 'verification_code':
                 error = this.validateOtp(value);
                 break;
             case 'subject':
