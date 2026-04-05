@@ -21,7 +21,7 @@ export class VerifyOtp implements OnInit {
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);
 
-  /** Email passed as query param from register page: /verify-otp?email=... */
+  /** Email passed as query param: /verify-otp?email=user@example.com */
   email = signal<string>('');
 
   otpControl = new FormControl('', [
@@ -33,15 +33,20 @@ export class VerifyOtp implements OnInit {
 
   ngOnInit(): void {
     const emailParam = this.route.snapshot.queryParams['email'] ?? '';
+
+    if (!emailParam) {
+      // No email context — send the user back to register to restart the flow
+      this.router.navigate(['/register']);
+      return;
+    }
+
     this.email.set(emailParam);
   }
 
   onVerify(): void {
-    if (this.otpControl.invalid) {
-      this.otpControl.markAsTouched();
-      return;
-    }
+    if (this.otpControl.invalid || this.isLoading()) return;
 
+    this.otpControl.markAsTouched();
     this.isLoading.set(true);
     this.errorMessage.set(null);
     this.successMessage.set(null);
@@ -50,17 +55,20 @@ export class VerifyOtp implements OnInit {
       next: (res) => {
         this.isLoading.set(false);
         this.successMessage.set(res.message || 'Account verified! Redirecting...');
-        setTimeout(() => this.router.navigate(['/dashboard']), 1500);
+        // Navigate to login so user can sign in with their verified account
+        setTimeout(() => this.router.navigate(['/login']), 1500);
       },
       error: (err: Error) => {
         this.isLoading.set(false);
         this.errorMessage.set(err.message);
+        // Clear OTP so user can re-enter without manually deleting
+        this.otpControl.reset();
       }
     });
   }
 
   onResend(): void {
-    if (!this.email()) return;
+    if (!this.email() || this.isResending()) return;
 
     this.isResending.set(true);
     this.errorMessage.set(null);

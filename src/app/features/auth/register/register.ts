@@ -18,6 +18,7 @@ export class Register {
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);
+  showPassword = signal(false);
 
   registerForm = new FormGroup(
     {
@@ -35,6 +36,10 @@ export class Register {
     const pw = group.get('password')?.value;
     const confirm = group.get('password_confirmation')?.value;
     return pw === confirm ? null : { passwordMismatch: true };
+  }
+
+  togglePassword(): void {
+    this.showPassword.set(!this.showPassword());
   }
 
   onRegister(): void {

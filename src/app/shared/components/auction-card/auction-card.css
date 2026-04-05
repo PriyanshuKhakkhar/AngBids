@@ -1,1 +1,250 @@
-/* Auction card styles are inherited from the global theme.css */
+/* =========================================
+   Auction Card — Scoped Component Styles
+   ========================================= */
+
+.ac-wrap {
+  background: #ffffff;
+  border: 2px solid #e0e3f0;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.ac-wrap:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(78, 115, 223, 0.14);
+  border-color: rgba(78, 115, 223, 0.35);
+}
+
+/* ── Image ── */
+.ac-img-wrap {
+  position: relative;
+  height: 205px;
+  background: #eaecf4;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.ac-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.38s ease;
+}
+
+.ac-wrap:hover .ac-img-wrap img {
+  transform: scale(1.05);
+}
+
+/* Category badge */
+.ac-cat-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(46, 89, 217, 0.88);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  backdrop-filter: blur(4px);
+  max-width: calc(100% - 60px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Wishlist */
+.ac-wishlist-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.92);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #b7b9cc;
+  font-size: 0.82rem;
+  line-height: 1;
+}
+.ac-wishlist-btn:hover {
+  background: #ffffff;
+  color: #e74a3b;
+  transform: scale(1.12);
+}
+
+/* Status badge */
+.ac-status-badge {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.badge-live     { background: rgba(28, 200, 138, 0.88);  color: #ffffff; }
+.badge-upcoming { background: rgba(246, 194, 62, 0.9);   color: #1a1a1a; }
+.badge-closed   { background: rgba(133, 135, 150, 0.85); color: #ffffff; }
+
+/* ── Timer Strip ── */
+.ac-timer-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: #f8f9fc;
+  border-top: 1px solid #eaecf4;
+  border-bottom: 1px solid #eaecf4;
+  flex-shrink: 0;
+}
+.ac-timer-icon {
+  color: #4e73df;
+  font-size: 0.78rem;
+  flex-shrink: 0;
+}
+.ac-timer-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #b7b9cc;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+}
+
+/* ── Card Body ── */
+.ac-body {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.ac-lot {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #b7b9cc;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+}
+
+.ac-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #2e59d9;
+  line-height: 1.35;
+  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Seller row */
+.ac-seller-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eaecf4;
+}
+
+.ac-seller-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #eaecf4;
+}
+
+.ac-seller-name {
+  font-size: 0.76rem;
+  color: #858796;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ac-bid-pill {
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: rgba(78, 115, 223, 0.1);
+  color: #4e73df;
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.ac-bid-pill .fa-gavel {
+  font-size: 0.62rem;
+  margin-right: 2px;
+}
+
+/* Bid amount */
+.ac-bid-row {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 12px;
+}
+
+.ac-bid-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #b7b9cc;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 2px;
+}
+
+.ac-bid-amount {
+  font-size: 1.22rem;
+  font-weight: 800;
+  color: #4e73df;
+  line-height: 1;
+}
+
+/* Bid Now Button */
+.ac-bid-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 9px 16px;
+  background: #4e73df;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.83rem;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.12s ease;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.ac-bid-btn:hover {
+  background: #2e59d9;
+  color: #ffffff;
+  transform: translateY(-1px);
+}

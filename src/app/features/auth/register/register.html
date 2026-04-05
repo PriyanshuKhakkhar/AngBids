@@ -1,95 +1,141 @@
-<!-- Register Section -->
-<section class="py-5 mt-4 d-flex align-items-center justify-content-center" style="min-height: 80vh;">
-    <div class="container py-lg-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5">
-                <div class="glass-panel p-5 text-center shadow-lg register-card">
-                    <a routerLink="/"><img src="assets/images/logo/angbids-logo.png" alt="AngBids" height="60" class="mb-4"></a>
-                    <h2 class="display-font h3 mb-4">Create an Account</h2>
+<section class="auth-section register-page">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-sm-11 col-md-9 col-lg-7 col-xl-6">
 
-                    <!-- Success Message -->
-                    <div *ngIf="successMessage()" class="alert alert-success bg-transparent border-success text-success small mb-3">
-                        <i class="fas fa-check-circle me-2"></i>{{ successMessage() }}
-                    </div>
+        <!-- Auth Card -->
+        <div class="auth-card">
 
-                    <!-- Error Message -->
-                    <div *ngIf="errorMessage()" class="alert alert-danger bg-transparent border-danger text-danger small mb-3">
-                        <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMessage() }}
-                    </div>
+          <!-- Header -->
+          <div class="auth-card-header">
+            <h1 class="auth-title">Create Account</h1>
+            <p class="auth-subtitle">Join AngBids and start bidding today.</p>
+          </div>
 
-                    <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
-                        <!-- Name row -->
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6 text-start">
-                                <label class="small text-secondary mb-2 px-1">First Name</label>
-                                <input type="text" class="form-control form-control-elite shadow-none"
-                                    formControlName="first_name" placeholder="John">
-                                <div *ngIf="registerForm.get('first_name')?.invalid && registerForm.get('first_name')?.touched"
-                                    class="text-danger small mt-1">First name is required.</div>
-                            </div>
-                            <div class="col-md-6 text-start">
-                                <label class="small text-secondary mb-2 px-1">Last Name</label>
-                                <input type="text" class="form-control form-control-elite shadow-none"
-                                    formControlName="last_name" placeholder="Phelps">
-                                <div *ngIf="registerForm.get('last_name')?.invalid && registerForm.get('last_name')?.touched"
-                                    class="text-danger small mt-1">Last name is required.</div>
-                            </div>
-                        </div>
+          <!-- Success -->
+          <div *ngIf="successMessage()" class="auth-alert auth-alert-success">
+            <i class="fas fa-check-circle me-2"></i>{{ successMessage() }}
+          </div>
 
-                        <!-- Email -->
-                        <div class="mb-3 text-start">
-                            <label class="small text-secondary mb-2 px-1">Email Address</label>
-                            <input type="email" class="form-control form-control-elite shadow-none"
-                                formControlName="email" placeholder="name@domain.com">
-                            <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
-                                class="text-danger small mt-1">Please enter a valid email.</div>
-                        </div>
+          <!-- Error -->
+          <div *ngIf="errorMessage()" class="auth-alert auth-alert-danger">
+            <i class="fas fa-exclamation-circle me-2"></i>{{ errorMessage() }}
+          </div>
 
-                        <!-- Password -->
-                        <div class="mb-3 text-start">
-                            <label class="small text-secondary mb-2 px-1">Password</label>
-                            <input type="password" class="form-control form-control-elite shadow-none"
-                                formControlName="password" placeholder="Create password">
-                            <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
-                                class="text-danger small mt-1">Password must be at least 8 characters.</div>
-                        </div>
+          <!-- Form -->
+          <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="auth-form" novalidate>
 
-                        <!-- Confirm Password -->
-                        <div class="mb-4 text-start">
-                            <label class="small text-secondary mb-2 px-1">Confirm Password</label>
-                            <input type="password" class="form-control form-control-elite shadow-none"
-                                formControlName="password_confirmation" placeholder="Re-enter password">
-                            <div *ngIf="registerForm.errors?.['passwordMismatch'] && registerForm.get('password_confirmation')?.touched"
-                                class="text-danger small mt-1">Passwords do not match.</div>
-                        </div>
-
-                        <!-- Terms -->
-                        <div class="form-check text-start mb-4 px-4">
-                            <input class="form-check-input bg-transparent border-secondary shadow-none"
-                                type="checkbox" id="terms" formControlName="terms">
-                            <label class="form-check-label small text-secondary" for="terms">
-                                I agree to the <a href="javascript:void(0)" class="text-gold text-decoration-none">Terms and Conditions</a> of AngBids.
-                            </label>
-                            <div *ngIf="registerForm.get('terms')?.invalid && registerForm.get('terms')?.touched"
-                                class="text-danger small mt-1">You must accept the terms.</div>
-                        </div>
-
-                        <!-- Submit -->
-                        <button type="submit" class="btn btn-gold w-100 py-3 mb-4 shadow-none fw-bold"
-                            [disabled]="isLoading()">
-                            <span *ngIf="!isLoading()">CREATE ACCOUNT</span>
-                            <span *ngIf="isLoading()">
-                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                CREATING...
-                            </span>
-                        </button>
-
-                        <p class="small text-secondary mb-0 text-center">Already have an account?
-                            <a routerLink="/login" class="text-gold text-decoration-none fw-bold ms-1">Login</a>
-                        </p>
-                    </form>
+            <!-- Row 1: First Name + Last Name -->
+            <div class="row g-3 mb-1">
+              <div class="col-12 col-sm-6">
+                <div class="auth-field">
+                  <label class="auth-label" for="reg-fname">First Name</label>
+                  <div class="auth-input-wrap">
+                    <span class="auth-input-icon"><i class="fas fa-user"></i></span>
+                    <input id="reg-fname" type="text" class="auth-input"
+                           formControlName="first_name" placeholder="John"
+                           autocomplete="given-name">
+                  </div>
+                  <div *ngIf="registerForm.get('first_name')?.invalid && registerForm.get('first_name')?.touched"
+                       class="auth-error">First name is required (min 2 chars).</div>
                 </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="auth-field">
+                  <label class="auth-label" for="reg-lname">Last Name</label>
+                  <div class="auth-input-wrap">
+                    <span class="auth-input-icon"><i class="fas fa-user"></i></span>
+                    <input id="reg-lname" type="text" class="auth-input"
+                           formControlName="last_name" placeholder="Smith"
+                           autocomplete="family-name">
+                  </div>
+                  <div *ngIf="registerForm.get('last_name')?.invalid && registerForm.get('last_name')?.touched"
+                       class="auth-error">Last name is required (min 2 chars).</div>
+                </div>
+              </div>
             </div>
+
+            <!-- Email -->
+            <div class="auth-field">
+              <label class="auth-label" for="reg-email">Email Address</label>
+              <div class="auth-input-wrap">
+                <span class="auth-input-icon"><i class="fas fa-envelope"></i></span>
+                <input id="reg-email" type="email" class="auth-input"
+                       formControlName="email" placeholder="name@domain.com"
+                       autocomplete="email">
+              </div>
+              <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+                   class="auth-error">Please enter a valid email address.</div>
+            </div>
+
+            <!-- Row 2: Password + Confirm Password -->
+            <div class="row g-3 mb-1">
+              <div class="col-12 col-sm-6">
+                <div class="auth-field">
+                  <label class="auth-label" for="reg-pass">Password</label>
+                  <div class="auth-input-wrap">
+                    <span class="auth-input-icon"><i class="fas fa-lock"></i></span>
+                    <input id="reg-pass" [type]="showPassword() ? 'text' : 'password'"
+                           class="auth-input auth-input-has-eye"
+                           formControlName="password" placeholder="Min 8 characters"
+                           autocomplete="new-password">
+                    <button type="button" class="auth-eye-btn" (click)="togglePassword()"
+                            [title]="showPassword() ? 'Hide' : 'Show'">
+                      <i [class]="showPassword() ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                    </button>
+                  </div>
+                  <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+                       class="auth-error">Password must be at least 8 characters.</div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="auth-field">
+                  <label class="auth-label" for="reg-confirm">Confirm Password</label>
+                  <div class="auth-input-wrap">
+                    <span class="auth-input-icon"><i class="fas fa-lock"></i></span>
+                    <input id="reg-confirm" [type]="showPassword() ? 'text' : 'password'"
+                           class="auth-input auth-input-has-eye"
+                           formControlName="password_confirmation" placeholder="Re-enter password"
+                           autocomplete="new-password">
+                  </div>
+                  <div *ngIf="registerForm.errors?.['passwordMismatch'] && registerForm.get('password_confirmation')?.touched"
+                       class="auth-error">Passwords do not match.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Terms -->
+            <div class="auth-terms-row">
+              <label class="auth-terms-label">
+                <input type="checkbox" class="auth-check-input" formControlName="terms">
+                I agree to the
+                <a href="javascript:void(0)" class="auth-terms-link">Terms &amp; Conditions</a>
+                of AngBids.
+              </label>
+              <div *ngIf="registerForm.get('terms')?.invalid && registerForm.get('terms')?.touched"
+                   class="auth-error mt-1">You must accept the terms to continue.</div>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="auth-submit-btn" [disabled]="isLoading()">
+              <span *ngIf="!isLoading()">
+                <i class="fas fa-user-plus me-2"></i>Create Account
+              </span>
+              <span *ngIf="isLoading()" class="d-flex align-items-center justify-content-center gap-2">
+                <span class="auth-spinner"></span> Creating...
+              </span>
+            </button>
+
+          </form>
+
+          <!-- Footer -->
+          <div class="auth-card-footer">
+            Already have an account?
+            <a routerLink="/login" class="auth-link">Login Here</a>
+          </div>
+
         </div>
+      </div>
     </div>
+  </div>
 </section>

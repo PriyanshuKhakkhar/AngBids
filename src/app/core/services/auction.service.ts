@@ -11,7 +11,7 @@ import { environment } from '../../../environments/environment';
 export class AuctionService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/auctions`;
-  private baseUrl = environment.apiUrl.replace('/api', '');
+  private baseUrl = ''; // For image URLs - using relative paths
 
   /**
    * Fetch all auctions from the Laravel API with optional filtering.
@@ -77,7 +77,7 @@ export class AuctionService {
    */
   private mapToModel(raw: any): Auction {
     // 1. Smart Image URL Resolution
-    const placeholder = `${this.baseUrl}/assets/images/banner-3.png`;
+    const placeholder = '/assets/images/banner-3.png';
     let imageUrl = placeholder;
     const rawImage = raw.imageUrl || raw.image || (raw.images && raw.images.length > 0 ? (raw.images[0].url || raw.images[0]) : null);
     
@@ -90,21 +90,13 @@ export class AuctionService {
         imageUrl = rawImage.substring(lastHttpIndex);
       } 
       else if (rawImage.startsWith('http')) {
-        // Clean URL
+        // Clean absolute URL
         imageUrl = rawImage;
       } 
       else {
-        // Handle local paths correctly
-        const path = rawImage.startsWith('/') ? rawImage.substring(1) : rawImage;
-        
-        // Differentiate between storage assets and public assets
-        if (path.startsWith('assets/')) {
-          imageUrl = `${this.baseUrl}/${path}`;
-        } else {
-          // Normalize to storage/
-          const finalPath = path.startsWith('storage/') ? path : `storage/${path}`;
-          imageUrl = `${this.baseUrl}/${finalPath}`;
-        }
+        // Handle local paths - these will be served by Laravel backend
+        // Since we're using proxy, we don't need to modify the path
+        imageUrl = rawImage.startsWith('/') ? rawImage : `/${rawImage}`;
       }
     }
 
@@ -119,6 +111,8 @@ export class AuctionService {
       endDate: raw.end_date ?? raw.endDate ?? raw.end_time ?? '',
       status: raw.status ?? 'active',
       category: raw.category?.name ?? raw.category ?? 'Luxury Collection',
+      bidCount: raw.bid_count ?? raw.bids_count ?? raw.bids?.length ?? 0,
+      sellerName: raw.seller?.name ?? raw.user?.name ?? raw.creator?.name ?? 'AngBids',
     };
   }
 
@@ -133,10 +127,17 @@ export class AuctionService {
       errorMessage = `Connection Error: ${error.error.message}`;
     } else {
       // Server-side error
-      errorMessage = `Server Error [${error.status}]: ${error.message || 'The server returned an error.'}`;
+      const serverMsg = error.error?.message || error.statusText || 'The server returned an error.';
+      errorMessage = `Server Error [${error.status}]: ${serverMsg}`;
     }
     
-    console.error(`[AuctionService API Error]: ${errorMessage}`, error);
+    console.error(`[AuctionService API Error]:`, {
+      message: errorMessage,
+      status: error.status,
+      url: error.url,
+      error: error.error
+    });
+    
     return throwError(() => new Error(errorMessage));
   }
 }

@@ -12,6 +12,8 @@ export interface Auction {
   endDate: string | Date;
   status: 'active' | 'closed' | 'pending';
   category: string;
+  bidCount?: number;
+  sellerName?: string;
 }
 
 export interface Bid {

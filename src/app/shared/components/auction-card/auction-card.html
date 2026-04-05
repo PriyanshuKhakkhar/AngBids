@@ -1,22 +1,59 @@
-<div class="card card-elite h-100">
-    <div class="position-relative overflow-hidden" style="height: 280px; border-radius: 12px 12px 0 0; background: #1a1a1a;">
-        <img [src]="auction.imageUrl" 
-             class="card-img-top h-100 object-fit-cover transition-soft" 
-             [alt]="auction.title"
-             (error)="$any($event.target).src = placeholder">
+<div class="ac-wrap">
+
+  <!-- ── Image ── -->
+  <div class="ac-img-wrap">
+    <img [src]="auction.imageUrl" [alt]="auction.title"
+         (error)="$any($event.target).src = placeholder">
+
+    <span class="ac-cat-badge">{{ auction.category }}</span>
+
+    <button class="ac-wishlist-btn" title="Add to Wishlist" type="button">
+      <i class="far fa-heart"></i>
+    </button>
+
+    <span class="ac-status-badge"
+      [class.badge-live]="auction.status === 'active'"
+      [class.badge-upcoming]="auction.status === 'pending'"
+      [class.badge-closed]="auction.status === 'closed'">
+      {{ auction.status === 'active' ? 'LIVE' : auction.status === 'pending' ? 'UPCOMING' : 'CLOSED' }}
+    </span>
+  </div>
+
+  <!-- ── Countdown Strip ── -->
+  <div class="ac-timer-strip">
+    <i class="far fa-clock ac-timer-icon"></i>
+    <span class="ac-timer-label">ENDS IN:</span>
+    <app-countdown-timer [endDate]="auction.endDate"></app-countdown-timer>
+  </div>
+
+  <!-- ── Card Body ── -->
+  <div class="ac-body">
+    <div class="ac-lot">LOT #{{ auction.id.toString().padStart(4, '0') }}</div>
+    <h3 class="ac-title">{{ auction.title }}</h3>
+
+    <!-- Seller row -->
+    <div class="ac-seller-row">
+      <img class="ac-seller-avatar"
+        [src]="'https://ui-avatars.com/api/?name=' + encodeURI(auction.sellerName || 'AngBids') + '&background=4e73df&color=ffffff&size=48&bold=true'"
+        [alt]="auction.sellerName || 'AngBids'">
+      <span class="ac-seller-name">{{ auction.sellerName || 'AngBids' }}</span>
+      <span class="ac-bid-pill">
+        <i class="fas fa-gavel"></i> {{ auction.bidCount ?? 0 }} Bids
+      </span>
     </div>
-    <div class="card-body p-4">
-        <div class="glass-timer text-center mb-3">
-            <app-countdown-timer [endDate]="auction.endDate"></app-countdown-timer>
-        </div>
-        <h3 class="h5 mb-2">{{ auction.title }}</h3>
-        <p class="text-secondary small mb-4 text-truncate">{{ auction.description }}</p>
-        <div class="d-flex justify-content-between align-items-center mb-4 pt-3 border-top border-white border-opacity-10">
-            <span class="small text-secondary">CURRENT BID</span>
-            <span class="h5 mb-0 fw-bold" style="color: var(--elite-gold);">
-                {{ auction.currentBid | currency }}
-            </span>
-        </div>
-        <a [routerLink]="['/auctions', auction.id]" class="btn btn-gold w-100 py-2">View Details</a>
+
+    <!-- Bid amount -->
+    <div class="ac-bid-row">
+      <div>
+        <div class="ac-bid-label">Current Bid</div>
+        <div class="ac-bid-amount">{{ auction.currentBid | currency }}</div>
+      </div>
     </div>
+
+    <!-- Action -->
+    <a [routerLink]="['/auctions', auction.id]" class="ac-bid-btn">
+      <i class="fas fa-gavel me-2"></i> Bid Now
+    </a>
+  </div>
+
 </div>

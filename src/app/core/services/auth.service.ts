@@ -50,13 +50,13 @@ export class AuthService {
   }
 
   /**
-   * Register a new user account
-   * @param payload Registration data
-   * @returns Observable with token and user data
+   * Register a new user account.
+   * NOTE: Session is NOT persisted here — user must verify OTP first.
+   * The component stores the email and redirects to /verify-otp.
    */
   register(payload: RegisterPayload): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, payload).pipe(
-      tap(res => this.persistSession(res)),
+      // No tap(persistSession) — wait for OTP verification
       catchError(this.handleError)
     );
   }
@@ -107,10 +107,18 @@ export class AuthService {
   }
 
   /**
-   * Log out the current user
-   * Clears token and user data from localStorage and resets state
+   * Log out the current user.
+   * Clears token and user data from localStorage and resets state.
    */
   logout(): void {
+    this.clearSession();
+  }
+
+  /**
+   * Centralized session cleanup — used by logout() and the HTTP interceptor
+   * on 401/403 responses to avoid duplicated clearing logic.
+   */
+  clearSession(): void {
     this.currentUser.set(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
