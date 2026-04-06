@@ -32,7 +32,7 @@ use App\Http\Controllers\Api\Admin\KycController as AdminKycControllerApi;
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
-Route::post('/reset-password', [ResetPasswordController::class, 'reset']);
+Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.reset');
 
 // Public Search & Filter Endpoint
 Route::get('/auctions/search', [AuctionController::class, 'search']);

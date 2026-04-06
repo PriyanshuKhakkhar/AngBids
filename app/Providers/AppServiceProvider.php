@@ -9,6 +9,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Login;
 use App\Listeners\PruneOldSessions;
+use Illuminate\Auth\Notifications\ResetPassword;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,6 +23,11 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Redirect password reset links to the Angular frontend
+        ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
+            return env('FRONTEND_URL', 'http://localhost:4200') . '/reset-password?token=' . $token . '&email=' . $notifiable->getEmailForPasswordReset();
+        });
+
         // Implicitly grant "Super Admin" role all permissions
         Gate::before(function ($user, $ability) {
             return $user->hasRole('super admin') ? true : null;
