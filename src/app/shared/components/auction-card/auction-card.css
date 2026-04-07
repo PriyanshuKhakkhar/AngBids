@@ -1,0 +1,45 @@
+/* Auction Card Styles */
+.card-elite {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(0,0,0,0.03) !important;
+}
+
+.card-elite:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 1rem 3rem rgba(0,0,0,0.1) !important;
+}
+
+.auction-img {
+    transform: scale(1.02);
+}
+
+.card-elite:hover .auction-img {
+    transform: scale(1.1);
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.title-hover:hover {
+    color: var(--primary-color) !important;
+    cursor: pointer;
+}
+
+.btn-hover-effect:active {
+    transform: scale(0.98);
+}
+
+.glass-timer {
+    background: rgba(248, 249, 250, 0.8);
+    backdrop-filter: blur(4px);
+    border-radius: 8px;
+}
+
+.bg-gold {
+    background-color: #d4af37;
+}
+
+.text-xs {
+    font-size: 0.75rem;
+}

@@ -1,0 +1,52 @@
+.logo {
+  height: 100px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+
+.nav-search {
+    background-color: #f8f9fc;
+    border-radius: 50px;
+    height: 40px;
+    border: 1px solid #eaecf4;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.nav-search:focus-within {
+    background-color: #ffffff;
+    border-color: #4e73df;
+    box-shadow: 0 4px 15px rgba(78, 115, 223, 0.1);
+}
+
+.nav-search i {
+    color: #4e73df;
+    font-size: 14px;
+}
+
+.nav-search input {
+    color: #6e707e !important;
+    font-size: 13.5px;
+    background: transparent;
+}
+
+.nav-search input::placeholder {
+    color: #b7b9cc !important;
+    font-weight: 400;
+}
+
+/* Desktop Width */
+@media (min-width: 992px) {
+    .nav-search {
+        min-width: 260px; 
+    }
+}

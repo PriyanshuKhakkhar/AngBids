@@ -1,0 +1,60 @@
+<div class="admin-wrapper d-flex">
+  <!-- Sidebar -->
+  <aside class="admin-sidebar shadow-lg">
+    <div class="sidebar-header p-4 text-center">
+      <a routerLink="/"><img src="assets/images/logo/angbids-logo.png" alt="Logo" height="40"></a>
+      <div class="mt-2 text-gold small fw-bold tracking-wider">ADMIN PORTAL</div>
+    </div>
+
+    <nav class="sidebar-nav flex-grow-1 p-3">
+      <a routerLink="./dashboard" routerLinkActive="active" class="nav-item">
+        <i class="fas fa-th-large"></i>
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="./users" routerLinkActive="active" class="nav-item">
+        <i class="fas fa-users"></i>
+        <span>User Management</span>
+      </a>
+      <a routerLink="./auctions" routerLinkActive="active" class="nav-item">
+        <i class="fas fa-gavel"></i>
+        <span>Auction Control</span>
+      </a>
+      <a routerLink="./activity" routerLinkActive="active" class="nav-item">
+        <i class="fas fa-history"></i>
+        <span>Live Activity</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer p-4 border-top border-secondary border-opacity-10">
+      <div class="admin-profile d-flex align-items-center mb-3">
+        <div class="admin-avatar me-2">
+          <i class="fas fa-user-shield text-gold"></i>
+        </div>
+        <div class="admin-info">
+          <div class="small fw-bold text-light truncate">{{ user?.firstName }}</div>
+          <div class="x-small text-secondary fw-semibold text-uppercase tracking-wider">Administrator</div>
+        </div>
+      </div>
+      <button (click)="onLogout()" class="btn btn-outline-danger btn-sm w-100 py-2 border-0 opacity-75 hover-opacity-100">
+        <i class="fas fa-sign-out-alt me-2"></i>Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="admin-main flex-grow-1 d-flex flex-column">
+    <header class="admin-header py-3 px-4 shadow-sm">
+      <div class="d-flex justify-content-between align-items-center">
+        <h1 class="h5 mb-0 display-font fw-bold">Management Console</h1>
+        <div class="text-secondary small">
+          <span class="me-3"><i class="fas fa-clock text-gold me-1"></i> {{ currentDate | date:'mediumTime' }}</span>
+          <span class="badge bg-gold-soft text-gold px-3 rounded-pill">System Online</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="admin-content flex-grow-1 p-4 overflow-auto">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

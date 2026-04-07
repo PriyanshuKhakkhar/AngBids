@@ -1,0 +1,111 @@
+/* Premium Architecture Styles */
+:host {
+    --primary-color: #4e73df;
+    --gold-color: #d4af37;
+    --dark-bg: #1a1a1a;
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ultimate Sticky Sidebar */
+@media (min-width: 992px) {
+    .sidebar-sticky-area {
+        position: sticky;
+        top: 90px;
+        height: calc(100vh - 110px);
+        overflow-y: auto;
+        z-index: 20;
+        padding-bottom: 20px;
+        overscroll-behavior-y: contain; 
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0,0,0,0.1) transparent;
+    }
+
+    .sidebar-sticky-area::-webkit-scrollbar {
+        width: 4px;
+    }
+    .sidebar-sticky-area::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .sidebar-sticky-area::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+    .sidebar-sticky-area:hover::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+}
+
+/* Reset inner card to fit wrapper */
+.filter-sidebar {
+    backdrop-filter: blur(10px);
+    background: var(--glass-bg);
+    border: 1px solid rgba(0,0,0,0.05) !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding-right: 5px;
+    box-shadow: none !important;
+}
+
+.letter-spacing-1 {
+    letter-spacing: 1px;
+}
+
+.category-tree-list li {
+    margin-bottom: 2px;
+}
+
+/* Enhanced Category Links */
+.category-link {
+    display: block;
+    padding: 10px 14px;
+    border-radius: 12px;
+    color: #5a5c69;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    border: 1px solid transparent;
+}
+
+.category-link:hover {
+    background-color: rgba(78, 115, 223, 0.05);
+    color: var(--primary-color);
+    transform: translateX(3px);
+}
+
+.category-link.active {
+    background-color: rgba(78, 115, 223, 0.1);
+    color: var(--primary-color);
+    font-weight: 700;
+    border-color: rgba(78, 115, 223, 0.1);
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.1);
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* Standard Pagination Styling */
+.pagination {
+    margin-bottom: 0;
+    gap: 2px;
+}
+.page-item .page-link {
+    border-radius: 6px !important;
+    color: #4e73df;
+    border: 1px solid #eaecf4;
+    padding: 8px 14px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+.page-item.active .page-link {
+    background-color: #4e73df;
+    border-color: #4e73df;
+    color: #fff;
+}
+.page-item.disabled .page-link {
+    color: #d1d3e2;
+    background-color: #f8f9fc;
+}

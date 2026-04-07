@@ -1,0 +1,51 @@
+<div class="glass-panel p-5 h-100">
+    <h2 class="display-font h3 mb-4">Account Overview</h2>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading()" class="text-center py-4">
+        <div class="spinner-border text-gold" role="status"></div>
+        <p class="text-secondary mt-3 small">Loading your dashboard...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="errorMessage()" class="alert alert-danger bg-transparent border-danger text-danger small mb-4">
+        <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMessage() }}
+    </div>
+
+    <!-- Stats -->
+    <div *ngIf="!isLoading() && !errorMessage()" class="row g-4 mb-5">
+        <div class="col-md-4" *ngFor="let stat of statsArray">
+            <div class="p-4 rounded-3 border border-white border-opacity-10 bg-white bg-opacity-5">
+                <small class="text-secondary d-block mb-1 text-uppercase fw-bold" style="font-size: 0.7rem;">{{ stat.label }}</small>
+                <span class="h2 mb-0 fw-bold text-white">{{ stat.value }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div *ngIf="!isLoading() && !errorMessage()" class="p-4 rounded-3 border border-white border-opacity-10">
+        <h5 class="h6 text-white mb-3">Recent Activity</h5>
+
+        <div *ngIf="recentActivity().length === 0">
+            <p class="text-secondary small">You haven't participated in any auctions yet. Start browsing to place your first bid!</p>
+            <a routerLink="/auctions" class="btn btn-outline-gold mt-2 btn-sm">Browse Auctions</a>
+        </div>
+
+        <div *ngFor="let activity of recentActivity()"
+            class="d-flex justify-content-between align-items-center py-2 border-bottom border-white border-opacity-10">
+            <div>
+                <p class="mb-0 small text-white fw-bold">{{ activity.auction_title }}</p>
+                <small class="text-secondary">{{ activity.created_at | date:'mediumDate' }}</small>
+            </div>
+            <div class="text-end">
+                <span class="small fw-bold text-gold">{{ activity.bid_amount | currency }}</span>
+                <span class="badge ms-2 small"
+                    [class.bg-success]="activity.status === 'winning'"
+                    [class.bg-danger]="activity.status === 'outbid'"
+                    [class.bg-secondary]="activity.status === 'closed'">
+                    {{ activity.status }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

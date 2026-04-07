@@ -1,0 +1,44 @@
+<div class="glass-panel p-5 h-100">
+    <h2 class="display-font h3 mb-4">Settings</h2>
+
+    <h5 class="h6 text-white mb-4 pb-2 border-bottom border-white border-opacity-10">Change Password</h5>
+
+    <div *ngIf="successMessage()" class="alert alert-success bg-transparent border-success text-success small mb-4">
+        <i class="fas fa-check-circle me-2"></i>{{ successMessage() }}
+    </div>
+    <div *ngIf="errorMessage()" class="alert alert-danger bg-transparent border-danger text-danger small mb-4">
+        <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMessage() }}
+    </div>
+
+    <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" style="max-width: 480px;">
+        <div class="mb-3">
+            <label class="small text-secondary mb-2">Current Password</label>
+            <input type="password" class="form-control form-control-elite" formControlName="current_password" placeholder="••••••••">
+            <div *ngIf="passwordForm.get('current_password')?.invalid && passwordForm.get('current_password')?.touched" class="text-danger small mt-1">
+                Current password is required.
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="small text-secondary mb-2">New Password</label>
+            <input type="password" class="form-control form-control-elite" formControlName="password" placeholder="Min. 8 characters">
+            <div *ngIf="passwordForm.get('password')?.invalid && passwordForm.get('password')?.touched" class="text-danger small mt-1">
+                Password must be at least 8 characters.
+            </div>
+        </div>
+        <div class="mb-4">
+            <label class="small text-secondary mb-2">Confirm New Password</label>
+            <input type="password" class="form-control form-control-elite" formControlName="password_confirmation" placeholder="Re-enter new password">
+            <div *ngIf="passwordForm.errors?.['passwordMismatch'] && passwordForm.get('password_confirmation')?.touched" class="text-danger small mt-1">
+                Passwords do not match.
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-gold px-5 py-2 fw-bold" [disabled]="isLoading()">
+            <span *ngIf="!isLoading()">UPDATE PASSWORD</span>
+            <span *ngIf="isLoading()">
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                UPDATING...
+            </span>
+        </button>
+    </form>
+</div>

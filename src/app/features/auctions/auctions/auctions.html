@@ -1,0 +1,160 @@
+<!-- Modern Auctions Layout Aligned with Laravel -->
+<section class="pt-2 pb-5">
+    <div class="container-fluid px-lg-5">
+        <div class="row g-4">
+            
+            <!-- Sidebar Filters -->
+            <div class="col-md-4 col-lg-3">
+                <button class="btn btn-primary d-md-none w-100 mb-3 shadow-sm rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#filterSidebar">
+                    <i class="fas fa-filter me-2"></i> Show Filters
+                </button>
+                
+                <div class="sidebar-sticky-area collapse d-md-block" id="filterSidebar">
+                    <div class="card border-0 shadow-sm rounded-4 mb-3 p-4 filter-sidebar">
+                        <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+                            <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-filter text-primary me-2"></i>Filters</h5>
+                            <a href="javascript:void(0)" (click)="clearSearch()" class="text-primary small fw-semibold text-decoration-none hover-underline">Clear All</a>
+                        </div>
+
+                        <!-- Categories -->
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-uppercase text-secondary letter-spacing-1 mb-3 d-block">Categories</label>
+                            <div class="category-sidebar-nav">
+                                <ul class="list-unstyled mb-0 category-tree-list">
+                                    <li class="mb-2">
+                                        <a href="javascript:void(0)" 
+                                           (click)="onCategoryChange(0)"
+                                           class="category-link"
+                                           [class.active]="!selectedCategory()">
+                                            <i class="fas fa-th-large me-2"></i> All Categories
+                                        </a>
+                                    </li>
+                                    <li class="category-item mb-1" *ngFor="let category of categories()">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <a href="javascript:void(0)" 
+                                               (click)="onCategoryChange(category.id)"
+                                               class="category-link flex-grow-1"
+                                               [class.active]="selectedCategory() === category.id">
+                                                <i class="fas fa-chevron-right me-2 opacity-75"></i> {{ category.name }}
+                                            </a>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-uppercase text-secondary letter-spacing-1">Max Price (₹)</label>
+                            <div class="row g-2">
+                                <div class="col-12">
+                                    <input type="number" class="form-control form-control-sm bg-light border-0 py-2 shadow-none rounded-3" 
+                                           placeholder="Max Price" 
+                                           [value]="maxPrice() || ''"
+                                           (change)="onPriceChange($event)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" (click)="applyFilters()" class="btn btn-primary w-100 py-2 rounded-pill fw-bold shadow-sm mt-2">
+                            Apply Filters <i class="fas fa-arrow-right ms-2 small"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Auction Grid -->
+            <div class="col-md-8 col-lg-9">
+                <!-- Sorting Bar -->
+                <div class="sticky-top bg-white py-3 mb-3 shadow-sm rounded-4 px-3" style="top: 85px; z-index: 9; margin-top: -5px;">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <div class="d-flex align-items-center">
+                            <span class="text-secondary small fw-bold text-uppercase me-2">Showing:</span>
+                            <span class="small fw-bold text-dark">{{ auctions().length }} Auctions</span>
+                        </div>
+
+                        <div class="d-flex align-items-center flex-grow-1 justify-content-end gap-3">
+                            <!-- Angular Search inside Top Bar -->
+                            <div class="input-group input-group-sm" style="max-width: 250px;">
+                                <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted"></i></span>
+                                <input type="text" class="form-control bg-light border-0 shadow-none" 
+                                       placeholder="Search auctions..." 
+                                       [value]="searchQuery()"
+                                       (input)="searchQuery.set($any($event.target).value)"
+                                       (keyup.enter)="onSearch()">
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <label class="small fw-bold text-secondary text-uppercase me-2" for="sortSelect">Sort By:</label>
+                                <select id="sortSelect" class="form-select form-select-sm border-0 bg-transparent fw-bold text-dark cursor-pointer shadow-none p-0 pe-4 w-auto" 
+                                        (change)="onSortChange($event)">
+                                    <option value="latest" [selected]="sortOption() === 'latest' || !sortOption()">Newly Listed</option>
+                                    <option value="price_asc" [selected]="sortOption() === 'price_asc'">Price: Low to High</option>
+                                    <option value="price_desc" [selected]="sortOption() === 'price_desc'">Price: High to Low</option>
+                                    <option value="ending_soon" [selected]="sortOption() === 'closing_soon'">Ending Soon</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Loading State -->
+                    <div *ngIf="isLoading()" class="col-12 py-5 text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="text-muted mt-3 small fw-bold">Loading premium items...</p>
+                    </div>
+
+                    <!-- Error State -->
+                    <div *ngIf="errorMessage()" class="col-12 py-5 text-center">
+                        <div class="text-danger mb-3"><i class="fas fa-exclamation-circle fa-3x opacity-50"></i></div>
+                        <h5 class="fw-bold text-dark">{{ errorMessage() }}</h5>
+                        <button class="btn btn-outline-primary rounded-pill mt-3 px-4" (click)="fetchData()">Try Again</button>
+                    </div>
+
+                    <!-- Cards -->
+                    <ng-container *ngIf="!isLoading() && !errorMessage()">
+                        <div class="col-md-6 col-xl-4" *ngFor="let auction of auctions()">
+                            <app-auction-card [auction]="auction"></app-auction-card>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div *ngIf="auctions().length === 0" class="col-12 py-5">
+                            <div class="text-center py-5">
+                                <div class="mb-3">
+                                    <i class="fas fa-search fa-2x text-muted opacity-25"></i>
+                                </div>
+                                <h6 class="fw-bold text-secondary mb-1">No Auctions Found</h6>
+                                <a href="javascript:void(0)" (click)="clearSearch()" class="small text-decoration-none fw-bold">Reset Filters</a>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+
+                <!-- Pagination Footer -->
+                <nav class="mt-5 pt-4 border-top" *ngIf="lastPage() > 1">
+                    <ul class="pagination pagination-sm justify-content-center gap-1 mb-0">
+                        <li class="page-item" [class.disabled]="currentPage() === 1">
+                            <a class="page-link shadow-sm cursor-pointer" (click)="onPageChange(currentPage() - 1)">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        
+                        <li class="page-item active">
+                            <a class="page-link shadow-sm bg-primary border-primary text-white">{{ currentPage() }} / {{ lastPage() }}</a>
+                        </li>
+
+                        <li class="page-item" [class.disabled]="currentPage() === lastPage()">
+                            <a class="page-link shadow-sm cursor-pointer" (click)="onPageChange(currentPage() + 1)">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+            </div>
+        </div>
+    </div>
+</section>

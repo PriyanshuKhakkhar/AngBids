@@ -1,0 +1,29 @@
+.dash-nav .nav-link {
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.dash-nav .nav-link i {
+  width: 20px;
+  text-align: center;
+}
+
+.dash-nav .nav-link:hover {
+  background: rgba(212, 175, 55, 0.05);
+  color: #fff;
+}
+
+.dash-nav .nav-link.active {
+  background: var(--elite-gold);
+  color: #000 !important;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.avatar-lg {
+  width: 80px;
+  height: 80px;
+  border: 2px solid var(--elite-gold);
+  padding: 3px;
+  border-radius: 50%;
+}
