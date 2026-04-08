@@ -392,8 +392,10 @@ class AuctionService
             $totalResults = $this->getFilteredAuctions($request, false)->count();
 
             // 2. Get price range (MUST clear order by for aggregate queries)
-            $priceStats = $this->getFilteredAuctions($request, false)
-                ->reorder() // Clear any existing order by from the service
+            $queryForStats = $this->getFilteredAuctions($request, false)->reorder();
+            $queryForStats->getQuery()->columns = null; // Clear existing selects (auctions.*)
+            
+            $priceStats = $queryForStats
                 ->selectRaw('MIN(current_price) as min_price, MAX(current_price) as max_price')
                 ->toBase()
                 ->first();
