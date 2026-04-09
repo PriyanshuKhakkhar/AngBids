@@ -25,7 +25,7 @@ class BidResource extends JsonResource
                     'time_remaining' => $this->auction->end_time?->isFuture() 
                         ? $this->auction->end_time->diffInSeconds(now()) 
                         : 0,
-                    'image_url' => $this->auction->images->first()?->image_url ?? null,
+                    'image_url' => $this->auction->images->first()?->url ?? null,
                     'category' => $this->whenLoaded('auction.category', function () {
                         return [
                             'id' => $this->auction->category->id,
