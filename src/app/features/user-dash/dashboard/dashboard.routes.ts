@@ -25,6 +25,14 @@ export const DASHBOARD_ROUTES: Routes = [
         path: 'settings',
         loadComponent: () => import('../settings/settings').then(m => m.Settings),
       },
+      {
+        path: 'verification',
+        loadComponent: () => import('../verification/verification').then(m => m.Verification),
+      },
+      {
+        path: 'my-listings/create',
+        loadComponent: () => import('../my-listings/create-auction.component').then(m => m.CreateAuction),
+      },
     ],
   },
 ];

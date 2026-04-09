@@ -22,16 +22,21 @@ export class AuctionService {
     maxPrice?: number | null;
     sort?: string | null;
     page?: number;
+    search?: string | null;
   }): Observable<{ data: Auction[], current_page?: number, last_page?: number }> {
     
     let params = new HttpParams();
     
     if (queryParams) {
-      if (queryParams.category) params = params.set('category', queryParams.category.toString());
-      if (queryParams.minPrice !== undefined && queryParams.minPrice !== null) params = params.set('minPrice', queryParams.minPrice.toString());
-      if (queryParams.maxPrice !== undefined && queryParams.maxPrice !== null) params = params.set('maxPrice', queryParams.maxPrice.toString());
+      if (queryParams.category) params = params.set('category_id', queryParams.category.toString());
+      if (queryParams.minPrice !== undefined && queryParams.minPrice !== null) params = params.set('min_price', queryParams.minPrice.toString());
+      if (queryParams.maxPrice !== undefined && queryParams.maxPrice !== null) params = params.set('max_price', queryParams.maxPrice.toString());
       if (queryParams.sort) params = params.set('sort', queryParams.sort);
       if (queryParams.page) params = params.set('page', queryParams.page.toString());
+      if (queryParams.search) {
+        params = params.set('search', queryParams.search);
+        params = params.set('q', queryParams.search);
+      }
     }
 
     return this.http.get<any>(`${this.apiUrl}/search`, { params }).pipe(
@@ -55,10 +60,25 @@ export class AuctionService {
    * Place a bid on an auction.
    */
   placeBid(auctionId: number, amount: number): Observable<{ message: string; bid: Bid }> {
-    return this.http.post<{ message: string; bid: Bid }>(
-      `${this.apiUrl}/${auctionId}/bids`,
-      { amount }
-    ).pipe(catchError(this.handleError));
+    return this.http.post<any>(
+      `${this.apiUrl}/${auctionId}/bid`,
+      { amount: amount }
+    ).pipe(
+      map(response => {
+        const bidData = response.data?.bid || response.bid || {};
+        return {
+          message: response.message || 'Bid placed successfully!',
+          bid: {
+            id: bidData.id || Date.now(),
+            auctionId: auctionId,
+            amount: bidData.amount || amount,
+            bidderName: bidData.user?.name || bidData.bidderName || 'You',
+            time: bidData.created_at || bidData.time || new Date().toISOString()
+          }
+        };
+      }),
+      catchError(this.handleError)
+    );
   }
 
   /**
@@ -126,6 +146,14 @@ export class AuctionService {
       category: raw.category?.name ?? raw.category ?? 'Luxury Collection',
       seller: raw.user ? { name: raw.user.name, avatar: sellerAvatar } : null,
       totalBids: raw.bids_count ?? (raw.bids ? raw.bids.length : 0),
+      minIncrement: raw.min_increment ?? 1,
+      bids: raw.bids ? raw.bids.map((b: any) => ({
+        id: b.id,
+        auctionId: raw.id,
+        amount: b.amount,
+        bidderName: b.user?.name || 'Anonymous',
+        time: b.created_at || new Date().toISOString()
+      })) : []
     };
   }
 

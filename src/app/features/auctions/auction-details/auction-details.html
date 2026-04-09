@@ -98,8 +98,11 @@
                         <h5 class="h6 text-white mb-3">Bid History</h5>
                         <div *ngIf="bids().length === 0" class="text-secondary small opacity-50">No bids placed yet.</div>
                         <div *ngFor="let bid of bids()" class="d-flex justify-content-between mb-2 small" [class.opacity-75]="bid.amount === a.currentBid" [class.opacity-50]="bid.amount !== a.currentBid">
-                            <span>{{ bid.bidderName }}</span>
-                            <span>{{ bid.amount | currency }}</span>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">{{ bid.bidderName }}</span>
+                                <span class="text-secondary" style="font-size: 0.75rem;">{{ bid.time | date:'short' }}</span>
+                            </div>
+                            <span class="fw-bold text-gold">{{ bid.amount | currency }}</span>
                         </div>
                     </div>
                 </div>

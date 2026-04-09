@@ -1,4 +1,7 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { AuctionCard } from '../../../shared/components/auction-card/auction-card';
 import { Auction } from '../../../core/models/auction.model';
 import { Category } from '../../../core/models/home.model';
@@ -30,12 +33,48 @@ export class Auctions implements OnInit {
   maxPrice = signal<number | null>(null);
   searchQuery = signal<string>('');
 
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+
+  private searchSubject = new Subject<string>();
+  private searchSubscription!: Subscription;
+
   ngOnInit(): void {
-    this.fetchData();
+    // Read initial search query from URL if present
+    this.route.queryParams.subscribe(params => {
+      const routeSearch = (params['search'] ?? params['q'] ?? '').toString();
+      this.searchQuery.set(routeSearch);
+      this.fetchData();
+    });
+
+    // Setup debounce for typing search
+    this.searchSubscription = this.searchSubject.pipe(
+      debounceTime(400),
+      distinctUntilChanged()
+    ).subscribe(query => {
+      this.searchQuery.set(query);
+      this.currentPage.set(1);
+      
+      // Update URL without reloading page
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { q: query || null, search: query || null },
+        queryParamsHandling: 'merge'
+      });
+      
+      this.fetchData();
+    });
+
     this.categoryService.getCategories().subscribe({
       next: (data: Category[]) => this.categories.set(data),
       error: (err) => console.error('Category Fetch Error:', err)
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
+    }
   }
 
   fetchData(): void {
@@ -47,15 +86,10 @@ export class Auctions implements OnInit {
       category: this.selectedCategory(),
       sort: this.sortOption(),
       maxPrice: this.maxPrice(),
+      search: this.searchQuery() ? this.searchQuery().trim() : null,
     }).subscribe({
       next: (response) => {
-        // Apply client-side keyword filter on top of server results
-        const query = this.searchQuery().toLowerCase().trim();
-        const filtered = query
-          ? response.data.filter(a => a.title.toLowerCase().includes(query))
-          : response.data;
-
-        this.auctions.set(filtered);
+        this.auctions.set(response.data);
         this.currentPage.set(response.current_page || 1);
         this.lastPage.set(response.last_page || 1);
         this.isLoading.set(false);
@@ -67,14 +101,29 @@ export class Auctions implements OnInit {
     });
   }
 
+  onSearchInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchQuery.set(value);
+    this.searchSubject.next(value);
+  }
+
   onSearch(): void {
-    this.currentPage.set(1);
-    this.fetchData();
+    this.searchSubject.next(this.searchQuery());
   }
 
   clearSearch(): void {
     this.searchQuery.set('');
+    this.selectedCategory.set(null);
+    this.maxPrice.set(null);
     this.currentPage.set(1);
+    
+    // Clear URL parameters
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { q: null, search: null },
+      queryParamsHandling: 'merge'
+    });
+    
     this.fetchData();
   }
 
@@ -87,7 +136,10 @@ export class Auctions implements OnInit {
   }
 
   onPriceChange(event: Event): void {
-    this.maxPrice.set(Number((event.target as HTMLInputElement).value));
+    const value = (event.target as HTMLInputElement).value;
+    this.maxPrice.set(value ? Number(value) : null);
+    this.currentPage.set(1);
+    this.fetchData();
   }
 
   applyFilters(): void {
@@ -97,12 +149,7 @@ export class Auctions implements OnInit {
 
   onSortChange(event: Event): void {
     const val = (event.target as HTMLSelectElement).value;
-    const map: Record<string, string> = {
-      'price_desc': 'price_desc',
-      'price_asc': 'price_asc',
-      'closing_soon': 'closing_soon',
-    };
-    this.sortOption.set(map[val] ?? 'newest');
+    this.sortOption.set(val);
     this.currentPage.set(1);
     this.fetchData();
   }

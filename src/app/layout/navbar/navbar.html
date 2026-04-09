@@ -19,7 +19,9 @@
                 <li class="nav-item d-lg-none mt-3 px-3">
                     <div class="nav-search d-flex align-items-center px-3 w-100 mb-3">
                         <i class="fas fa-search me-2"></i>
-                        <input type="text" class="form-control border-0 shadow-none bg-transparent" placeholder="Search auctions...">
+                        <input type="text" class="form-control border-0 shadow-none bg-transparent" 
+                               placeholder="Search auctions..."
+                               (keyup.enter)="onGlobalSearch($event)">
                     </div>
                 </li>
             </ul>
@@ -29,7 +31,9 @@
                 <!-- Desktop Search Bar (Always Visible) -->
                 <div class="nav-search d-none d-lg-flex align-items-center me-3 px-3">
                     <i class="fas fa-search me-2 text-primary"></i>
-                    <input type="text" class="form-control border-0 shadow-none bg-transparent" placeholder="Search auctions...">
+                    <input type="text" class="form-control border-0 shadow-none bg-transparent" 
+                           placeholder="Search auctions..."
+                           (keyup.enter)="onGlobalSearch($event)">
                 </div>
 
                 <!-- Auth Actions (Guest) -->
@@ -46,11 +50,11 @@
                         <span class="small">{{currentUser.firstName}}</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end glass-panel border-gold border-opacity-25 w-100 w-lg-auto">
-                        <li><a class="dropdown-item text-white small" routerLink="/dashboard"><i class="fas fa-th-large me-2 text-gold"></i> Dashboard</a></li>
-                        <li><a class="dropdown-item text-white small" routerLink="/dashboard/profile"><i class="fas fa-user-edit me-2 text-gold"></i> Profile</a></li>
-                        <li><a class="dropdown-item text-white small" routerLink="/dashboard/watchlist"><i class="fas fa-heart me-2 text-gold"></i> Watchlist</a></li>
-                        <li><hr class="dropdown-divider border-white border-opacity-10"></li>
-                        <li><a class="dropdown-item text-danger small" (click)="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                        <li><a class="dropdown-item small d-flex align-items-center mb-1" routerLink="/dashboard"><i class="fas fa-th-large me-2 text-primary"></i> <span class="text-dark">Dashboard</span></a></li>
+                        <li><a class="dropdown-item small d-flex align-items-center mb-1" routerLink="/dashboard/profile"><i class="fas fa-user-edit me-2 text-primary"></i> <span class="text-dark">Profile</span></a></li>
+                        <li><a class="dropdown-item small d-flex align-items-center mb-1" routerLink="/dashboard/watchlist"><i class="fas fa-heart me-2 text-primary"></i> <span class="text-dark">Watchlist</span></a></li>
+                        <li><hr class="dropdown-divider border-dark border-opacity-10"></li>
+                        <li><a class="dropdown-item text-danger small d-flex align-items-center" (click)="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
                     </ul>
                 </div>
             </div>

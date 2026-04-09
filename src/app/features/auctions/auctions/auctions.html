@@ -51,7 +51,7 @@
                                     <input type="number" class="form-control form-control-sm bg-light border-0 py-2 shadow-none rounded-3" 
                                            placeholder="Max Price" 
                                            [value]="maxPrice() || ''"
-                                           (change)="onPriceChange($event)">
+                                           (input)="onPriceChange($event)">
                                 </div>
                             </div>
                         </div>
@@ -80,7 +80,7 @@
                                 <input type="text" class="form-control bg-light border-0 shadow-none" 
                                        placeholder="Search auctions..." 
                                        [value]="searchQuery()"
-                                       (input)="searchQuery.set($any($event.target).value)"
+                                       (input)="onSearchInput($event)"
                                        (keyup.enter)="onSearch()">
                             </div>
 
@@ -91,7 +91,7 @@
                                     <option value="latest" [selected]="sortOption() === 'latest' || !sortOption()">Newly Listed</option>
                                     <option value="price_asc" [selected]="sortOption() === 'price_asc'">Price: Low to High</option>
                                     <option value="price_desc" [selected]="sortOption() === 'price_desc'">Price: High to Low</option>
-                                    <option value="ending_soon" [selected]="sortOption() === 'closing_soon'">Ending Soon</option>
+                                    <option value="ending_soon" [selected]="sortOption() === 'ending_soon'">Ending Soon</option>
                                 </select>
                             </div>
                         </div>

@@ -14,17 +14,50 @@
 
     <!-- Stats -->
     <div *ngIf="!isLoading() && !errorMessage()" class="row g-4 mb-5">
-        <div class="col-md-4" *ngFor="let stat of statsArray">
-            <div class="p-4 rounded-3 border border-white border-opacity-10 bg-white bg-opacity-5">
-                <small class="text-secondary d-block mb-1 text-uppercase fw-bold" style="font-size: 0.7rem;">{{ stat.label }}</small>
-                <span class="h2 mb-0 fw-bold text-white">{{ stat.value }}</span>
+        <div class="col-md-4">
+            <div class="p-4 rounded-4 border border-white border-opacity-10 shadow-sm transition-all hover-translate-y">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="p-2 rounded-3 bg-primary bg-opacity-10 text-primary">
+                        <i class="fas fa-gavel fs-5"></i>
+                    </div>
+                </div>
+                <small class="text-secondary d-block mb-1 text-uppercase fw-bold letter-spacing-1" style="font-size: 0.65rem;">Active Bids</small>
+                <div class="d-flex align-items-baseline">
+                    <span class="h2 mb-0 fw-bold text-dark">{{ stats()?.active_bids || 0 }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 rounded-4 border border-white border-opacity-10 shadow-sm transition-all hover-translate-y">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="p-2 rounded-3 bg-success bg-opacity-10 text-success">
+                        <i class="fas fa-trophy fs-5"></i>
+                    </div>
+                </div>
+                <small class="text-secondary d-block mb-1 text-uppercase fw-bold letter-spacing-1" style="font-size: 0.65rem;">Winning Bids</small>
+                <div class="d-flex align-items-baseline">
+                    <span class="h2 mb-0 fw-bold text-dark">{{ stats()?.winning_bids || 0 }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 rounded-4 border border-white border-opacity-10 shadow-sm transition-all hover-translate-y">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="p-2 rounded-3 bg-warning bg-opacity-10 text-warning">
+                        <i class="fas fa-history fs-5"></i>
+                    </div>
+                </div>
+                <small class="text-secondary d-block mb-1 text-uppercase fw-bold letter-spacing-1" style="font-size: 0.65rem;">Total Participated</small>
+                <div class="d-flex align-items-baseline">
+                    <span class="h2 mb-0 fw-bold text-dark">{{ stats()?.total_participated || 0 }}</span>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Recent Activity -->
     <div *ngIf="!isLoading() && !errorMessage()" class="p-4 rounded-3 border border-white border-opacity-10">
-        <h5 class="h6 text-white mb-3">Recent Activity</h5>
+        <h5 class="h6 text-dark mb-4 fw-bold">Recent Activity</h5>
 
         <div *ngIf="recentActivity().length === 0">
             <p class="text-secondary small">You haven't participated in any auctions yet. Start browsing to place your first bid!</p>
@@ -32,18 +65,29 @@
         </div>
 
         <div *ngFor="let activity of recentActivity()"
-            class="d-flex justify-content-between align-items-center py-2 border-bottom border-white border-opacity-10">
-            <div>
-                <p class="mb-0 small text-white fw-bold">{{ activity.auction_title }}</p>
-                <small class="text-secondary">{{ activity.created_at | date:'mediumDate' }}</small>
+            class="d-flex justify-content-between align-items-center py-3 border-bottom border-white border-opacity-10 activity-row">
+            <div class="d-flex align-items-center">
+                <div class="activity-img-wrapper me-3">
+                    <img [src]="activity.auction_image" 
+                         [alt]="activity.auction_title"
+                         (error)="$any($event.target).src = 'https://placehold.co/400x400/4e73df/white?text=Auction'"
+                         class="rounded object-fit-cover"
+                         style="width: 50px; height: 50px; border: 1px solid rgba(255,255,255,0.1);">
+                </div>
+                <div>
+                    <a [routerLink]="['/auctions', activity.auction_id]" class="mb-0 small text-white fw-bold d-block text-decoration-none hover-gold">{{ activity.auction_title }}</a>
+                    <small class="text-secondary d-block">{{ activity.created_at | date:'mediumDate' }} at {{ activity.created_at | date:'shortTime' }}</small>
+                </div>
             </div>
             <div class="text-end">
-                <span class="small fw-bold text-gold">{{ activity.bid_amount | currency }}</span>
-                <span class="badge ms-2 small"
-                    [class.bg-success]="activity.status === 'winning'"
-                    [class.bg-danger]="activity.status === 'outbid'"
-                    [class.bg-secondary]="activity.status === 'closed'">
-                    {{ activity.status }}
+                <div class="fw-bold text-gold small">{{ activity.bid_amount | currency }}</div>
+                <span class="badge mt-1"
+                    [class]="{
+                        'bg-success-soft text-success': activity.status === 'winning',
+                        'bg-danger-soft text-danger': activity.status === 'outbid',
+                        'bg-secondary-soft text-secondary': activity.status === 'closed'
+                    }" style="font-size: 0.65rem; padding: 0.4em 0.8em; border-radius: 50px;">
+                    {{ activity.status | uppercase }}
                 </span>
             </div>
         </div>

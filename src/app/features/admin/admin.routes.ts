@@ -1,10 +1,6 @@
 import { Routes } from '@angular/router';
-import { adminGuard } from './guards/admin.guard';
+import { adminGuard } from '../../core/guards/admin.guard';
 
-/**
- * Routes for the Admin Panel feature.
- * Everything nested here is protected by the adminGuard.
- */
 export const ADMIN_ROUTES: Routes = [
   {
     path: '',
@@ -12,22 +8,18 @@ export const ADMIN_ROUTES: Routes = [
     loadComponent: () => import('./layout/admin-layout').then(m => m.AdminLayout),
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      {
-        path: 'dashboard',
-        loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.AdminDashboard),
+      { 
+        path: 'dashboard', 
+        loadComponent: () => import('./pages/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent) 
       },
-      {
-        path: 'users',
-        loadComponent: () => import('./pages/users/users').then(m => m.AdminUsers),
+      { 
+        path: 'auctions', 
+        loadComponent: () => import('./pages/manage-auctions/manage-auctions.component').then(m => m.ManageAuctionsComponent) 
       },
-      {
-        path: 'auctions',
-        loadComponent: () => import('./pages/auctions/auctions').then(m => m.AdminAuctions),
-      },
-      {
-        path: 'activity',
-        loadComponent: () => import('./pages/activity/activity').then(m => m.AdminActivity),
+      { 
+        path: 'users', 
+        loadComponent: () => import('./pages/manage-users/manage-users.component').then(m => m.ManageUsersComponent) 
       }
-    ],
-  },
+    ]
+  }
 ];

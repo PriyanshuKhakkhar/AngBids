@@ -24,10 +24,11 @@ export class AuctionDetails implements OnInit {
   bidError = signal<string | null>(null);
   isBidding = signal(false);
 
-  /** Minimum valid bid: 1 above current bid */
+  /** Minimum valid bid: current bid + minimum increment */
   minBid = computed(() => {
-    const current = this.auction()?.currentBid;
-    return current ? Number(current) + 1 : 1;
+    const current = Number(this.auction()?.currentBid || 0);
+    const minInc = Number(this.auction()?.minIncrement || 1);
+    return current > 0 ? current + minInc : minInc;
   });
 
   bidControl = new FormControl<number | null>(null, [
@@ -47,12 +48,24 @@ export class AuctionDetails implements OnInit {
     this.auctionService.getAuctionById(id).subscribe({
       next: (data) => {
         this.auction.set(data);
+        if (data.bids) {
+            this.bids.set(data.bids);
+        }
+        
         // Set dynamic min validator based on current bid
         this.bidControl.setValidators([
           Validators.required,
           Validators.min(this.minBid()),
         ]);
         this.bidControl.updateValueAndValidity();
+        
+        // Disable bidding if auction has ended
+        if (new Date(data.endDate) <= new Date() || data.status === 'closed') {
+            this.bidControl.disable();
+        } else {
+            this.bidControl.enable();
+        }
+        
         this.isLoading.set(false);
       },
       error: (err: Error) => {
@@ -78,7 +91,7 @@ export class AuctionDetails implements OnInit {
         this.bids.update(prev => [res.bid, ...prev]);
         this.bidControl.reset();
         this.isBidding.set(false);
-        // Refresh auction to get updated current bid
+        // Refresh auction to get updated current bid and bids list
         this.loadAuction(auctionId);
       },
       error: (err: Error) => {

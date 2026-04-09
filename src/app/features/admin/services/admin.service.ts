@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({
@@ -10,35 +10,50 @@ export class AdminService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/admin`;
 
-  /**
-   * Get overall system statistics for admin dashboard
-   */
-  getStats(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/dashboard`).pipe(
-      catchError(this.handleError)
+  // --- Dashboard Data ---
+  getDashboardStats(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/stats`).pipe(
+      map(res => res.data || res)
     );
   }
 
-  /**
-   * Get paginated list of users for management
-   */
+  getRecentActivity(): Observable<any[]> {
+    return this.http.get<any>(`${this.apiUrl}/activity`).pipe(
+      map(res => res.data || res)
+    );
+  }
+
+  // --- User Management ---
   getUsers(params?: any): Observable<any> {
-    return this.http.get(`${this.apiUrl}/users`, { params }).pipe(
-      catchError(this.handleError)
+    return this.http.get<any>(`${this.apiUrl}/users`, { params }).pipe(
+      map(res => res.data || res)
     );
   }
 
-  /**
-   * Get list of auctions for moderation
-   */
+  updateUser(id: number, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/users/${id}`, data);
+  }
+
+  deleteUser(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/users/${id}`);
+  }
+
+  // --- Auction Control ---
   getAuctions(params?: any): Observable<any> {
-    return this.http.get(`${this.apiUrl}/auctions`, { params }).pipe(
-      catchError(this.handleError)
+    return this.http.get<any>(`${this.apiUrl}/auctions`, { params }).pipe(
+      map(res => res.data || res)
     );
   }
 
-  private handleError(error: any) {
-    console.error('[AdminService Error]:', error);
-    return throwError(() => new Error(error.error?.message || 'An error occurred during admin operation.'));
+  approveAuction(id: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auctions/${id}/approve`, {});
+  }
+
+  rejectAuction(id: number, reason: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auctions/${id}/reject`, { reason });
+  }
+
+  deleteAuction(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/auctions/${id}`);
   }
 }

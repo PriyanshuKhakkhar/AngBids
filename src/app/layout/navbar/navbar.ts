@@ -23,6 +23,15 @@ export class Navbar {
     return this.authService.currentUser();
   }
 
+  onGlobalSearch(event: Event): void {
+    const el = event.target as HTMLInputElement;
+    const value = el.value.trim();
+    if (value) {
+      this.router.navigate(['/auctions'], { queryParams: { q: value } });
+      el.blur();
+    }
+  }
+
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/']);

@@ -14,6 +14,8 @@ export interface Auction {
   category: string;
   seller?: { name: string; avatar?: string } | null;
   totalBids?: number;
+  minIncrement?: number;
+  bids?: Bid[];
 }
 
 export interface Bid {

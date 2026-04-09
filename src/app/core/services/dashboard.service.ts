@@ -13,7 +13,9 @@ export interface DashboardStats {
 
 export interface RecentActivity {
   id: number;
+  auction_id?: number;
   auction_title: string;
+  auction_image?: string;
   bid_amount: number;
   status: 'winning' | 'outbid' | 'closed';
   created_at: string;
@@ -69,7 +71,11 @@ export class DashboardService {
           },
           recent_activity: bidsRes.data.map((bid: any) => ({
             id: bid.id,
-            auction_title: bid.auction?.title || 'Unknown Auction',
+            auction_id: bid.auction?.id,
+            auction_title: bid.auction?.title || 'Untitled Auction',
+            auction_image: bid.auction?.image_url ? 
+              (bid.auction.image_url.includes('http') ? bid.auction.image_url : `/storage/${bid.auction.image_url}`) : 
+              'https://placehold.co/400x400/4e73df/white?text=Auction+Item',
             bid_amount: bid.amount,
             status: (bid.auction?.status === 'closed' || bid.auction?.status === 'ended' ? 'closed' : (bid.is_winning ? 'winning' : 'outbid')) as 'winning' | 'outbid' | 'closed',
             created_at: bid.placed_at
@@ -114,6 +120,18 @@ export class DashboardService {
 
   updatePassword(payload: PasswordUpdatePayload): Observable<{ message: string }> {
     return this.http.put<{ message: string }>(`${this.baseUrl}/password`, payload).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  submitKyc(formData: FormData): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.baseUrl}/kyc`, formData).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  getKycStatus(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/kyc`).pipe(
       catchError(this.handleError)
     );
   }

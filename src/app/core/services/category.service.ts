@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, catchError, throwError, retry } from 'rxjs';
+import { Observable, catchError, throwError, retry, map } from 'rxjs';
 import { Category } from '../models/home.model';
 import { environment } from '../../../environments/environment';
 
@@ -12,7 +12,8 @@ export class CategoryService {
   private apiUrl = `${environment.apiUrl}/categories`;
 
   getCategories(): Observable<Category[]> {
-    return this.http.get<Category[]>(this.apiUrl).pipe(
+    return this.http.get<any>(this.apiUrl).pipe(
+      map(response => response.data || response),
       retry(1),
       catchError(this.handleError)
     );

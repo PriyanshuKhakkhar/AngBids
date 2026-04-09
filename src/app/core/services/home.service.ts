@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, catchError, throwError, retry } from 'rxjs';
+import { Observable, catchError, throwError, retry, map } from 'rxjs';
 import { HomeStats, UpcomingAuction, Partner } from '../models/home.model';
 import { environment } from '../../../environments/environment';
 
@@ -11,8 +11,9 @@ export class HomeService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/home`;
 
-  getHomeData(): Observable<{ stats: HomeStats[], upcoming: UpcomingAuction[], partners: Partner[] }> {
+  getHomeData(): Observable<any> {
     return this.http.get<any>(this.apiUrl).pipe(
+      map(response => response.data || response),
       retry(1),
       catchError(this.handleError)
     );
