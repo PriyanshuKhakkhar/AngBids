@@ -124,34 +124,46 @@ class AuctionController extends Controller
     public function placeBid($id, \App\Http\Requests\PlaceBidRequest $request)
     {
         $auction = Auction::findOrFail($id);
-        
-        try {
-            $bidService = app(\App\Services\BidService::class);
-            $result = $bidService->placeBid($auction, $request->validated(), auth()->user());
+        $user = auth()->user();
+        $amount = $request->input('amount');
 
-            $message = 'Bid placed successfully!';
-            if ($result['is_extended']) {
-                $message .= ' This auction has been extended by 5 minutes due to fair play rules.';
-            }
-
+        // Simple validation: amount must be higher than current price
+        if ($amount <= (float)$auction->current_price) {
             return response()->json([
-                'success' => true,
-                'message' => $message,
-                'data' => [
-                    'bid' => new \App\Http\Resources\BidResource($result['bid']),
-                    'is_extended' => $result['is_extended'],
-                    'auction' => [
-                        'id' => $auction->id,
-                        'current_price' => $auction->fresh()->current_price,
-                        'end_time' => $auction->fresh()->end_time->toDateTimeString()
+                'success' => false,
+                'message' => 'Your bid must be higher than the current price of ' . number_format((float)$auction->current_price, 2)
+            ], 422);
+        }
+
+        try {
+            return \Illuminate\Support\Facades\DB::transaction(function () use ($auction, $user, $amount) {
+                // Create the bid
+                $bid = \App\Models\Bid::create([
+                    'auction_id' => $auction->id,
+                    'user_id' => $user->id,
+                    'amount' => $amount
+                ]);
+
+                // Update auction current price
+                $auction->update(['current_price' => $amount]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Bid placed successfully!',
+                    'data' => [
+                        'bid' => new \App\Http\Resources\BidResource($bid),
+                        'auction' => [
+                            'id' => $auction->id,
+                            'current_price' => $auction->fresh()->current_price
+                        ]
                     ]
-                ]
-            ], 201);
+                ], 201);
+            });
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
-            ], 422);
+                'message' => 'Failed to place bid: ' . $e->getMessage()
+            ], 500);
         }
     }
 

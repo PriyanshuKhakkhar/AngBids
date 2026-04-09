@@ -22,8 +22,9 @@ class SearchAuctionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'keyword' => 'nullable|string|min:2|max:255',
-            'q' => 'nullable|string|min:2|max:255', // Alias for keyword
+            'keyword' => 'nullable|string|max:255',
+            'q' => 'nullable|string|max:255', // Alias for keyword
+            'search' => 'nullable|string|max:255', // Alias for q
             'category' => 'nullable|string|exists:categories,slug',
             'category_id' => 'nullable|integer|exists:categories,id',
             'min_price' => 'nullable|numeric|min:0',
@@ -60,6 +61,11 @@ class SearchAuctionRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
+        // If 'search' is provided, use it as 'q' for consistency
+        if ($this->has('search') && !$this->has('q')) {
+            $this->merge(['q' => $this->input('search')]);
+        }
+
         // If 'keyword' is provided, use it as 'q' for consistency
         if ($this->has('keyword') && !$this->has('q')) {
             $this->merge(['q' => $this->input('keyword')]);

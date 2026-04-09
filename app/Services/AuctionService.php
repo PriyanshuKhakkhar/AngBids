@@ -41,8 +41,8 @@ class AuctionService
         }
 
         // Search filter
-        if ($request->has('q')) {
-            $search = $request->input('q');
+        if ($request->filled('search') || $request->filled('q')) {
+            $search = $request->input('search', $request->input('q'));
 
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
@@ -54,7 +54,15 @@ class AuctionService
         }
 
         // Category filter (Includes children products)
-        if ($request->has('category')) {
+        if ($request->has('category_id')) {
+            $categoryId = $request->input('category_id');
+            $category = Category::find($categoryId);
+
+            if ($category) {
+                $categoryIds = $category->getAllChildIds();
+                $query->whereIn('category_id', $categoryIds);
+            }
+        } elseif ($request->has('category')) {
             $categorySlug = $request->input('category');
             $category = Category::where('slug', $categorySlug)->first();
 
