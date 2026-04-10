@@ -399,13 +399,13 @@ class AuctionService
             // 1. Get base query for total count (Laravel's count() usually clears orders)
             $totalResults = $this->getFilteredAuctions($request, false)->count();
 
-            // 2. Get price range (MUST clear order by for aggregate queries)
-            $queryForStats = $this->getFilteredAuctions($request, false)->reorder();
-            $queryForStats->getQuery()->columns = null; // Clear existing selects (auctions.*)
+            // 2. Get price range (MUST clear selects and orders for valid aggregate)
+            $queryForStats = $this->getFilteredAuctions($request, false)->toBase();
+            $queryForStats->columns = []; // Clear any previously selected columns (like auctions.*)
             
             $priceStats = $queryForStats
                 ->selectRaw('MIN(current_price) as min_price, MAX(current_price) as max_price')
-                ->toBase()
+                ->reorder()
                 ->first();
 
             return [

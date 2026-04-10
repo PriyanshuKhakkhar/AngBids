@@ -58,10 +58,15 @@ class AuctionController extends Controller
             \Log::error("API Error [Auctions Index]: " . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch auctions. Please try again later.',
+                'message' => config('app.debug') ? 'Index Error: ' . $e->getMessage() : 'Failed to fetch auctions. Please try again later.',
                 'data' => [],
-                'errors' => config('app.debug') ? $e->getMessage() : null
-            ], 500); // We still return 500 but as a clean JSON with context
+                'errors' => config('app.debug') ? [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString()
+                ] : null
+            ], 500); 
         }
     }
 
@@ -229,9 +234,14 @@ class AuctionController extends Controller
             \Log::error("API Error [Auctions Search]: " . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Search failed. Please try again later.',
+                'message' => config('app.debug') ? 'Search Error: ' . $e->getMessage() : 'Search failed. Please try again later.',
                 'data' => [],
-                'errors' => config('app.debug') ? $e->getMessage() : null
+                'errors' => config('app.debug') ? [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString()
+                ] : null
             ], 500);
         }
     }

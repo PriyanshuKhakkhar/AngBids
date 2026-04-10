@@ -18,7 +18,7 @@ class AuctionResource extends JsonResource
         $endTime = $this->end_time;
         
         // Calculate time remaining in seconds
-        $timeRemaining = $endTime->isFuture() ? $endTime->diffInSeconds($now) : 0;
+        $timeRemaining = ($endTime && $endTime->isFuture()) ? $endTime->diffInSeconds($now) : 0;
 
         return [
             'id' => $this->id,
@@ -32,7 +32,7 @@ class AuctionResource extends JsonResource
             'start_time' => $this->start_time?->toIso8601String(),
             'end_time' => $this->end_time?->toIso8601String(),
             'time_remaining' => $timeRemaining,
-            'time_remaining_human' => $endTime->isFuture() ? $endTime->diffForHumans($now, true) : 'Ended',
+            'time_remaining_human' => ($endTime && $endTime->isFuture()) ? $endTime->diffForHumans($now, true) : 'Ended',
 
             'user' => [
                 'id' => $this->user?->id,
