@@ -181,7 +181,7 @@ export class AuctionService {
       }
       errorMessage = validationErrors || error.error?.message || 'Validation failed. Please check your input.';
     } else if (error.status === 500) {
-      errorMessage = 'Server Error: Something went wrong on our end. Please try again later.';
+      errorMessage = error.error?.message || 'Server Error: Something went wrong on our end. Please try again later.';
     } else {
       if (typeof error.error === 'string' && error.error.trim().startsWith('<')) {
         errorMessage = 'Invalid response from server. Please try again.';

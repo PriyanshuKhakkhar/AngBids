@@ -1,0 +1,186 @@
+<!-- ── Dashboard Header ── -->
+<div class="d-flex align-items-center justify-content-between mb-4 mt-2">
+    <div>
+        <h1 class="h3 fw-bold mb-1 text-dark">Admin Dashboard</h1>
+        <p class="text-secondary small mb-0">Monitor users, auctions, and bidding activity platform-wide</p>
+    </div>
+    <div class="d-flex gap-2">
+        <div *ngIf="usingFallback()" class="badge bg-warning text-dark d-flex align-items-center px-3 rounded-pill">
+            <i class="fas fa-exclamation-triangle me-2"></i> Demo Mode
+        </div>
+        <button (click)="loadDashboard()" class="btn btn-white shadow-sm btn-sm d-flex align-items-center gap-2 border" [disabled]="isLoading()">
+            <i class="fas fa-sync-alt" [class.fa-spin]="isLoading()"></i>
+            Refresh
+        </button>
+    </div>
+</div>
+
+<!-- ── Loading State ── -->
+<div *ngIf="isLoading()" class="text-center py-5 glass-panel mt-4">
+    <div class="spinner-border text-primary mb-3" role="status"></div>
+    <p class="text-secondary small mb-0 fw-semibold">GATHERING PLATFORM INTELLIGENCE...</p>
+</div>
+
+<!-- ── Main Content ── -->
+<ng-container *ngIf="!isLoading()">
+
+    <!-- ━━ Summary Cards Grid (5 Cards) ━━ -->
+    <div class="row g-3 mb-5">
+        <div class="col-md col-sm-6" *ngFor="let card of summaryCards()">
+            <div class="stat-card p-3 h-100 bg-white shadow-sm rounded-4 border-0 d-flex flex-column"
+                 [ngClass]="getCardBorderClass(card.color)">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="stat-icon p-3 rounded-3" [ngClass]="getIconBgClass(card.color)">
+                        <i [class]="card.icon + ' fa-lg'"></i>
+                    </div>
+                    <div>
+                        <div class="text-uppercase fw-bold text-muted small lh-1 mb-1" style="font-size: 0.65rem; letter-spacing: 0.1em;">
+                            {{ card.label }}
+                        </div>
+                        <div class="h2 fw-black mb-0 lh-1">{{ card.value | number }}</div>
+                    </div>
+                </div>
+                <div class="mt-auto pt-2 border-top border-light">
+                    <span class="text-secondary" style="font-size: 0.72rem; font-weight: 500;">
+                        {{ card.sub }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ━━ Quick Actions ━━ -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-4" *ngFor="let action of quickActions">
+            <div class="glass-panel p-4 h-100 position-relative hover-lift overflow-hidden">
+                <div class="position-relative z-1">
+                    <div class="stat-icon p-2 rounded-2 mb-3 d-inline-block" [ngClass]="actionBg(action.color)">
+                        <i [class]="action.icon"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">{{ action.label }}</h5>
+                    <p class="text-secondary small mb-4">{{ action.description }}</p>
+                    <a [routerLink]="action.route" [class]="actionBtn(action.color)">
+                        Open Control Panel <i class="fas fa-chevron-right ms-2 small"></i>
+                    </a>
+                </div>
+                <!-- Subtle background icon decorate -->
+                <i [class]="action.icon" class="position-absolute end-0 bottom-0 text-muted opacity-05" style="font-size: 5rem; margin-right: -1rem; margin-bottom: -1rem;"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- ━━ Lower Content Sections ━━ -->
+    <div class="row g-4">
+        
+        <!-- ── Recent Auctions (Table) ── -->
+        <div class="col-lg-12">
+            <div class="glass-panel p-0 overflow-hidden">
+                <div class="p-4 d-flex align-items-center justify-content-between bg-light bg-opacity-50">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-gavel text-primary me-2"></i>Recent Auctions</h5>
+                    <a routerLink="/admin/auctions" class="small text-primary fw-bold text-decoration-none">EXPLORE ALL <i class="fas fa-external-link-alt ms-1"></i></a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="bg-light text-secondary text-uppercase small">
+                            <tr>
+                                <th class="ps-4 border-0 py-3" style="font-size: 0.65rem;">Title & Seller</th>
+                                <th class="border-0 py-3" style="font-size: 0.65rem;">Category</th>
+                                <th class="border-0 py-3" style="font-size: 0.65rem;">Current Bid</th>
+                                <th class="border-0 py-3 text-center" style="font-size: 0.65rem;">Status</th>
+                                <th class="border-0 py-3" style="font-size: 0.65rem;">End Date</th>
+                                <th class="pe-4 border-0 py-3 text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngIf="recentAuctions().length === 0">
+                                <td colspan="6" class="text-center py-5 text-secondary">No auctions data available</td>
+                            </tr>
+                            <tr *ngFor="let a of recentAuctions()">
+                                <td class="ps-4">
+                                    <div class="fw-bold text-dark">{{ a.title }}</div>
+                                    <div class="text-muted small">Seller: {{ a.user?.name || 'Unknown' }}</div>
+                                </td>
+                                <td><span class="badge bg-soft-primary px-2 py-1 text-primary">{{ a.category?.name || 'General' }}</span></td>
+                                <td class="fw-bold text-primary">{{ a.current_price | currency }}</td>
+                                <td class="text-center">
+                                    <span class="badge-status" [ngClass]="statusClass(getAuctionStatus(a))">
+                                        {{ getAuctionStatus(a) }}
+                                    </span>
+                                </td>
+                                <td class="text-secondary small">{{ a.end_time | date:'mediumDate' }}</td>
+                                <td class="pe-4 text-end">
+                                    <a [routerLink]="['/auctions', a.id]" target="_blank" class="btn btn-icon-only">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Recent Users (Section) ── -->
+        <div class="col-lg-6">
+            <div class="glass-panel p-0 overflow-hidden h-100">
+                <div class="p-4 bg-light bg-opacity-50">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-users-plus text-success me-2"></i>Recent Registrations</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0 small">
+                        <thead class="bg-light text-secondary uppercase text-xs">
+                            <tr>
+                                <th class="ps-4 border-0 py-2">User</th>
+                                <th class="border-0 py-2 text-center">Role</th>
+                                <th class="pe-4 border-0 py-2 text-end">Joined</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngIf="recentUsers().length === 0">
+                                <td colspan="3" class="text-center py-4">No new users</td>
+                            </tr>
+                            <tr *ngFor="let u of recentUsers()">
+                                <td class="ps-4 py-3">
+                                    <div class="fw-bold">{{ u.name }}</div>
+                                    <div class="text-muted text-xs">{{ u.email }}</div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary-soft text-secondary px-2 py-0 border" style="font-size: 10px;">{{ u.roles?.[0] || 'User' }}</span>
+                                </td>
+                                <td class="pe-4 text-end text-muted text-xs">{{ u.created_at | date:'d MMM, yy' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Recent Bids (Section) ── -->
+        <div class="col-lg-6">
+            <div class="glass-panel p-0 overflow-hidden h-100">
+                <div class="p-4 bg-light bg-opacity-50">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-history text-warning me-2"></i>Latest Performance</h5>
+                </div>
+                <div class="p-0">
+                    <div *ngIf="recentBids().length === 0" class="text-center py-5 text-secondary small">Looking for live bids...</div>
+                    <ul class="list-group list-group-flush" *ngIf="recentBids().length > 0">
+                        <li class="list-group-item px-4 py-3 border-light d-flex align-items-center gap-3" *ngFor="let b of recentBids()">
+                            <div class="rounded-circle bg-warning bg-opacity-10 text-warning d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; flex-shrink: 0;">
+                                <i class="fas fa-gavel" style="font-size: 10px;"></i>
+                            </div>
+                            <div class="flex-grow-1 overflow-hidden">
+                                <div class="small fw-bold text-truncate">{{ b.bidderName }} placed bid on {{ b.auctionTitle }}</div>
+                                <div class="text-muted text-xs">{{ b.time | date:'shortTime' }} • {{ b.time | date:'d MMM' }}</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold text-success">{{ b.amount | currency }}</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</ng-container>

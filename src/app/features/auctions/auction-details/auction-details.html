@@ -6,7 +6,9 @@
             <ol class="breadcrumb justify-content-center mb-0">
                 <li class="breadcrumb-item"><a routerLink="/" class="text-gold text-decoration-none">Home</a></li>
                 <li class="breadcrumb-item"><a routerLink="/auctions" class="text-gold text-decoration-none">Auctions</a></li>
-                <li class="breadcrumb-item active text-secondary" aria-current="page">{{ auction()?.title || 'Auction Details' }}</li>
+                <li class="breadcrumb-item active text-secondary" aria-current="page">
+                    {{ auction()?.title || 'Auction Details' }}
+                </li>
             </ol>
         </nav>
     </div>
@@ -15,98 +17,326 @@
 <!-- Content -->
 <section class="py-5 mt-4">
     <div class="container py-lg-5">
-        <!-- Loading State -->
+
+        <!-- Back Button -->
+        <button (click)="goBack()" class="btn btn-outline-secondary btn-sm mb-4 d-inline-flex align-items-center gap-2">
+            <i class="fas fa-arrow-left"></i> Back to Auctions
+        </button>
+
+        <!-- ── Loading State ── -->
         <div *ngIf="isLoading()" class="text-center py-5">
-            <div class="spinner-border text-gold" role="status"></div>
+            <div class="spinner-border text-gold" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
             <p class="text-secondary mt-3">Loading auction details...</p>
         </div>
 
-        <!-- Load Error State -->
+        <!-- ── Error State ── -->
         <div *ngIf="!isLoading() && errorMessage()" class="text-center py-5">
-            <div class="alert alert-danger bg-transparent border-danger text-danger">
-                <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMessage() }}
+            <div class="alert alert-danger bg-transparent border-danger text-danger d-inline-flex align-items-center gap-2">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>{{ errorMessage() }}</span>
             </div>
-            <a routerLink="/auctions" class="btn btn-outline-gold mt-3">Back to Auctions</a>
+            <div class="mt-3">
+                <a routerLink="/auctions" class="btn btn-outline-gold">Back to Auctions</a>
+            </div>
         </div>
 
+        <!-- ── Main Content ── -->
         <div class="row g-5" *ngIf="!isLoading() && auction() as a">
-            <!-- Product Gallery -->
+
+            <!-- ━━ Left: Image + Info ━━ -->
             <div class="col-lg-7">
-                <div class="glass-panel p-2 mb-4">
+
+                <!-- Main Image -->
+                <div class="glass-panel p-2 mb-4 position-relative">
+                    <!-- Status Badge overlaid on image -->
+                    <div class="position-absolute top-0 start-0 m-3" style="z-index: 2;">
+                        <span class="badge fw-bold px-3 py-2 shadow-sm"
+                              [class.bg-success]="auctionStatus() === 'Live'"
+                              [class.bg-warning]="auctionStatus() === 'Upcoming'"
+                              [class.bg-danger]="auctionStatus() === 'Closed'"
+                              [class.text-dark]="auctionStatus() === 'Upcoming'"
+                              style="font-size: 0.75rem; letter-spacing: 0.05em;">
+                            <i class="fas me-1"
+                               [class.fa-circle]="auctionStatus() === 'Live'"
+                               [class.fa-clock]="auctionStatus() === 'Upcoming'"
+                               [class.fa-lock]="auctionStatus() === 'Closed'"
+                               [class.fa-beat]="auctionStatus() === 'Live'"></i>
+                            {{ auctionStatus() | uppercase }}
+                        </span>
+                    </div>
                     <img [src]="a.imageUrl"
-                        class="img-fluid rounded w-100" style="height: 500px; object-fit: cover;" [alt]="a.title">
+                         class="img-fluid rounded w-100"
+                         style="height: 480px; object-fit: cover;"
+                         [alt]="a.title">
                 </div>
-                <!-- Gallery Thumbnails (Static for now but utilizing primary image) -->
-                <div class="row g-3">
-                    <div class="col-3"><img [src]="a.imageUrl" class="img-fluid rounded border border-secondary" alt="Thumb"></div>
+
+                <!-- ── Auction Meta Info ── -->
+                <div class="glass-panel p-4">
+                    <h4 class="h5 mb-3 fw-bold">Auction Information</h4>
+                    <div class="row g-3">
+
+                        <!-- Category -->
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-start gap-2">
+                                <i class="fas fa-tag text-gold mt-1"></i>
+                                <div>
+                                    <small class="text-secondary d-block" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em;">Category</small>
+                                    <span class="fw-semibold small">{{ a.category || '—' }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Seller -->
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-start gap-2">
+                                <i class="fas fa-user text-gold mt-1"></i>
+                                <div>
+                                    <small class="text-secondary d-block" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em;">Seller</small>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <img *ngIf="a.seller?.avatar" [src]="a.seller!.avatar"
+                                             class="rounded-circle border" width="18" height="18"
+                                             style="object-fit: cover;" [alt]="a.seller!.name">
+                                        <span class="fw-semibold small">{{ a.seller?.name || 'Anonymous' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Starting Price -->
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-start gap-2">
+                                <i class="fas fa-dollar-sign text-gold mt-1"></i>
+                                <div>
+                                    <small class="text-secondary d-block" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em;">Starting Price</small>
+                                    <span class="fw-semibold small">{{ a.startingPrice | currency }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Total Bids -->
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-start gap-2">
+                                <i class="fas fa-gavel text-gold mt-1"></i>
+                                <div>
+                                    <small class="text-secondary d-block" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em;">Total Bids</small>
+                                    <span class="fw-semibold small">{{ a.totalBids ?? bids().length }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- End Time -->
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-start gap-2">
+                                <i class="fas fa-hourglass-end text-gold mt-1"></i>
+                                <div>
+                                    <small class="text-secondary d-block" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em;">Ends</small>
+                                    <span class="fw-semibold small">{{ a.endDate | date:'medium' }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-start gap-2">
+                                <i class="fas fa-info-circle text-gold mt-1"></i>
+                                <div>
+                                    <small class="text-secondary d-block" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em;">Status</small>
+                                    <span class="badge fw-semibold"
+                                          [class.bg-success]="auctionStatus() === 'Live'"
+                                          [class.bg-warning]="auctionStatus() === 'Upcoming'"
+                                          [class.bg-danger]="auctionStatus() === 'Closed'"
+                                          [class.text-dark]="auctionStatus() === 'Upcoming'">
+                                        {{ auctionStatus() }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mt-4 pt-3 border-top border-white border-opacity-10">
+                        <h5 class="h6 fw-bold mb-2">Description</h5>
+                        <p class="text-secondary small mb-0" style="line-height: 1.7;">{{ a.description }}</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- Bidding Panel -->
+            <!-- ━━ Right: Bidding Panel ━━ -->
             <div class="col-lg-5">
-                <div class="glass-panel p-5">
-                    <span class="badge-elite mb-2 d-inline-block">Premium Asset</span>
-                    <h1 class="h2 display-font mb-3">{{ a.title }}</h1>
-                    <p class="text-secondary small mb-4">{{ a.description }}</p>
+                <div class="glass-panel p-4 p-lg-5 sticky-top" style="top: 80px;">
 
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge-elite d-inline-block">Premium Asset</span>
+                        <span class="badge ms-auto fw-semibold"
+                              [class.bg-success]="auctionStatus() === 'Live'"
+                              [class.bg-warning]="auctionStatus() === 'Upcoming'"
+                              [class.bg-danger]="auctionStatus() === 'Closed'"
+                              [class.text-dark]="auctionStatus() === 'Upcoming'">
+                            {{ auctionStatus() }}
+                        </span>
+                    </div>
+
+                    <h1 class="h2 display-font mb-2">{{ a.title }}</h1>
+                    <p class="text-secondary small mb-4 d-flex align-items-center gap-1">
+                        <i class="fas fa-tag text-gold"></i>
+                        <span>{{ a.category }}</span>
+                        <span class="mx-1 opacity-25">|</span>
+                        <i class="fas fa-user text-gold"></i>
+                        <span>{{ a.seller?.name || 'Anonymous' }}</span>
+                    </p>
+
+                    <!-- ── Stats Bar ── -->
                     <div class="bg-dark bg-opacity-25 rounded p-4 mb-4 border border-white border-opacity-10">
                         <div class="row text-center g-0">
                             <div class="col border-end border-white border-opacity-10">
-                                <small class="text-secondary d-block mb-1">CURRENT BID</small>
-                                <span class="h3 fw-bold text-gold">{{ a.currentBid | currency }}</span>
+                                <small class="text-secondary d-block mb-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">CURRENT BID</small>
+                                <span class="h3 fw-bold text-gold">{{ auction()!.currentBid | currency }}</span>
+                            </div>
+                            <div class="col border-end border-white border-opacity-10">
+                                <small class="text-secondary d-block mb-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">STARTING</small>
+                                <span class="h5 fw-bold text-white">{{ a.startingPrice | currency }}</span>
                             </div>
                             <div class="col">
-                                <small class="text-secondary d-block mb-1">ENDING IN</small>
-                                <div class="h4 fw-bold text-white d-flex justify-content-center">
+                                <small class="text-secondary d-block mb-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">ENDING IN</small>
+                                <div class="h5 fw-bold text-white d-flex justify-content-center">
                                     <app-countdown-timer [endDate]="a.endDate"></app-countdown-timer>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="small text-secondary mb-2 px-1">Your Bid Amount</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-transparent border-secondary text-secondary">$</span>
-                            <input type="number" class="form-control form-control-elite"
-                                [placeholder]="'Min: ' + (minBid() | currency)"
-                                [formControl]="bidControl">
-                            <button class="btn btn-gold fw-bold px-4 shadow-none"
-                                (click)="placeBid()"
-                                [disabled]="bidControl.invalid || isBidding()">
-                                <span *ngIf="!isBidding()">PLACE BID</span>
-                                <span *ngIf="isBidding()">
-                                    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                                    BIDDING...
-                                </span>
-                            </button>
-                        </div>
-                        <div *ngIf="bidControl.invalid && bidControl.touched" class="text-danger small mt-1 px-1">
-                            Please enter a valid bid amount (min: {{ minBid() | currency }}).
-                        </div>
-                        <div *ngIf="bidSuccess()" class="text-success small mt-2 px-1">
-                            <i class="fas fa-check-circle me-1"></i>{{ bidSuccess() }}
-                        </div>
-                        <div *ngIf="bidError()" class="text-danger small mt-2 px-1">
-                            <i class="fas fa-exclamation-triangle me-1"></i>{{ bidError() }}
-                        </div>
-                        <small class="text-secondary mt-2 d-block opacity-50 px-1">* Highest bidder will be notified
-                            via automated secure alerts.</small>
+                    <!-- ── AUCTION CLOSED BANNER ── -->
+                    <div *ngIf="isAuctionClosed()"
+                         class="p-4 rounded-3 text-center border border-danger border-opacity-50 bg-danger bg-opacity-10 mb-4">
+                        <i class="fas fa-lock fs-3 text-danger mb-2 d-block"></i>
+                        <p class="fw-bold text-danger mb-1">Auction Has Ended</p>
+                        <p class="text-secondary small mb-0">This auction is closed. No more bids are accepted.</p>
                     </div>
 
-                    <div class="border-top border-white border-opacity-10 pt-4 mt-4">
-                        <h5 class="h6 text-white mb-3">Bid History</h5>
-                        <div *ngIf="bids().length === 0" class="text-secondary small opacity-50">No bids placed yet.</div>
-                        <div *ngFor="let bid of bids()" class="d-flex justify-content-between mb-2 small" [class.opacity-75]="bid.amount === a.currentBid" [class.opacity-50]="bid.amount !== a.currentBid">
-                            <div class="d-flex flex-column">
-                                <span class="fw-bold">{{ bid.bidderName }}</span>
-                                <span class="text-secondary" style="font-size: 0.75rem;">{{ bid.time | date:'short' }}</span>
+                    <!-- ── NOT LOGGED IN BANNER ── -->
+                    <ng-container *ngIf="!isAuctionClosed() && !isLoggedIn()">
+                        <div class="p-4 rounded-3 text-center border border-warning border-opacity-50 bg-warning bg-opacity-10 mb-4">
+                            <i class="fas fa-lock fs-3 text-warning mb-2 d-block"></i>
+                            <p class="text-secondary mb-3 small">You must be logged in to place a bid.</p>
+                            <a routerLink="/login" class="btn btn-gold fw-bold px-4 w-100">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login to Bid
+                            </a>
+                        </div>
+                    </ng-container>
+
+                    <!-- ── BID FORM (authenticated + open) ── -->
+                    <ng-container *ngIf="!isAuctionClosed() && isLoggedIn()">
+                        <div class="mb-4">
+                            <label class="small text-secondary mb-2 px-1 d-block">
+                                Your Bid Amount
+                                <span class="text-gold ms-1">(Min: {{ minBid() | currency }})</span>
+                            </label>
+
+                            <!-- Auth redirect flash -->
+                            <div *ngIf="authMessage()"
+                                 class="alert alert-warning d-flex align-items-center gap-2 py-2 px-3 mb-3"
+                                 role="alert">
+                                <i class="fas fa-lock"></i>
+                                <span>{{ authMessage() }}</span>
                             </div>
-                            <span class="fw-bold text-gold">{{ bid.amount | currency }}</span>
+
+                            <!-- Input + submit -->
+                            <div class="input-group mb-2">
+                                <span class="input-group-text bg-transparent border-secondary text-secondary">$</span>
+                                <input
+                                    id="bid-amount-input"
+                                    type="number"
+                                    class="form-control form-control-elite"
+                                    [placeholder]="'Above ' + (auction()!.currentBid | currency)"
+                                    [formControl]="bidControl">
+                                <button
+                                    id="place-bid-btn"
+                                    class="btn btn-gold fw-bold px-4 shadow-none"
+                                    (click)="placeBid()"
+                                    [disabled]="isBidding() || isAuctionClosed()">
+                                    <ng-container *ngIf="!isBidding(); else placingTpl">
+                                        PLACE BID <i class="fas fa-gavel ms-1"></i>
+                                    </ng-container>
+                                    <ng-template #placingTpl>
+                                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                                        Placing...
+                                    </ng-template>
+                                </button>
+                            </div>
+
+                            <!-- Validation -->
+                            <div *ngIf="bidControl.invalid && bidControl.touched"
+                                 class="text-danger small px-1 mb-1">
+                                <i class="fas fa-exclamation-circle me-1"></i>
+                                Please enter a valid bid (min: {{ minBid() | currency }}).
+                            </div>
+
+                            <!-- Success -->
+                            <div *ngIf="bidSuccess()"
+                                 class="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mt-2"
+                                 role="alert">
+                                <i class="fas fa-check-circle"></i>
+                                <span>{{ bidSuccess() }}</span>
+                            </div>
+
+                            <!-- Error -->
+                            <div *ngIf="bidError()"
+                                 class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mt-2"
+                                 role="alert">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>{{ bidError() }}</span>
+                            </div>
+
+                            <small class="text-secondary mt-2 d-block opacity-50 px-1">
+                                * Highest bidder will be notified via secure alerts.
+                            </small>
+                        </div>
+                    </ng-container>
+
+                    <!-- ── Bid History ── -->
+                    <div class="border-top border-white border-opacity-10 pt-4">
+                        <h5 class="h6 text-white mb-3 d-flex align-items-center justify-content-between">
+                            <span><i class="fas fa-history me-2 opacity-50"></i>Bid History</span>
+                            <span *ngIf="bids().length > 0" class="badge bg-gold text-dark">{{ bids().length }}</span>
+                        </h5>
+
+                        <!-- Empty -->
+                        <div *ngIf="bids().length === 0" class="text-center py-3">
+                            <i class="fas fa-gavel text-secondary opacity-25 fs-4 d-block mb-2"></i>
+                            <p class="text-secondary small opacity-50 mb-0">No bids placed yet. Be the first!</p>
+                        </div>
+
+                        <!-- Bid rows -->
+                        <div *ngFor="let bid of bids(); let i = index"
+                             class="d-flex justify-content-between align-items-center mb-2 small rounded px-2 py-2"
+                             [style.background]="i === 0 ? 'rgba(var(--gold-rgb, 212,175,55), 0.08)' : 'transparent'"
+                             [class.border]="i === 0"
+                             [class.border-warning]="i === 0"
+                             [class.border-opacity-25]="i === 0"
+                             [class.opacity-75]="i !== 0">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                     style="width:28px; height:28px; background: rgba(255,255,255,0.07);">
+                                    <i class="fas fa-user text-secondary" style="font-size: 10px;"></i>
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold lh-1">{{ bid.bidderName }}</span>
+                                    <span class="text-secondary lh-1" style="font-size: 0.7rem;">{{ bid.time | date:'short' }}</span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="fw-bold" [class.text-gold]="i === 0">{{ bid.amount | currency }}</span>
+                                <span *ngIf="i === 0" class="d-block" style="font-size: 0.65rem; color: goldenrod;">Highest</span>
+                            </div>
                         </div>
                     </div>
+
                 </div>
             </div>
-        </div>
+
+        </div><!-- /row -->
     </div>
 </section>

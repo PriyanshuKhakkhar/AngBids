@@ -1,158 +1,226 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import {
+  AdminService,
+  AdminDashboardData,
+  AdminStats,
+  AdminRecentAuction,
+  AdminRecentUser,
+} from '../../services/admin.service';
+
+// ─── Local types ───────────────────────────────────────────────────────────────
+interface RecentBidRow {
+  bidderName: string;
+  auctionTitle: string;
+  amount: number;
+  time: string;
+}
+
+interface QuickAction {
+  label: string;
+  description: string;
+  icon: string;
+  color: string;
+  route: string;
+}
+
+// ─── Mock fallback data (only used when API fails) ────────────────────────────
+const MOCK_STATS: AdminStats = {
+  total_users: 0, new_users_this_month: 0,
+  total_auctions: 0, active_auctions: 0,
+  pending_auctions: 0, closed_auctions: 0,
+  cancelled_auctions: 0, total_bids: 0,
+  bids_today: 0, total_categories: 0, unread_contacts: 0,
+};
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule],
-  template: `
-    <div class="admin-wrapper d-flex min-vh-100 bg-light">
-      <!-- Sidebar -->
-      <aside class="admin-sidebar bg-dark text-white p-3 d-none d-md-block" style="width: 260px;">
-        <div class="sidebar-brand mb-4 py-2 border-bottom border-secondary text-center">
-            <h4 class="m-0 text-gold fw-bold">AngBids <span class="text-white fs-6">Admin</span></h4>
-        </div>
-        
-        <ul class="nav flex-column gap-2 mb-5">
-            <li class="nav-item">
-                <a class="nav-link text-white active bg-primary rounded-3" href="javascript:void(0)">
-                    <i class="fas fa-tachometer-alt me-2"></i> Dashboard
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white-50" href="javascript:void(0)">
-                    <i class="fas fa-gavel me-2"></i> Manage Auctions
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white-50" href="javascript:void(0)">
-                    <i class="fas fa-users me-2"></i> Manage Users
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white-50" href="javascript:void(0)">
-                    <i class="fas fa-history me-2"></i> Manage Bids
-                </a>
-            </li>
-        </ul>
-
-        <div class="mt-auto p-3 bg-secondary bg-opacity-10 rounded-3">
-            <small class="text-white-50 d-block">Logged in as:</small>
-            <div class="fw-bold">Administrator</div>
-        </div>
-      </aside>
-
-      <!-- Main Content -->
-      <main class="flex-grow-1 p-4 overflow-auto">
-        <!-- Header -->
-        <header class="mb-4 pb-3 border-bottom">
-            <h1 class="h3 fw-bold mb-1">Admin Dashboard</h1>
-            <p class="text-secondary small mb-0">Monitor and manage platform activity</p>
-        </header>
-
-        <!-- Stats Grid -->
-        <div class="row g-4 mb-5">
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-primary border-4">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <small class="text-uppercase fw-bold text-secondary mb-1 d-block" style="font-size: 0.7rem;">Total Users</small>
-                            <h2 class="m-0 fw-bold">120</h2>
-                        </div>
-                        <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-3 p-3">
-                            <i class="fas fa-users fs-4"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-success border-4">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <small class="text-uppercase fw-bold text-secondary mb-1 d-block" style="font-size: 0.7rem;">Total Auctions</small>
-                            <h2 class="m-0 fw-bold">45</h2>
-                        </div>
-                        <div class="icon-box bg-success bg-opacity-10 text-success rounded-3 p-3">
-                            <i class="fas fa-gavel fs-4"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-warning border-4">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <small class="text-uppercase fw-bold text-secondary mb-1 d-block" style="font-size: 0.7rem;">Total Bids</small>
-                            <h2 class="m-0 fw-bold">310</h2>
-                        </div>
-                        <div class="icon-box bg-warning bg-opacity-10 text-warning rounded-3 p-3">
-                            <i class="fas fa-history fs-4"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-info border-4">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <small class="text-uppercase fw-bold text-secondary mb-1 d-block" style="font-size: 0.7rem;">Active Auctions</small>
-                            <h2 class="m-0 fw-bold">18</h2>
-                        </div>
-                        <div class="icon-box bg-info bg-opacity-10 text-info rounded-3 p-3">
-                            <i class="fas fa-bolt fs-4"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Placeholder for activity -->
-        <div class="row g-4">
-            <div class="col-md-8">
-                <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
-                    <h5 class="fw-bold mb-4">Platform Overview</h5>
-                    <div class="text-center py-5 text-secondary">
-                        <i class="fas fa-chart-line fs-1 mb-3 opacity-25"></i>
-                        <p>Detailed performance analytics will appear here.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
-                    <h5 class="fw-bold mb-4">Live Activity</h5>
-                    <div class="d-flex flex-column gap-3">
-                        <div class="d-flex gap-3 small pb-2 border-bottom">
-                            <div class="p-2 h-100 bg-light rounded text-primary"><i class="fas fa-user"></i></div>
-                            <div>
-                                <div class="fw-bold">New user registered</div>
-                                <div class="text-muted">2 mins ago</div>
-                            </div>
-                        </div>
-                        <div class="d-flex gap-3 small pb-2 border-bottom">
-                            <div class="p-2 h-100 bg-light rounded text-success"><i class="fas fa-gavel"></i></div>
-                            <div>
-                                <div class="fw-bold">New bid placed on "MacBook Pro"</div>
-                                <div class="text-muted">15 mins ago</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-      </main>
-    </div>
-  `,
-  styles: [`
-    .admin-sidebar .nav-link:hover {
-        background: rgba(255,255,255,0.05);
-        color: #fff !important;
-    }
-    .text-gold {
-        color: #d4af37;
-    }
-    .bg-light {
-        background-color: #f8f9fc !important;
-    }
-  `]
+  imports: [CommonModule, RouterLink],
+  templateUrl: './admin-dashboard.component.html',
+  styleUrl: './admin-dashboard.component.css',
 })
-export class AdminDashboardComponent {}
+export class AdminDashboardComponent implements OnInit {
+  private adminService = inject(AdminService);
+
+  // ─── State ────────────────────────────────────────────────────────────────
+  isLoading      = signal(true);
+  errorMessage   = signal<string | null>(null);
+  usingFallback  = signal(false);
+
+  stats          = signal<AdminStats>(MOCK_STATS);
+  recentAuctions = signal<AdminRecentAuction[]>([]);
+  recentUsers    = signal<AdminRecentUser[]>([]);
+  recentBids     = signal<RecentBidRow[]>([]);
+
+  // ─── Computed: Summary Cards (Total Users, Total Auctions, Active, Ended, Total Bids) ───
+  summaryCards = computed(() => {
+    const s = this.stats();
+    return [
+      {
+        label: 'Total Users',
+        value: s.total_users,
+        sub: `+${s.new_users_this_month} this month`,
+        icon: 'fas fa-users',
+        color: 'primary',
+      },
+      {
+        label: 'Total Auctions',
+        value: s.total_auctions,
+        sub: `${s.pending_auctions} pending approval`,
+        icon: 'fas fa-gavel',
+        color: 'success',
+      },
+      {
+        label: 'Active Auctions',
+        value: s.active_auctions,
+        sub: 'Live and upcoming',
+        icon: 'fas fa-bolt',
+        color: 'warning',
+      },
+      {
+        label: 'Ended Auctions',
+        value: s.closed_auctions,
+        sub: 'Successfully finished',
+        icon: 'fas fa-flag-checkered',
+        color: 'secondary',
+      },
+      {
+        label: 'Total Bids',
+        value: s.total_bids,
+        sub: `${s.bids_today} today`,
+        icon: 'fas fa-hand-paper',
+        color: 'info',
+      },
+    ];
+  });
+
+  // ─── Quick Navigation / Admin Actions ─────────────────────────────────────
+  quickActions: QuickAction[] = [
+    {
+      label:       'Manage Users',
+      description: 'View and control user access',
+      icon:        'fas fa-users-cog',
+      color:       'primary',
+      route:       '/admin/users',
+    },
+    {
+      label:       'Manage Auctions',
+      description: 'Review and moderate auctions',
+      icon:        'fas fa-gavel',
+      color:       'success',
+      route:       '/admin/auctions',
+    },
+    {
+      label:       'Manage Bids',
+      description: 'Monitor live bidding flow',
+      icon:        'fas fa-history',
+      color:       'warning',
+      route:       '/admin/activity',
+    },
+  ];
+
+  // ─── Lifecycle ────────────────────────────────────────────────────────────
+  ngOnInit(): void {
+    this.loadDashboard();
+  }
+
+  loadDashboard(): void {
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+    this.usingFallback.set(false);
+
+    this.adminService.getDashboard().subscribe({
+      next: (data: AdminDashboardData) => {
+        if (data) {
+          this.stats.set(data.stats || MOCK_STATS);
+          this.recentAuctions.set(data.recent_auctions || []);
+          this.recentUsers.set(data.recent_users || []);
+          this.recentBids.set(this._extractRecentBids(data.recent_auctions || []));
+        }
+        this.isLoading.set(false);
+      },
+      error: (err: Error) => {
+        this.errorMessage.set(err.message || 'Server currently unreachable');
+        this._setFallbackData();
+        this.isLoading.set(false);
+      }
+    });
+  }
+
+  // ─── Helpers ──────────────────────────────────────────────────────────────
+
+  private _setFallbackData(): void {
+    this.usingFallback.set(true);
+    this.stats.set({
+      total_users: 1540,
+      new_users_this_month: 124,
+      total_auctions: 485,
+      active_auctions: 42,
+      pending_auctions: 12,
+      closed_auctions: 420,
+      cancelled_auctions: 23,
+      total_bids: 8450,
+      bids_today: 156,
+      total_categories: 15,
+      unread_contacts: 8,
+    });
+
+    this.recentAuctions.set([
+      { id: 1, title: 'Vintage Rolex Datejust', status: 'active', current_price: 5400, starting_price: 3000, end_time: new Date(Date.now() + 86400000).toISOString(), start_time: null, category: {id: 1, name: 'Watches'}, user: {id: 1, name: 'John Doe'}, bid_count: 14 },
+      { id: 2, title: 'MacBook Pro M2 Max', status: 'pending', current_price: 2100, starting_price: 2000, end_time: new Date(Date.now() + 172800000).toISOString(), start_time: null, category: {id: 2, name: 'Electronics'}, user: {id: 2, name: 'Alice Smith'}, bid_count: 5 },
+      { id: 3, title: 'Herman Miller Aeron Key', status: 'closed', current_price: 850, starting_price: 500, end_time: new Date(Date.now() - 3600000).toISOString(), start_time: null, category: {id: 3, name: 'Furniture'}, user: {id: 3, name: 'Bob Wilson'}, bid_count: 22 },
+    ]);
+
+    this.recentUsers.set([
+      { id: 4, name: 'Sarah Chen', email: 'sarah@example.com', roles: ['user'], created_at: new Date().toISOString() },
+      { id: 5, name: 'Mike Johnson', email: 'mike@example.com', roles: ['user'], created_at: new Date().toISOString() },
+    ]);
+
+    this.recentBids.set([
+      { bidderName: 'John Doe', auctionTitle: 'Vintage Rolex', amount: 5400, time: new Date().toISOString() },
+      { bidderName: 'Jane Smith', auctionTitle: 'MacBook Pro', amount: 2100, time: new Date().toISOString() },
+    ]);
+  }
+
+  private _extractRecentBids(auctions: AdminRecentAuction[]): RecentBidRow[] {
+    const rows: RecentBidRow[] = [];
+    auctions.forEach(a => {
+      const bArr = (a as any).bids as any[];
+      if (bArr && bArr.length) {
+        bArr.slice(0, 2).forEach(b => {
+          rows.push({
+            bidderName: b.user?.name || 'Anonymous',
+            auctionTitle: a.title,
+            amount: b.amount,
+            time: b.created_at || a.start_time || ''
+          });
+        });
+      }
+    });
+    return rows.slice(0, 10);
+  }
+
+  getAuctionStatus(a: AdminRecentAuction): 'Live' | 'Upcoming' | 'Closed' | 'Cancelled' {
+    if (a.status === 'cancelled') return 'Cancelled';
+    if (a.status === 'pending')   return 'Upcoming';
+    if (a.end_time && new Date(a.end_time) <= new Date()) return 'Closed';
+    return 'Live';
+  }
+
+  statusClass(status: string): string {
+    const map: Record<string, string> = {
+      Live: 'badge-live', Upcoming: 'badge-upcoming',
+      Closed: 'badge-closed', Cancelled: 'badge-cancelled',
+    };
+    return map[status] ?? 'badge-secondary';
+  }
+
+  getCardBorderClass(color: string) { return `border-start border-4 border-${color}`; }
+  getIconBgClass(color: string)      { return `bg-${color} bg-opacity-10 text-${color}`; }
+  actionBg(color: string)            { return `bg-${color} bg-opacity-10 text-${color}`; }
+  actionBtn(color: string)           { return `btn btn-${color} btn-sm w-100 mt-auto`; }
+}
+
+// // update: sync with latest changes

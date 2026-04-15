@@ -1,29 +1,57 @@
-.dash-nav .nav-link {
-  color: rgba(255, 255, 255, 0.6);
-  transition: all 0.3s ease;
-  font-weight: 500;
+.dashboard-sidebar {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.dash-nav .nav-link i {
-  width: 20px;
-  text-align: center;
-}
-
-.dash-nav .nav-link:hover {
-  background: rgba(212, 175, 55, 0.05);
-  color: #fff;
-}
-
-.dash-nav .nav-link.active {
-  background: var(--elite-gold);
-  color: #000 !important;
-  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+.dashboard-sidebar:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(78, 115, 223, 0.08) !important;
 }
 
 .avatar-lg {
   width: 80px;
   height: 80px;
-  border: 2px solid var(--elite-gold);
+  border: 3px solid #4e73df;
   padding: 3px;
   border-radius: 50%;
+  background: white;
+}
+
+.dash-nav .dash-link {
+  color: #5a5c69;
+  text-decoration: none;
+}
+
+.dash-nav .dash-link:hover {
+  background-color: #f8f9fc;
+  color: #4e73df !important;
+  transform: translateX(4px);
+}
+
+.dash-nav .dash-link:hover .icon-box {
+  background-color: rgba(78, 115, 223, 0.2) !important;
+}
+
+.dash-nav .dash-link.active {
+  background: #4e73df;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(78, 115, 223, 0.25);
+}
+
+.dash-nav .dash-link.active .icon-box {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+.dash-nav .dash-link.active i {
+  color: #ffffff !important;
+}
+
+.dash-nav .hover-danger:hover {
+  background-color: #fff3f3 !important;
+  color: #e74a3b !important;
+  transform: translateX(4px);
+}
+
+.dash-nav .hover-danger:hover .icon-box {
+  background-color: rgba(231, 74, 59, 0.2) !important;
 }

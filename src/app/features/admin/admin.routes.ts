@@ -19,6 +19,15 @@ export const ADMIN_ROUTES: Routes = [
       { 
         path: 'users', 
         loadComponent: () => import('./pages/manage-users/manage-users.component').then(m => m.ManageUsersComponent) 
+      },
+      { 
+        path: 'activity', 
+        loadComponent: () => import('./pages/activity/activity').then(m => m.AdminActivity) 
+      },
+      { 
+        path: 'bids', 
+        redirectTo: 'activity',
+        pathMatch: 'full' 
       }
     ]
   }
