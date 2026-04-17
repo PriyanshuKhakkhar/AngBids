@@ -30,6 +30,8 @@ use App\Http\Controllers\Api\Admin\KycController as AdminKycControllerApi;
 
 
 Route::post('/register', [RegisterController::class, 'register']);
+Route::post('/verify-otp', [RegisterController::class, 'verifyOtp']);
+Route::post('/resend-otp', [RegisterController::class, 'resendOtp']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
 Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.reset');

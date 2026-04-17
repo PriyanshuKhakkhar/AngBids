@@ -33,6 +33,15 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $appends = [
+        'role'
+    ];
+
+    public function getRoleAttribute()
+    {
+        return $this->roles->first()->name ?? 'user';
+    }
+
     protected function casts(): array
     {
         return [
