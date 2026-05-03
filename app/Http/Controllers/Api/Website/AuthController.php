@@ -14,13 +14,18 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
+        \Log::info("Login attempt for email: " . $request->email);
+        \Log::info("Request Data: " . json_encode($request->all()));
+
         if(!Auth::attempt($request->only('email', 'password'))) {
+            \Log::warning("Failed login attempt for email: " . $request->email);
             return response()->json([
                 'message' => 'Invalid login details'
              ], 401);
         }
 
         $user = Auth::user();
+        \Log::info("User authenticated successfully: ID " . $user->id . " - Email: " . $user->email);
 
         if (is_null($user->email_verified_at)) {
             Auth::logout();

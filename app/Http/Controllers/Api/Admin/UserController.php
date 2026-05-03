@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\Rule;
 use App\Http\Resources\UserResource;
 
 class UserController extends Controller
@@ -93,7 +94,7 @@ class UserController extends Controller
     public function sendOtp(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|unique:users,email'
+            'email' => ['required', 'email', Rule::unique('users', 'email')->whereNull('deleted_at')]
         ]);
 
         $email = strtolower(trim($request->email));
@@ -127,8 +128,8 @@ class UserController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name'     => 'required|string|min:2|max:255',
-            'username' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_-]+$/', 'unique:users,username'],
-            'email'    => 'required|email|max:255|unique:users,email',
+            'username' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_-]+$/', Rule::unique('users', 'username')->whereNull('deleted_at')],
+            'email'    => ['required', 'email', 'max:255', Rule::unique('users', 'email')->whereNull('deleted_at')],
             'password' => ['required', 'confirmed', 'min:8', Rules\Password::defaults()],
             'role'     => 'required|exists:roles,name',
             'otp'      => 'required|string|size:6',
@@ -256,8 +257,8 @@ class UserController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name'  => 'required|string|min:2|max:255',
-            'username' => 'required|string|alpha_dash|max:255|unique:users,username,' . $user->id,
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'username' => ['required', 'string', 'alpha_dash', 'max:255', Rule::unique('users', 'username')->ignore($user->id)->whereNull('deleted_at')],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)->whereNull('deleted_at')],
             'role'  => 'sometimes|exists:roles,name',
             'password' => ['nullable', 'confirmed', 'min:8', Rules\Password::defaults()],
         ]);
@@ -313,14 +314,7 @@ class UserController extends Controller
      
     public function destroy($id)
     {
-        $user = User::find($id);
-
-        if (!$user) {
-             return response()->json([
-                'status' => false,
-                'message' => 'User not found'
-            ], 404);
-        }
+        $user = User::findOrFail($id);
 
         $currentUser = Auth::user();
 
@@ -339,12 +333,12 @@ class UserController extends Controller
             ], 403);
         }
 
-        $user->update(['deleted_by' => Auth::id()]); // Create migration if this column doesn't exist, assuming logic from existing controller implies it might exist or be handled differently. Looking at existing controller: `$user->update(['deleted_by' => Auth::id()]);` is present.
+        $user->update(['deleted_by' => Auth::id()]);
         $user->delete();
 
         return response()->json([
             'status' => true,
-            'message' => 'User moved to trash'
+            'message' => 'User deleted successfully'
         ]);
     }
 

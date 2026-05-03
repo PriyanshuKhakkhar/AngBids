@@ -32,12 +32,49 @@ class WebsiteController extends Controller
         $categories = Category::topLevel()->active()->take(6)->get();
         $testimonials = Testimonial::where('is_active', true)->take(5)->get();
 
+        // Calculate Stats
+        $stats = [
+            [
+                'liveAuctions' => (string) Auction::active()->count(),
+                'weeklyVolume' => '$' . number_format(Auction::where('status', 'closed')->sum('current_price') / 1000, 1) . 'k',
+                'verifiedUsers' => (string) User::count(),
+                'successRate' => '94%'
+            ]
+        ];
+
+        // Fetch Upcoming Auctions
+        $upcoming = Auction::where('start_time', '>', now())
+            ->orWhere('status', 'pending')
+            ->take(3)
+            ->get()
+            ->map(function($a) {
+                return [
+                    'id' => $a->id,
+                    'title' => $a->title,
+                    'description' => \Illuminate\Support\Str::limit($a->description, 100),
+                    'date' => $a->start_time ? $a->start_time->format('M d, Y') : 'Coming Soon'
+                ];
+            });
+
+        // Mock Partners
+        $partners = [
+            ['icon' => 'fab fa-apple'],
+            ['icon' => 'fab fa-google'],
+            ['icon' => 'fab fa-amazon'],
+            ['icon' => 'fab fa-microsoft'],
+            ['icon' => 'fab fa-facebook'],
+            ['icon' => 'fab fa-twitter']
+        ];
+
         return response()->json([
             'success' => true,
             'data' => [
                 'auctions' => AuctionResource::collection($auctions),
                 'categories' => CategoryResource::collection($categories),
-                'testimonials' => TestimonialResource::collection($testimonials)
+                'testimonials' => TestimonialResource::collection($testimonials),
+                'stats' => $stats,
+                'upcoming' => $upcoming,
+                'partners' => $partners
             ]
         ]);
     }

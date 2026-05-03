@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\Rule;
 use App\Jobs\SendOtpEmailJob;
 
 class RegisterController extends Controller
@@ -28,10 +29,10 @@ class RegisterController extends Controller
         
         if ($existingUser && !is_null($existingUser->email_verified_at)) {
             // If verified, enforce the unique rule as normal
-            $emailRules[] = 'unique:users,email';
+            $emailRules[] = Rule::unique('users', 'email')->whereNull('deleted_at');
         } elseif (!$existingUser) {
             // If new user, enforce the unique rule
-            $emailRules[] = 'unique:users,email';
+            $emailRules[] = Rule::unique('users', 'email')->whereNull('deleted_at');
         }
         // If unverified user exists, we skip the unique rule so we can "take over" the unverified record
 
@@ -95,7 +96,7 @@ class RegisterController extends Controller
                 'success' => true,
                 'message' => 'Registration successful. An OTP has been sent to your email.',
                 'email' => $user->email
-            ], 201);
+            ], 200);
 
         } catch (\Exception $e) {
             \Log::error('Registration Error: ' . $e->getMessage());

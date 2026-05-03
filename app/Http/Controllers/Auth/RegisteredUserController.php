@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
+use Illuminate\Validation\Rule;
 
 class RegisteredUserController extends Controller
 {
@@ -24,7 +25,7 @@ class RegisteredUserController extends Controller
     public function sendOtp(Request $request)
     {
         $request->validate([
-            'email' => ['required', 'email', 'unique:users,email', 'max:255', 'not_regex:/\+/']
+            'email' => ['required', 'email', Rule::unique('users', 'email')->whereNull('deleted_at'), 'max:255', 'not_regex:/\+/']
         ], [
             'email.not_regex' => 'Please enter a valid standard email address.'
         ]);
@@ -54,8 +55,8 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'min:2', 'max:255', 'regex:/^[a-zA-Z\s\'-]+$/'],
-            'username' => ['required', 'string', 'alpha_dash', 'max:255', 'unique:'.User::class],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class, 'not_regex:/\+/'],
+            'username' => ['required', 'string', 'alpha_dash', 'max:255', Rule::unique('users', 'username')->whereNull('deleted_at')],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users', 'email')->whereNull('deleted_at'), 'not_regex:/\+/'],
             'password' => ['required', 'confirmed', 'min:8', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/'],
             'verification_code'      => ['required', 'string', 'size:6'],
         ], [
