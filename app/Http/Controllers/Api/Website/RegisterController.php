@@ -114,10 +114,11 @@ class RegisterController extends Controller
         ]);
 
         try {
+            \Log::info("OTP received for: {$request->email} - Code: {$request->otp}");
             $cachedOtp = Cache::get('otp_' . $request->email);
 
             if (!$cachedOtp || $cachedOtp !== $request->otp) {
-                \Log::warning("Verification failed for {$request->email}: Invalid or expired OTP.");
+                \Log::warning("Verification failed for {$request->email}: Invalid or expired OTP. Expected: {$cachedOtp}, Received: {$request->otp}");
                 return response()->json([
                     'success' => false,
                     'message' => 'Invalid or expired OTP code.'
@@ -126,9 +127,27 @@ class RegisterController extends Controller
 
             $user = User::where('email', $request->email)->first();
             if ($user) {
+                \Log::info("User found for verification: {$user->email} (ID: {$user->id})");
+                
                 $user->email_verified_at = now();
+                // If you have a status field, update it here. Assuming email_verified_at is the primary indicator.
                 $user->save();
-                \Log::info("User verified successfully: {$request->email}");
+                
+                \Log::info("User activated and email_verified_at updated: {$user->email}");
+
+                // Generate Auth Token for immediate login
+                $token = $user->createToken('auth_token')->plainTextToken;
+                \Log::info("Sanctum token created for user: {$user->email}");
+
+                Cache::forget('otp_' . $request->email);
+
+                \Log::info("OTP Verification successful. Returning response with token and user data.");
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Account verified successfully!',
+                    'token' => $token,
+                    'user' => new \App\Http\Resources\UserResource($user)
+                ], 200);
             } else {
                 \Log::error("User not found after OTP match for: {$request->email}");
                 return response()->json([
@@ -136,13 +155,6 @@ class RegisterController extends Controller
                     'message' => 'User account not found.'
                 ], 404);
             }
-
-            Cache::forget('otp_' . $request->email);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Account verified successfully!'
-            ], 200);
 
         } catch (\Exception $e) {
             \Log::error("OTP Verification Exception for {$request->email}: " . $e->getMessage());
