@@ -14,6 +14,7 @@ export interface User {
   isVerified?: boolean;
   phone?: string;
   address?: string;
+  kyc_status?: 'pending' | 'submitted' | 'approved' | 'rejected' | null;
 }
 
 /**

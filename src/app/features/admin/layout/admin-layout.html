@@ -7,9 +7,13 @@
     </div>
 
     <nav class="sidebar-nav flex-grow-1 p-3">
-      <a routerLink="./dashboard" routerLinkActive="active" class="nav-item">
+      <a *ngIf="!auth.isSuperAdmin()" routerLink="./dashboard" routerLinkActive="active" class="nav-item">
         <i class="fas fa-th-large"></i>
         <span>Dashboard</span>
+      </a>
+      <a *ngIf="auth.isSuperAdmin()" routerLink="./super-dashboard" routerLinkActive="active" class="nav-item">
+        <i class="fas fa-server"></i>
+        <span>Super Dashboard</span>
       </a>
       <a routerLink="./users" routerLinkActive="active" class="nav-item">
         <i class="fas fa-users"></i>
@@ -32,7 +36,9 @@
         </div>
         <div class="admin-info">
           <div class="small fw-bold text-light truncate">{{ user()?.firstName }}</div>
-          <div class="x-small text-secondary fw-semibold text-uppercase tracking-wider">Administrator</div>
+          <div class="x-small text-secondary fw-semibold text-uppercase tracking-wider">
+            {{ auth.isSuperAdmin() ? 'Super Admin' : 'Administrator' }}
+          </div>
         </div>
       </div>
       <button (click)="onLogout()" class="btn btn-outline-danger btn-sm w-100 py-2 border-0 opacity-75 hover-opacity-100">

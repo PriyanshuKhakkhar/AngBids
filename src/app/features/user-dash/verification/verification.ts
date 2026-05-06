@@ -9,7 +9,7 @@ import { DashboardService } from '../../../core/services/dashboard.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
-    <div class="glass-panel p-5 h-100">
+    <div class="glass-panel p-4 p-md-5 h-100">
       <div class="d-flex align-items-center mb-4">
         <div class="p-3 rounded-circle bg-warning bg-opacity-10 text-warning me-3">
             <i class="fas fa-id-card fs-4"></i>
@@ -20,7 +20,7 @@ import { DashboardService } from '../../../core/services/dashboard.service';
         </div>
       </div>
 
-      <div *ngIf="kycStatus() === 'pending'" class="alert alert-info border-info bg-transparent text-info small mb-4 animate__animated animate__fadeIn">
+      <div *ngIf="kycStatus() === 'pending' || kycStatus() === 'submitted'" class="alert alert-info border-info bg-transparent text-info small mb-4 animate__animated animate__fadeIn">
           <i class="fas fa-clock me-2"></i>Your verification is currently under review. This usually takes 24-48 hours.
       </div>
 
@@ -28,50 +28,103 @@ import { DashboardService } from '../../../core/services/dashboard.service';
           <i class="fas fa-check-circle me-2"></i>{{ successMessage() }}
       </div>
 
-      <div *ngIf="kycStatus() !== 'pending' && kycStatus() !== 'approved'" class="kyc-form-container mt-4">
+      <div *ngIf="kycStatus() !== 'pending' && kycStatus() !== 'submitted' && kycStatus() !== 'approved'" class="kyc-form-container mt-4">
           <form [formGroup]="kycForm" (ngSubmit)="onSubmit()">
-              <div class="mb-4">
-                  <label class="small text-secondary mb-2 fw-bold">Select Document Type</label>
-                  <select class="form-select form-control-elite shadow-none" formControlName="document_type">
-                      <option value="">Choose document...</option>
-                      <option value="aadhar">Aadhar Card</option>
-                      <option value="pan">PAN Card</option>
-                      <option value="passport">Passport</option>
-                      <option value="voter_id">Voter ID</option>
-                  </select>
+              
+              <!-- Section 1: Personal Details -->
+              <div class="mb-4 pt-3 border-top border-white border-opacity-10">
+                  <h5 class="h6 fw-bold mb-3 text-gold">1. Personal Information</h5>
+                  <div class="row g-3">
+                      <div class="col-md-6">
+                          <label class="small text-secondary mb-1">Full Name (As per ID)</label>
+                          <input type="text" class="form-control form-control-elite" formControlName="full_name" placeholder="John Doe">
+                      </div>
+                      <div class="col-md-6">
+                          <label class="small text-secondary mb-1">Date of Birth</label>
+                          <input type="date" class="form-control form-control-elite" formControlName="date_of_birth">
+                      </div>
+                      <div class="col-12">
+                          <label class="small text-secondary mb-1">Residential Address</label>
+                          <textarea class="form-control form-control-elite" formControlName="address" rows="2" placeholder="Street, City, State, ZIP"></textarea>
+                      </div>
+                  </div>
               </div>
 
-              <div class="mb-5">
-                  <label class="small text-secondary mb-3 fw-bold d-block">Upload Document Proof (Front Side)</label>
-                  <div class="upload-area p-5 border-2 border-dashed rounded-4 text-center cursor-pointer transition-all"
-                       (click)="fileInput.click()"
-                       [class.border-primary]="isDragging"
-                       (dragover)="onDragOver($event)"
-                       (dragleave)="onDragLeave()"
-                       (drop)="onDrop($event)">
-                      <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*,.pdf" class="d-none">
-                      
-                      <div *ngIf="!selectedFile" class="py-3">
-                          <i class="fas fa-cloud-upload-alt text-primary fs-1 mb-3"></i>
-                          <h6 class="text-dark">Click or drag to upload</h6>
-                          <p class="text-secondary small">PNG, JPG or PDF up to 5MB</p>
+              <!-- Section 2: ID Document Details -->
+              <div class="mb-4 pt-3 border-top border-white border-opacity-10">
+                  <h5 class="h6 fw-bold mb-3 text-gold">2. ID Document Details</h5>
+                  <div class="row g-3">
+                      <div class="col-md-6">
+                          <label class="small text-secondary mb-1">ID Type</label>
+                          <select class="form-select form-control-elite shadow-none" formControlName="id_type">
+                              <option value="">Choose document...</option>
+                              <option value="aadhaar">Aadhar Card</option>
+                              <option value="pan">PAN Card</option>
+                              <option value="passport">Passport</option>
+                              <option value="driving_license">Driving License</option>
+                          </select>
+                      </div>
+                      <div class="col-md-6">
+                          <label class="small text-secondary mb-1">ID Number</label>
+                          <input type="text" class="form-control form-control-elite" formControlName="id_number" placeholder="Enter ID number">
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Section 3: Document Uploads -->
+              <div class="mb-5 pt-3 border-top border-white border-opacity-10">
+                  <h5 class="h6 fw-bold mb-3 text-gold">3. Proof Uploads</h5>
+                  <div class="row g-4">
+                      <!-- ID Document -->
+                      <div class="col-md-6">
+                          <label class="small text-secondary mb-2 fw-bold d-block">ID Document Proof (Front Side)</label>
+                          <div class="upload-area p-4 border-2 border-dashed rounded-4 text-center cursor-pointer transition-all"
+                               (click)="idFileInput.click()">
+                              <input type="file" #idFileInput (change)="onIdFileSelected($event)" accept="image/*,.pdf" class="d-none">
+                              
+                              <div *ngIf="!idFile" class="py-2">
+                                  <i class="fas fa-file-upload text-primary fs-3 mb-2"></i>
+                                  <p class="mb-0 small fw-bold">Upload ID</p>
+                                  <p class="text-secondary x-small mb-0">PDF, JPG up to 2MB</p>
+                              </div>
+
+                              <div *ngIf="idFile" class="py-2">
+                                  <div class="d-flex align-items-center justify-content-center text-primary">
+                                      <i class="fas fa-check-circle me-2"></i>
+                                      <span class="small fw-bold text-truncate" style="max-width: 150px;">{{ idFile.name }}</span>
+                                      <i class="fas fa-times text-danger ms-2" (click)="removeIdFile($event)"></i>
+                                  </div>
+                              </div>
+                          </div>
                       </div>
 
-                      <div *ngIf="selectedFile" class="py-3 d-flex align-items-center justify-content-center">
-                          <div class="p-3 bg-primary bg-opacity-10 rounded-3 text-primary d-flex align-items-center">
-                              <i class="fas fa-file-alt fs-4 me-3"></i>
-                              <div class="text-start">
-                                  <div class="small fw-bold">{{ selectedFile.name }}</div>
-                                  <div class="x-small">{{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB</div>
+                      <!-- Selfie Image -->
+                      <div class="col-md-6">
+                          <label class="small text-secondary mb-2 fw-bold d-block">Selfie with ID</label>
+                          <div class="upload-area p-4 border-2 border-dashed rounded-4 text-center cursor-pointer transition-all"
+                               (click)="selfieFileInput.click()">
+                              <input type="file" #selfieFileInput (change)="onSelfieFileSelected($event)" accept="image/*" class="d-none">
+                              
+                              <div *ngIf="!selfieFile" class="py-2">
+                                  <i class="fas fa-camera text-primary fs-3 mb-2"></i>
+                                  <p class="mb-0 small fw-bold">Upload Selfie</p>
+                                  <p class="text-secondary x-small mb-0">JPG, PNG up to 2MB</p>
                               </div>
-                              <button type="button" class="btn btn-sm text-danger ms-4" (click)="removeFile($event)"><i class="fas fa-times"></i></button>
+
+                              <div *ngIf="selfieFile" class="py-2">
+                                  <div class="d-flex align-items-center justify-content-center text-primary">
+                                      <i class="fas fa-check-circle me-2"></i>
+                                      <span class="small fw-bold text-truncate" style="max-width: 150px;">{{ selfieFile.name }}</span>
+                                      <i class="fas fa-times text-danger ms-2" (click)="removeSelfieFile($event)"></i>
+                                  </div>
+                              </div>
                           </div>
                       </div>
                   </div>
               </div>
 
-              <button type="submit" class="btn btn-gold px-5 py-3 fw-bold w-100 w-md-auto" 
-                      [disabled]="isLoading() || kycForm.invalid || !selectedFile">
+              <button type="submit" class="btn btn-gold px-5 py-3 fw-bold w-100" 
+                      [disabled]="isLoading() || kycForm.invalid || !idFile || !selfieFile">
                   <span *ngIf="!isLoading()">SUBMIT FOR VERIFICATION</span>
                   <span *ngIf="isLoading()">
                       <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
@@ -95,6 +148,11 @@ import { DashboardService } from '../../../core/services/dashboard.service';
     .upload-area {
         background: rgba(78, 115, 223, 0.02);
         border-color: #cbd5e0 !important;
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
     .upload-area:hover {
         background: rgba(78, 115, 223, 0.05);
@@ -106,6 +164,19 @@ import { DashboardService } from '../../../core/services/dashboard.service';
     .cursor-pointer {
         cursor: pointer;
     }
+    .x-small {
+        font-size: 0.65rem;
+    }
+    .form-control-elite {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #333;
+    }
+    .form-control-elite:focus {
+        background: rgba(255,255,255,0.08);
+        border-color: var(--gold-color, #d4af37);
+        box-shadow: none;
+    }
   `]
 })
 export class Verification implements OnInit {
@@ -115,14 +186,20 @@ export class Verification implements OnInit {
 
   kycForm: FormGroup;
   isLoading = signal(false);
-  isDragging = false;
-  selectedFile: File | null = null;
+  
+  idFile: File | null = null;
+  selfieFile: File | null = null;
+  
   kycStatus = signal<string | null>(null);
   successMessage = signal<string | null>(null);
 
   constructor() {
     this.kycForm = this.fb.group({
-      document_type: ['', Validators.required]
+      full_name: ['', [Validators.required, Validators.minLength(3)]],
+      date_of_birth: ['', Validators.required],
+      address: ['', Validators.required],
+      id_type: ['', Validators.required],
+      id_number: ['', [Validators.required, Validators.minLength(5)]]
     });
   }
 
@@ -138,53 +215,51 @@ export class Verification implements OnInit {
     });
   }
 
-  onFileSelected(event: any) {
+  onIdFileSelected(event: any) {
     const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
-    }
+    if (file) this.idFile = file;
   }
 
-  removeFile(event: Event) {
+  onSelfieFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) this.selfieFile = file;
+  }
+
+  removeIdFile(event: Event) {
     event.stopPropagation();
-    this.selectedFile = null;
+    this.idFile = null;
   }
 
-  onDragOver(event: DragEvent) {
-    event.preventDefault();
-    this.isDragging = true;
-  }
-
-  onDragLeave() {
-    this.isDragging = false;
-  }
-
-  onDrop(event: DragEvent) {
-    event.preventDefault();
-    this.isDragging = false;
-    const file = event.dataTransfer?.files[0];
-    if (file) {
-      this.selectedFile = file;
-    }
+  removeSelfieFile(event: Event) {
+    event.stopPropagation();
+    this.selfieFile = null;
   }
 
   onSubmit() {
-    if (this.kycForm.invalid || !this.selectedFile) return;
+    if (this.kycForm.invalid || !this.idFile || !this.selfieFile) return;
 
     this.isLoading.set(true);
     const formData = new FormData();
-    formData.append('document_type', this.kycForm.value.document_type);
-    formData.append('document', this.selectedFile);
+    
+    // Append form fields
+    Object.keys(this.kycForm.value).forEach(key => {
+      formData.append(key, this.kycForm.value[key]);
+    });
+    
+    // Append files
+    formData.append('id_document', this.idFile);
+    formData.append('selfie_image', this.selfieFile);
 
     this.dashboardService.submitKyc(formData).subscribe({
       next: (res) => {
         this.isLoading.set(false);
-        this.successMessage.set('Verification document submitted successfully!');
+        this.successMessage.set('Verification documents submitted successfully!');
         this.kycStatus.set('pending');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       },
       error: (err) => {
         this.isLoading.set(false);
-        alert(err.message);
+        alert(err.message || 'Failed to submit KYC. Please check your data and try again.');
       }
     });
   }

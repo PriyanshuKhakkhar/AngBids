@@ -69,6 +69,13 @@ export class AuthService {
       tap(res => {
         if (res.token && res.user) {
           this.persistSession(res);
+          if (this.isSuperAdmin()) {
+            console.log('[Login] Redirecting to Super Admin Dashboard');
+          } else if (this.isAdmin()) {
+            console.log('[Login] Redirecting to Admin Dashboard');
+          } else {
+            console.log('[Login] Redirecting to Home');
+          }
         }
       }),
       catchError(this.handleError)
@@ -122,36 +129,65 @@ export class AuthService {
 
   /**
    * Check if the current user has admin privileges.
-   * Logic is robust and supports:
-   * 1. Backend roles array (Spatie standard)
-   * 2. Singular role string property
-   * 3. Boolean is_admin property
-   * 4. Safe fallback via localStorage.setItem('isAdmin', 'true') for testing
+   * returns true for both 'admin' and 'super admin'
    */
   isAdmin(): boolean {
+    return this.hasRole('admin') || this.hasRole('super admin') || this.hasRole('super_admin');
+  }
+
+  /**
+   * Check if the current user is a Super Admin
+   */
+  isSuperAdmin(): boolean {
+    return this.hasRole('super admin') || this.hasRole('super_admin');
+  }
+
+  /**
+   * Check if the user has a specific role.
+   * Supports:
+   * 1. Backend roles array (Spatie standard)
+   * 2. Singular role string property
+   */
+  hasRole(roleName: string): boolean {
     const user = this.currentUser();
     if (!user) return false;
 
+    const target = roleName.toLowerCase();
+
     // 1. Check Spatie roles array (handles both strings and objects)
     if (user.roles?.length) {
+      console.log('[AuthService] Checking roles:', user.roles);
       return user.roles.some((r: any) => {
-        const roleName = typeof r === 'string' ? r.toLowerCase() : r.name?.toLowerCase();
-        return roleName === 'admin' || roleName === 'super admin' || roleName === 'super_admin';
+        const name = typeof r === 'string' ? r.toLowerCase() : r.name?.toLowerCase();
+        console.log(`[AuthService] Comparing role "${name}" with target "${target}"`);
+        return name === target;
       });
     }
 
     // 2. Check singular role string
-    const role = user.role?.toLowerCase();
-    if (role === 'admin' || role === 'super admin' || role === 'super_admin') {
+    if (user.role?.toLowerCase() === target) {
       return true;
     }
 
-    // 3. Check boolean is_admin flag
-    if (user.is_admin === true) {
+    // 3. Fallback for boolean is_admin flag (only if checking for 'admin')
+    if (target === 'admin' && user.is_admin === true) {
       return true;
     }
 
     return false;
+  }
+  
+  /**
+   * Check if current user is KYC approved
+   */
+  isKycApproved(): boolean {
+    const user = this.currentUser();
+    if (!user) return false;
+    
+    // Admins are always approved
+    if (this.isAdmin()) return true;
+    
+    return user.kyc_status === 'approved';
   }
 
   /**

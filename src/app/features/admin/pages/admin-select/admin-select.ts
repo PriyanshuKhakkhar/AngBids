@@ -28,7 +28,7 @@ import { AuthService } from '../../../../core/services/auth.service';
             <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-primary bg-opacity-10 text-primary mb-3">
               <i class="fas fa-user-shield fs-1"></i>
             </div>
-            <h1 class="h2 fw-bold text-dark mb-2">Welcome Back, Admin</h1>
+            <h1 class="h2 fw-bold text-dark mb-2">Welcome Back, {{ isSuperAdmin() ? 'Super Admin' : 'Admin' }}</h1>
             <p class="text-secondary fs-5">Where would you like to go today?</p>
           </div>
 
@@ -48,12 +48,12 @@ import { AuthService } from '../../../../core/services/auth.service';
 
             <!-- Admin Panel Flow -->
             <div class="col-md-6">
-              <a routerLink="/admin" class="card h-100 shadow-sm rounded-4 text-decoration-none transition-all hover-translate-y selection-card border-primary" style="border-width: 2px !important;">
+              <a [routerLink]="isSuperAdmin() ? '/admin/super-dashboard' : '/admin/dashboard'" class="card h-100 shadow-sm rounded-4 text-decoration-none transition-all hover-translate-y selection-card border-primary" style="border-width: 2px !important;">
                 <div class="card-body p-5 text-center d-flex flex-column align-items-center">
                   <div class="p-4 rounded-circle bg-primary bg-opacity-10 text-primary mb-4 flex-shrink-0">
                     <i class="fas fa-sliders-h fs-2"></i>
                   </div>
-                  <h3 class="h4 fw-bold text-dark mb-3">Open Admin Panel</h3>
+                  <h3 class="h4 fw-bold text-dark mb-3">Open {{ isSuperAdmin() ? 'Super ' : '' }}Admin Panel</h3>
                   <p class="text-secondary mb-0">Manage users, approve auction requests, and view system analytics.</p>
                 </div>
               </a>
@@ -91,5 +91,9 @@ export class AdminSelect {
   onLogout(): void {
     this.auth.logout();
     this.router.navigate(['/login']);
+  }
+
+  isSuperAdmin(): boolean {
+    return this.auth.isSuperAdmin();
   }
 }

@@ -49,8 +49,10 @@ export class Login {
     this.authService.login(email!, password!).subscribe({
       next: () => {
         this.isLoading.set(false);
-        if (this.authService.isAdmin()) {
-          this.router.navigateByUrl('/admin');
+        if (this.authService.isSuperAdmin()) {
+          this.router.navigateByUrl('/admin/super-dashboard');
+        } else if (this.authService.isAdmin()) {
+          this.router.navigateByUrl('/admin/dashboard');
         } else {
           this.router.navigateByUrl('/home');
         }

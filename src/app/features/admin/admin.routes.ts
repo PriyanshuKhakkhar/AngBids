@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from '../../core/guards/admin.guard';
+import { superAdminGuard } from '../../core/guards/super-admin.guard';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -11,6 +12,11 @@ export const ADMIN_ROUTES: Routes = [
       { 
         path: 'dashboard', 
         loadComponent: () => import('./pages/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent) 
+      },
+      { 
+        path: 'super-dashboard', 
+        canActivate: [superAdminGuard],
+        loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.SuperAdminDashboard) 
       },
       { 
         path: 'auction-approvals', 

@@ -55,6 +55,9 @@ export class AuctionDetails implements OnInit, OnDestroy {
     if (a.status === 'pending') return 'Upcoming';
     return 'Live';
   });
+  
+  /** True if user is verified to bid */
+  isKycApproved = computed(() => this.authService.isKycApproved());
 
   // ─── Reactive Form ────────────────────────────────────────────
   bidControl = new FormControl<number | null>(null, [Validators.required, Validators.min(1)]);
@@ -113,6 +116,13 @@ export class AuctionDetails implements OnInit, OnDestroy {
     if (!this.authService.isLoggedIn()) {
       this.authMessage.set('Please login to place a bid.');
       setTimeout(() => this.router.navigate(['/login']), 1500);
+      return;
+    }
+
+    // 1.5 KYC guard
+    if (!this.isKycApproved()) {
+      this.bidError.set('Complete identity verification to participate in auctions.');
+      setTimeout(() => this.router.navigate(['/dashboard/verification']), 2000);
       return;
     }
 
@@ -191,7 +201,7 @@ export class AuctionDetails implements OnInit, OnDestroy {
     ]);
     this.bidControl.updateValueAndValidity();
 
-    if (isClosed) {
+    if (isClosed || !this.isKycApproved()) {
       this.bidControl.disable();
     } else {
       this.bidControl.enable();

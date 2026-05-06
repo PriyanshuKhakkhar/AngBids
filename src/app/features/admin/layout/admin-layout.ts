@@ -16,9 +16,14 @@ import { AuthService } from '../../../core/services/auth.service';
         </div>
         
         <ul class="nav flex-column gap-2 mb-5">
-            <li class="nav-item">
+            <li class="nav-item" *ngIf="!isSuperAdmin()">
                 <a class="nav-link text-white-50 rounded-3" routerLink="/admin/dashboard" routerLinkActive="active bg-primary text-white shadow-sm">
                     <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item" *ngIf="isSuperAdmin()">
+                <a class="nav-link text-white-50 rounded-3" routerLink="/admin/super-dashboard" routerLinkActive="active bg-primary text-white shadow-sm">
+                    <i class="fas fa-server me-2"></i> Super Dashboard
                 </a>
             </li>
             <li class="nav-item">
@@ -45,7 +50,9 @@ import { AuthService } from '../../../core/services/auth.service';
 
         <div class="mt-auto p-3 bg-secondary bg-opacity-10 rounded-3 d-flex justify-content-between align-items-center">
             <div>
-                <small class="text-white-50 d-block" style="font-size: 0.65rem;">ADMINISTRATOR</small>
+                <small class="text-white-50 d-block" style="font-size: 0.65rem;">
+                    {{ isSuperAdmin() ? 'SUPER ADMIN' : 'ADMINISTRATOR' }}
+                </small>
                 <div class="fw-bold small">{{ user()?.firstName }}</div>
             </div>
             <button (click)="onLogout()" class="btn btn-link text-danger p-0" title="Logout">
@@ -95,6 +102,7 @@ export class AdminLayout implements OnInit {
 
   currentDate = new Date();
   user = this.auth.currentUser;
+  isSuperAdmin = () => this.auth.isSuperAdmin();
 
   ngOnInit(): void {
     setInterval(() => {

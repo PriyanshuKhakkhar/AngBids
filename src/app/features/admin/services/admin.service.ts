@@ -37,6 +37,7 @@ export interface AdminRecentUser {
   name: string;
   email: string;
   roles?: string[];
+  kyc_status?: string;
   created_at: string;
 }
 
