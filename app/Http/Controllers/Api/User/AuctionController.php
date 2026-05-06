@@ -255,13 +255,18 @@ class AuctionController extends Controller
         }
     }
 
-    //list auctions created by the authenticated user
+    //list auctions for management (User sees theirs, Admin sees all)
     public function managedAuctions(Request $request){
         $perPage = $request->input('per_page', 10);
+        $user = auth()->user();
 
-        $query = Auction::where('user_id', auth()->id())
-            ->with(['category', 'images'])
+        $query = Auction::with(['category', 'images', 'user'])
             ->withCount('bids');
+
+        // Only filter by user_id if NOT an admin/super-admin
+        if (!$user->hasAnyRole(['admin', 'super admin', 'super_admin'])) {
+            $query->where('user_id', $user->id);
+        }
 
         // Status Filter
         if ($request->filled('status')) {
@@ -298,7 +303,10 @@ class AuctionController extends Controller
             $keyword = $request->q;
             $query->where(function($q) use ($keyword) {
                 $q->where('title', 'like', "%{$keyword}%")
-                  ->orWhere('description', 'like', "%{$keyword}%");
+                  ->orWhere('description', 'like', "%{$keyword}%")
+                  ->orWhereHas('user', function($uq) use ($keyword) {
+                      $uq->where('name', 'like', "%{$keyword}%");
+                  });
             });
         }
 
@@ -320,11 +328,20 @@ class AuctionController extends Controller
     }
 
     /**
-     * Update an auction (User endpoint)
+     * Update an auction
      */
     public function update(UpdateAuctionRequest $request, $id)
     {
         $auction = Auction::findOrFail($id);
+        $user = auth()->user();
+
+        // Check ownership OR admin role
+        if ($auction->user_id !== $user->id && !$user->isAdmin() && !$user->isSuperAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized: You can only edit your own auctions.'
+            ], 403);
+        }
 
         try {
             $updatedAuction = $this->auctionService->updateAuction($auction, $request->validated());
@@ -339,6 +356,74 @@ class AuctionController extends Controller
                 'success' => false,
                 'message' => $e->getMessage()
             ], 422);
+        }
+    }
+
+    /**
+     * Delete an auction
+     */
+    public function destroy($id)
+    {
+        $auction = Auction::findOrFail($id);
+        $user = auth()->user();
+
+        // Check ownership OR admin role
+        if ($auction->user_id !== $user->id && !$user->isAdmin() && !$user->isSuperAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized: You can only delete your own auctions.'
+            ], 403);
+        }
+
+        try {
+            $auction->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Auction deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete auction'
+            ], 500);
+        }
+    }
+
+    /**
+     * Update auction status (Admin or Owner)
+     */
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:active,pending,closed,cancelled',
+            'note' => 'nullable|string'
+        ]);
+
+        $auction = Auction::findOrFail($id);
+        $user = auth()->user();
+
+        // Authorization: Admin or Owner only
+        if ($auction->user_id !== $user->id && !$user->isAdmin() && !$user->isSuperAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized access'
+            ], 403);
+        }
+
+        try {
+            $auction->status = $request->status;
+            $auction->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Auction status updated successfully',
+                'data' => $auction
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update status'
+            ], 500);
         }
     }
 }

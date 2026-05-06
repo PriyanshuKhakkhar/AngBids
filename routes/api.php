@@ -65,6 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Auction Management (Protected Actions)
     Route::post('auctions', [AuctionController::class, 'store']);
     Route::put('auctions/{auction}', [AuctionController::class, 'update']);
+    Route::patch('auctions/{id}/status', [AuctionController::class, 'updateStatus']);
     Route::delete('auctions/{auction}', [AuctionController::class, 'destroy']);
 
     // Watchlist

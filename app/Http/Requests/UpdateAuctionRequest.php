@@ -22,8 +22,11 @@ class UpdateAuctionRequest extends FormRequest
             return false;
         }
 
-        // Only allow owner to update
-        return auth()->check() && auth()->id() === $auction->user_id;
+        // Allow owner OR admin to update
+        $user = auth()->user();
+        if (!$user) return false;
+
+        return $user->id === $auction->user_id || $user->isAdmin() || $user->isSuperAdmin();
     }
 
     /**
