@@ -32,6 +32,7 @@ const MOCK_STATS: AdminStats = {
   pending_auctions: 0, closed_auctions: 0,
   cancelled_auctions: 0, total_bids: 0,
   bids_today: 0, total_categories: 0, unread_contacts: 0,
+  pending_kyc_count: 0,
 };
 
 @Component({
@@ -90,8 +91,14 @@ export class AdminDashboardComponent implements OnInit {
         label: 'Total Bids',
         value: s.total_bids,
         sub: `${s.bids_today} today`,
-        icon: 'fas fa-hand-paper',
         color: 'info',
+      },
+      {
+        label: 'Pending KYC',
+        value: s.pending_kyc_count,
+        sub: 'Verification requests',
+        icon: 'fas fa-id-card',
+        color: 'danger',
       },
     ];
   });
@@ -118,6 +125,13 @@ export class AdminDashboardComponent implements OnInit {
       icon:        'fas fa-history',
       color:       'warning',
       route:       '/admin/activity',
+    },
+    {
+      label:       'KYC Verification',
+      description: 'Review identity submissions',
+      icon:        'fas fa-id-card',
+      color:       'danger',
+      route:       '/admin/kyc',
     },
   ];
 
@@ -165,6 +179,7 @@ export class AdminDashboardComponent implements OnInit {
       bids_today: 156,
       total_categories: 15,
       unread_contacts: 8,
+      pending_kyc_count: 5,
     });
 
     this.recentAuctions.set([

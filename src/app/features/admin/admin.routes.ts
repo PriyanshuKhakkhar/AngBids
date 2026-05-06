@@ -35,6 +35,10 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('./pages/activity/activity').then(m => m.AdminActivity) 
       },
       { 
+        path: 'kyc', 
+        loadComponent: () => import('./pages/kyc-management/kyc-management').then(m => m.KycManagementComponent) 
+      },
+      { 
         path: 'bids', 
         redirectTo: 'activity',
         pathMatch: 'full' 

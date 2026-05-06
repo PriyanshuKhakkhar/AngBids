@@ -17,6 +17,7 @@ export interface AdminStats {
   bids_today: number;
   total_categories: number;
   unread_contacts: number;
+  pending_kyc_count: number;
 }
 
 export interface AdminRecentAuction {
@@ -121,6 +122,26 @@ export class AdminService {
     return this.http.get<any>(`${environment.apiUrl}/categories`).pipe(
       map(res => res.data || res)
     );
+  }
+
+  // --- KYC Management ---
+  getKycRequests(params?: any): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/kyc`, { params }).pipe(
+      map(res => res.data || res)
+    );
+  }
+
+  getKycDetails(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/kyc/${id}`).pipe(
+      map(res => res.data || res)
+    );
+  }
+
+  updateKycStatus(id: number, status: 'approved' | 'rejected', adminNote?: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/kyc/${id}/status`, { 
+      status, 
+      admin_note: adminNote 
+    });
   }
 
   // ─── Error Handler ────────────────────────────────────────────────────────

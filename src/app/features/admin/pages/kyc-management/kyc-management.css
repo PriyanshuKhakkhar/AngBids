@@ -1,0 +1,51 @@
+.kyc-management-container {
+    background: #f8f9fc;
+    min-vh: 100vh;
+}
+
+.bg-soft-primary { background-color: rgba(78, 115, 223, 0.1); }
+.bg-warning-soft { background-color: rgba(246, 194, 62, 0.1); }
+.bg-success-soft { background-color: rgba(28, 200, 138, 0.1); }
+.bg-danger-soft { background-color: rgba(231, 74, 59, 0.1); }
+.bg-secondary-soft { background-color: rgba(133, 135, 150, 0.1); }
+
+.text-xs { font-size: 0.75rem; }
+.x-small { font-size: 0.7rem; }
+.fw-black { font-weight: 900; }
+
+.hover-bg-light:hover {
+    background-color: #f8f9fc;
+}
+
+.transition-all {
+    transition: all 0.2s ease-in-out;
+}
+
+.modal-backdrop {
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+}
+
+.doc-preview {
+    transition: transform 0.2s;
+}
+
+.doc-preview:hover {
+    transform: scale(1.02);
+    border-color: #4e73df !important;
+}
+
+.img-fluid {
+    max-height: 200px;
+    object-fit: contain;
+    width: 100%;
+    background: #f1f3f5;
+}
+
+.btn-close:focus {
+    box-shadow: none;
+}
+
+.tracking-wider {
+    letter-spacing: 0.1em;
+}

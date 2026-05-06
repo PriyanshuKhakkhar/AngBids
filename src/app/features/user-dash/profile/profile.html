@@ -16,10 +16,10 @@
             <h5 class="text-white mb-0">{{ user?.firstName }} {{ user?.lastName }}</h5>
             <small class="text-secondary">{{ user?.email }}</small>
             <div class="mt-2">
-                <span class="badge bg-success-soft text-success px-3 py-2 rounded-pill small fw-bold" *ngIf="user?.isVerified">
+                <span class="badge bg-success-soft text-success px-3 py-2 rounded-pill small fw-bold" *ngIf="user?.kyc_status === 'approved'">
                     <i class="fas fa-check-circle me-1"></i> Verified Account
                 </span>
-                <a routerLink="/dashboard/verification" class="badge bg-warning-soft text-warning px-3 py-2 rounded-pill small fw-bold text-decoration-none border border-warning border-opacity-25" *ngIf="!user?.isVerified">
+                <a routerLink="/dashboard/verification" class="badge bg-warning-soft text-warning px-3 py-2 rounded-pill small fw-bold text-decoration-none border border-warning border-opacity-25" *ngIf="user?.kyc_status !== 'approved'">
                     <i class="fas fa-exclamation-circle me-1"></i> Unverified - <span class="text-decoration-underline">Verify Now</span>
                 </a>
             </div>

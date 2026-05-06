@@ -1,0 +1,156 @@
+<div class="kyc-management-container p-4 animate__animated animate__fadeIn">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="h3 fw-bold mb-1 text-dark">KYC Verification Management</h1>
+            <p class="text-secondary small mb-0">Review and verify user identity documents.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <select class="form-select form-select-sm border-0 shadow-sm px-3" 
+                    [ngModel]="statusFilter()" (ngModelChange)="onFilterChange($event)">
+                <option value="all">All Requests</option>
+                <option value="pending">Pending Only</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+            </select>
+            <button (click)="loadRequests()" class="btn btn-white shadow-sm border btn-sm px-3 fw-bold">
+                <i class="fas fa-sync-alt" [class.fa-spin]="isLoading()"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="glass-panel p-0 overflow-hidden border-0 shadow-sm bg-white">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="bg-light text-secondary text-uppercase small">
+                    <tr>
+                        <th class="ps-4 py-3">User Information</th>
+                        <th class="py-3">ID Type</th>
+                        <th class="py-3">ID Number</th>
+                        <th class="py-3 text-center">Status</th>
+                        <th class="py-3">Submitted Date</th>
+                        <th class="pe-4 py-3 text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="isLoading()" class="text-center">
+                        <td colspan="6" class="py-5">
+                            <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
+                            <span class="ms-2 text-secondary small">Loading requests...</span>
+                        </td>
+                    </tr>
+                    <tr *ngIf="!isLoading() && kycRequests().length === 0" class="text-center">
+                        <td colspan="6" class="py-5 text-secondary">No KYC requests found.</td>
+                    </tr>
+                    <tr *ngFor="let k of kycRequests()" class="hover-bg-light transition-all">
+                        <td class="ps-4">
+                            <div class="fw-bold text-dark">{{ k.full_name }}</div>
+                            <div class="text-muted text-xs">{{ k.user.email }}</div>
+                        </td>
+                        <td>
+                            <span class="badge bg-soft-primary text-primary px-2 py-1">{{ k.id_type_label }}</span>
+                        </td>
+                        <td class="font-monospace small">{{ k.id_number }}</td>
+                        <td class="text-center">
+                            <span class="badge rounded-pill px-3 py-1 fw-bold" [ngClass]="getStatusClass(k.status)">
+                                {{ k.status | uppercase }}
+                            </span>
+                        </td>
+                        <td class="text-secondary small">{{ k.created_at }}</td>
+                        <td class="pe-4 text-end">
+                            <button (click)="openReview(k)" class="btn btn-sm btn-primary px-3 shadow-sm fw-bold">
+                                REVIEW <i class="fas fa-chevron-right ms-1"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div class="modal-backdrop fade show" *ngIf="showModal()"></div>
+    <div class="modal fade show d-block" *ngIf="showModal()" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header border-0 p-4 pb-0">
+                    <h5 class="modal-title fw-black h4 text-dark">Review KYC Submission</h5>
+                    <button type="button" class="btn-close shadow-none" (click)="closeModal()"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-4">
+                        <!-- User Details -->
+                        <div class="col-md-5">
+                            <div class="bg-light p-4 rounded-4 h-100">
+                                <h6 class="text-uppercase tracking-wider small fw-bold text-secondary mb-3">Applicant Profile</h6>
+                                <div class="mb-3">
+                                    <label class="x-small text-muted d-block mb-1">Full Name</label>
+                                    <div class="fw-bold">{{ selectedKyc().full_name }}</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="x-small text-muted d-block mb-1">Date of Birth</label>
+                                    <div class="fw-bold">{{ selectedKyc().date_of_birth | date:'longDate' }}</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="x-small text-muted d-block mb-1">ID Details</label>
+                                    <div class="fw-bold">{{ selectedKyc().id_type_label }} ({{ selectedKyc().id_number }})</div>
+                                </div>
+                                <div class="mb-0">
+                                    <label class="x-small text-muted d-block mb-1">Residential Address</label>
+                                    <div class="small text-secondary">{{ selectedKyc().address }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Document Previews -->
+                        <div class="col-md-7">
+                            <h6 class="text-uppercase tracking-wider small fw-bold text-secondary mb-3">Document Proofs</h6>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="doc-preview border rounded-3 p-1 bg-white cursor-pointer" (click)="openDocument(selectedKyc().id_document)">
+                                        <img [src]="selectedKyc().id_document" class="img-fluid rounded shadow-sm" alt="ID Document">
+                                        <div class="text-center x-small py-2 fw-bold text-primary">View ID Proof</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="doc-preview border rounded-3 p-1 bg-white cursor-pointer" (click)="openDocument(selectedKyc().selfie_image)">
+                                        <img [src]="selectedKyc().selfie_image" class="img-fluid rounded shadow-sm" alt="Selfie">
+                                        <div class="text-center x-small py-2 fw-bold text-primary">View Selfie</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="mt-4 pt-4 border-top" *ngIf="selectedKyc().status === 'pending'">
+                        <div class="rejection-area mb-4" *ngIf="isProcessing() || rejectReason()">
+                            <label class="small fw-bold text-danger mb-2">Rejection Reason (Sent to user)</label>
+                            <textarea class="form-control form-control-sm border-danger-subtle bg-danger-soft" 
+                                      [(ngModel)]="rejectReason" placeholder="e.g. ID image is blurry, please resubmit."></textarea>
+                        </div>
+                        
+                        <div class="d-flex gap-3">
+                            <button class="btn btn-success flex-grow-1 py-3 fw-bold shadow-sm" 
+                                    (click)="approve()" [disabled]="isProcessing()">
+                                <i class="fas fa-check-circle me-2"></i> APPROVE VERIFICATION
+                            </button>
+                            <button class="btn btn-outline-danger px-4 py-3 fw-bold" 
+                                    (click)="reject()" [disabled]="isProcessing()">
+                                <i class="fas fa-times-circle me-2"></i> REJECT
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-top text-center" *ngIf="selectedKyc().status !== 'pending'">
+                        <div class="p-3 rounded-3" [ngClass]="getStatusClass(selectedKyc().status)">
+                            <i class="fas fa-info-circle me-2"></i>
+                            This request was <strong>{{ selectedKyc().status }}</strong> on {{ selectedKyc().updated_at }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

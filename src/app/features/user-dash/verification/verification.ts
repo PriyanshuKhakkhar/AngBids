@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DashboardService } from '../../../core/services/dashboard.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-verification',
@@ -182,6 +183,7 @@ import { DashboardService } from '../../../core/services/dashboard.service';
 export class Verification implements OnInit {
   private fb = inject(FormBuilder);
   private dashboardService = inject(DashboardService);
+  private authService = inject(AuthService);
   private router = inject(Router);
 
   kycForm: FormGroup;
@@ -255,11 +257,31 @@ export class Verification implements OnInit {
         this.isLoading.set(false);
         this.successMessage.set('Verification documents submitted successfully!');
         this.kycStatus.set('pending');
+        
+        // Refresh user profile to update kyc_status in auth state
+        this.authService.getUserProfile().subscribe({
+          next: () => {
+            console.log('User profile refreshed after KYC submission');
+          },
+          error: (err) => {
+            console.error('Failed to refresh user profile:', err);
+          }
+        });
+        
         window.scrollTo({ top: 0, behavior: 'smooth' });
       },
       error: (err) => {
         this.isLoading.set(false);
-        alert(err.message || 'Failed to submit KYC. Please check your data and try again.');
+        
+        // If already submitted, transition to pending view
+        if (err.message?.includes('already') || err.message?.includes('processed')) {
+          this.kycStatus.set('pending');
+          
+          // Still refresh profile to sync status
+          this.authService.getUserProfile().subscribe();
+        } else {
+          alert(err.message || 'Failed to submit KYC. Please try again.');
+        }
       }
     });
   }

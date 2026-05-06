@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, tap, map } from 'rxjs/operators';
 import { User, AuthResponse, RegisterResponse } from '../models/user.model';
 import { environment } from '../../../environments/environment';
 
@@ -105,6 +105,38 @@ export class AuthService {
    */
   resendOtp(email: string): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`${this.apiUrl}/resend-otp?t=${Date.now()}`, { email }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  getUserProfile(): Observable<any> {
+    return this.http.get<{success: boolean, data: any}>(`${environment.apiUrl}/user/profile`).pipe(
+      map(res => {
+        if (res.success && res.data) {
+          // Map backend fields to frontend User model
+          const backendUser = res.data;
+          const user: User = {
+            id: backendUser.id,
+            firstName: backendUser.name?.split(' ')[0] || '',
+            lastName: backendUser.name?.split(' ').slice(1).join(' ') || '',
+            name: backendUser.name,
+            email: backendUser.email,
+            avatar: backendUser.avatar_url,
+            phone: backendUser.phone,
+            address: backendUser.location,
+            roles: backendUser.roles,
+            kyc_status: backendUser.kyc_status || null,
+            isVerified: backendUser.email_verified_at != null
+          };
+          
+          // Update current user state and localStorage
+          this.currentUser.set(user);
+          localStorage.setItem('user', JSON.stringify(user));
+          
+          return user;
+        }
+        return null;
+      }),
       catchError(this.handleError)
     );
   }

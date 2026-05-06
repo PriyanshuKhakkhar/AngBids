@@ -42,6 +42,11 @@ import { AuthService } from '../../../core/services/auth.service';
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link text-white-50 rounded-3" routerLink="/admin/kyc" routerLinkActive="active bg-primary text-white shadow-sm">
+                    <i class="fas fa-id-card me-2"></i> KYC Verification
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link text-white-50 rounded-3" routerLink="/admin/bids" routerLinkActive="active bg-primary text-white shadow-sm">
                     <i class="fas fa-history me-2"></i> Manage Bids
                 </a>
@@ -105,6 +110,8 @@ export class AdminLayout implements OnInit {
   isSuperAdmin = () => this.auth.isSuperAdmin();
 
   ngOnInit(): void {
+    console.log('[AdminLayout] Initialized. User:', this.user());
+    console.log('[AdminLayout] Is Super Admin:', this.isSuperAdmin());
     setInterval(() => {
       this.currentDate = new Date();
     }, 60000);

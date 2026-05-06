@@ -29,6 +29,9 @@ export class Profile implements OnInit {
   get user() { return this.authService.currentUser(); }
 
   ngOnInit(): void {
+    // Refresh user from server to get latest KYC status
+    this.authService.getUserProfile().subscribe();
+
     const u = this.user;
     if (u) {
       // Split name if first_name/last_name exists or fallback to splitting 'name'
