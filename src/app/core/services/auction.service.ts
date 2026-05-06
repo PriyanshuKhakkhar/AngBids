@@ -95,7 +95,7 @@ export class AuctionService {
   /**
    * Normalizes raw API data into a clean, consistent Auction model.
    */
-  private mapToModel(raw: any): Auction {
+  public mapToModel(raw: any): Auction {
     // 1. Smart Image URL Resolution
     const placeholder = `${this.baseUrl}/assets/images/banner-3.png`;
     let imageUrl = placeholder;
@@ -145,7 +145,7 @@ export class AuctionService {
       status: raw.status ?? 'active',
       category: raw.category?.name ?? raw.category ?? 'Luxury Collection',
       seller: raw.user ? { name: raw.user.name, avatar: sellerAvatar } : null,
-      totalBids: raw.bids_count ?? (raw.bids ? raw.bids.length : 0),
+      totalBids: raw.bid_count ?? raw.bids_count ?? (raw.bids ? raw.bids.length : 0),
       minIncrement: raw.min_increment ?? 1,
       bids: raw.bids ? raw.bids.map((b: any) => ({
         id: b.id,

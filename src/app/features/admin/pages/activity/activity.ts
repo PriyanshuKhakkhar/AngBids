@@ -15,25 +15,25 @@ import { CommonModule } from '@angular/common';
       </div>
 
       <div class="list-group list-group-flush bg-transparent">
-        <div *ngFor="let item of activity()" class="list-group-item bg-transparent border-opacity-10 border-white py-4 px-0">
+        <div *ngFor="let item of activity()" class="list-group-item bg-transparent border-0 py-4 px-0">
           <div class="d-flex justify-content-between align-items-start">
             <div class="d-flex gap-3">
               <div class="activity-icon flex-shrink-0">
-                <span class="badge bg-gold-soft text-gold px-3 py-2 rounded-3">
+                <span class="badge bg-gold bg-opacity-10 text-gold px-3 py-2 rounded-3 border border-gold border-opacity-10">
                   <i [class]="getIcon(item.type)"></i>
                 </span>
               </div>
               <div>
-                <div class="fw-bold small text-light">{{ item.message }}</div>
+                <div class="fw-bold small text-dark">{{ item.message }}</div>
                 <div class="text-secondary x-small mt-1 d-flex align-items-center gap-3">
-                  <span><i class="fas fa-user-circle me-1"></i> {{ item.user }}</span>
-                  <span><i class="fas fa-link me-1"></i> {{ item.target }}</span>
+                  <span class="d-flex align-items-center gap-1"><i class="fas fa-user-circle text-primary opacity-50"></i> {{ item.user }}</span>
+                  <span class="d-flex align-items-center gap-1"><i class="fas fa-link text-primary opacity-50"></i> {{ item.target }}</span>
                 </div>
               </div>
             </div>
             <div class="text-end">
-              <div class="text-secondary x-small mb-1">{{ item.time }}</div>
-              <span class="badge" [class]="getStatusClass(item.status)" style="font-size: 0.65rem;">
+              <div class="text-secondary x-small mb-1 opacity-75 fw-medium">{{ item.time }}</div>
+              <span class="badge rounded-pill px-3 py-1 fw-bold" [class]="getStatusClass(item.status)" style="font-size: 0.65rem; letter-spacing: 0.05em;">
                 {{ item.status | uppercase }}
               </span>
             </div>
@@ -61,8 +61,8 @@ export class AdminActivity {
   }
 
   getStatusClass(status: string): string {
-    if (status === 'completed' || status === 'pending') return 'bg-success-soft text-success';
-    if (status === 'awaiting_review') return 'bg-warning-soft text-warning';
-    return 'bg-danger-soft text-danger';
+    if (status === 'completed' || status === 'pending') return 'bg-success bg-opacity-10 text-success';
+    if (status === 'awaiting_review') return 'bg-warning bg-opacity-10 text-warning';
+    return 'bg-danger bg-opacity-10 text-danger';
   }
 }

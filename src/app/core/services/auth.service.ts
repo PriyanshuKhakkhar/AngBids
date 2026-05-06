@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { User, AuthResponse } from '../models/user.model';
+import { User, AuthResponse, RegisterResponse } from '../models/user.model';
 import { environment } from '../../../environments/environment';
 
 export interface RegisterPayload {
@@ -40,6 +40,9 @@ export class AuthService {
    * Authenticate user with email and password
    */
   login(email: string, password: string): Observable<AuthResponse> {
+    // Ensure we start with a clean slate before logging in again
+    this.clearSession();
+
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
       tap(res => this.persistSession(res)),
       catchError(this.handleError)
@@ -51,18 +54,23 @@ export class AuthService {
    * NOTE: Session is NOT persisted here — user must verify OTP first.
    * The component stores the email and redirects to /verify-otp.
    */
-  register(payload: RegisterPayload): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, payload).pipe(
-      tap(res => this.persistSession(res)),
+  register(payload: RegisterPayload): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.apiUrl}/register`, payload).pipe(
       catchError(this.handleError)
     );
   }
 
   /**
-   * Verify OTP code sent to user's email
+   * Verify OTP code sent to user's email.
+   * If successful, Laravel now returns token + user for immediate login.
    */
-  verifyOtp(email: string, otp: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.apiUrl}/verify-otp`, { email, otp }).pipe(
+  verifyOtp(email: string, otp: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/verify-otp?t=${Date.now()}`, { email, otp }).pipe(
+      tap(res => {
+        if (res.token && res.user) {
+          this.persistSession(res);
+        }
+      }),
       catchError(this.handleError)
     );
   }
@@ -89,7 +97,7 @@ export class AuthService {
    * Resend OTP code to user's email
    */
   resendOtp(email: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.apiUrl}/resend-otp`, { email }).pipe(
+    return this.http.post<{ message: string }>(`${this.apiUrl}/resend-otp?t=${Date.now()}`, { email }).pipe(
       catchError(this.handleError)
     );
   }
@@ -121,27 +129,24 @@ export class AuthService {
    * 4. Safe fallback via localStorage.setItem('isAdmin', 'true') for testing
    */
   isAdmin(): boolean {
-    // 1. Check for manual override from localStorage (Highest priority for manual testing)
-    if (localStorage.getItem('isAdmin') === 'true') {
-      return true;
-    }
-
     const user = this.currentUser();
     if (!user) return false;
 
-    // 2. Check Spatie roles array
+    // 1. Check Spatie roles array (handles both strings and objects)
     if (user.roles?.length) {
-      if (user.roles.includes('admin') || user.roles.includes('super admin')) {
-        return true;
-      }
+      return user.roles.some((r: any) => {
+        const roleName = typeof r === 'string' ? r.toLowerCase() : r.name?.toLowerCase();
+        return roleName === 'admin' || roleName === 'super admin' || roleName === 'super_admin';
+      });
     }
 
-    // 3. Check singular role string
-    if (user.role === 'admin' || user.role === 'super admin') {
+    // 2. Check singular role string
+    const role = user.role?.toLowerCase();
+    if (role === 'admin' || role === 'super admin' || role === 'super_admin') {
       return true;
     }
 
-    // 4. Check boolean is_admin flag
+    // 3. Check boolean is_admin flag
     if (user.is_admin === true) {
       return true;
     }
@@ -175,9 +180,11 @@ export class AuthService {
    */
   private persistSession(res: AuthResponse): void {
     if (res.token) {
+      console.log('[AuthService] Storing token in localStorage');
       localStorage.setItem('token', res.token);
     }
     if (res.user) {
+      console.log('[AuthService] Storing user data in localStorage:', res.user.email);
       const u = res.user;
       // Map name into firstName/lastName if missing — common in Laravel resources
       if (!u.firstName && !u.lastName && u.name) {
@@ -222,9 +229,9 @@ export class AuthService {
     } else if (error.status === 0) {
       errorMessage = 'Backend is not reachable. Please check your internet connection or try again later.';
     } else if (error.status === 401) {
-      errorMessage = 'Unauthorized: Please log in to continue.';
+      errorMessage = error.error?.message || 'Unauthorized: Please log in to continue.';
     } else if (error.status === 403) {
-      errorMessage = 'Forbidden: You do not have permission to perform this action.';
+      errorMessage = error.error?.message || 'Forbidden: You do not have permission to perform this action.';
     } else if (error.status === 404) {
       errorMessage = 'Not Found: The requested resource could not be found.';
     } else if (error.status === 422) {

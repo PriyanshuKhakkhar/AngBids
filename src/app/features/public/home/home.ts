@@ -47,29 +47,30 @@ export class Home implements OnInit {
   loadData(): void {
     this.isLoading.set(true);
     
-    // Fetch Live Auctions
-    this.auctionService.getAuctions().subscribe({
-      next: (response) => this.liveAuctions.set(response.data.slice(0, 3)),
-      error: (err) => console.error('Live Auctions Fetch Error:', err)
-    });
-    
-    // Fetch Categories
-    this.categoryService.getCategories().subscribe({
-      next: (data: Category[]) => this.categories.set(data),
-      error: (err) => console.error('Categories Fetch Error:', err)
-    });
-    
-    // Fetch Home Specific Data (Stats + Upcoming + Partners)
+    // Fetch all home data in a single request
     this.homeService.getHomeData().subscribe({
       next: (data) => {
+        // Map raw auction data to our model
+        if (data.auctions) {
+          const mapped = data.auctions.slice(0, 3).map((a: any) => this.auctionService.mapToModel(a));
+          this.liveAuctions.set(mapped);
+        }
+        
+        if (data.categories) this.categories.set(data.categories);
         if (data.stats) this.stats.set(data.stats[0]);
         if (data.upcoming) this.upcomingAuctions.set(data.upcoming);
         if (data.partners) this.partners.set(data.partners);
+        
         this.isLoading.set(false);
       },
       error: (err) => {
         console.error('Home Data Fetch Error:', err);
         this.isLoading.set(false);
+        
+        // Fallback for live auctions if main home fetch fails
+        this.auctionService.getAuctions().subscribe({
+          next: (response) => this.liveAuctions.set(response.data.slice(0, 3))
+        });
       }
     });
   }

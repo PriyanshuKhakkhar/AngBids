@@ -18,6 +18,8 @@ export class Register {
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);
+  showPassword = signal(false);
+  showConfirmPassword = signal(false);
 
   registerForm = new FormGroup(
     {
@@ -30,6 +32,14 @@ export class Register {
     },
     { validators: this.passwordMatchValidator }
   );
+
+  togglePassword(): void {
+    this.showPassword.set(!this.showPassword());
+  }
+
+  toggleConfirmPassword(): void {
+    this.showConfirmPassword.set(!this.showConfirmPassword());
+  }
 
   private passwordMatchValidator(group: AbstractControl) {
     const pw = group.get('password')?.value;
@@ -57,10 +67,15 @@ export class Register {
     }).subscribe({
       next: (res) => {
         this.isLoading.set(false);
-        this.successMessage.set('Account created! Redirecting to dashboard...');
+        this.successMessage.set('Account created! Redirecting to verification...');
         
-        // Backend returns token automatically. auth.service will handle storing it.
-        setTimeout(() => this.router.navigate(['/dashboard']), 1000);
+        // Persist email in localStorage as a fallback for verify-otp page
+        localStorage.setItem('pending_email', email!);
+        
+        // Pass the registered email to the verify-otp route
+        setTimeout(() => {
+          this.router.navigate(['/verify-otp'], { queryParams: { email: email! } });
+        }, 1000);
       },
       error: (err: Error) => {
         this.isLoading.set(false);

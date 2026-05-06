@@ -12,3 +12,33 @@
     border-radius: 10px;
     letter-spacing: 0.5px;
 }
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 15px;
+    padding: 0;
+    color: #6c757d;
+    text-decoration: none;
+    transition: color 0.2s;
+    border: none;
+    background: none;
+}
+
+.password-toggle-btn:hover {
+    color: #4e73df; /* using primary hover or gold depending on UI, but #4e73df matches login's logic */
+}
+
+.password-toggle-btn:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+.form-control-elite.pe-5 {
+    padding-right: 45px !important;
+}

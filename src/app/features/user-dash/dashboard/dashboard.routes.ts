@@ -30,6 +30,10 @@ export const DASHBOARD_ROUTES: Routes = [
         loadComponent: () => import('../verification/verification').then(m => m.Verification),
       },
       {
+        path: 'my-listings',
+        loadComponent: () => import('../my-listings/my-listings.component').then(m => m.MyListings),
+      },
+      {
         path: 'my-listings/create',
         loadComponent: () => import('../my-listings/create-auction.component').then(m => m.CreateAuction),
       },

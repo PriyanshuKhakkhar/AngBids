@@ -13,6 +13,10 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('./pages/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent) 
       },
       { 
+        path: 'auction-approvals', 
+        loadComponent: () => import('./pages/auction-approvals/auction-approvals.component').then(m => m.AuctionApprovalsComponent) 
+      },
+      { 
         path: 'auctions', 
         loadComponent: () => import('./pages/manage-auctions/manage-auctions.component').then(m => m.ManageAuctionsComponent) 
       },

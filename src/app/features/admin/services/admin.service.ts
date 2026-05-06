@@ -112,6 +112,16 @@ export class AdminService {
     return this.http.delete(`${this.apiUrl}/auctions/${id}`);
   }
 
+  createAuction(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auctions`, data);
+  }
+
+  getCategories(): Observable<any[]> {
+    return this.http.get<any>(`${environment.apiUrl}/categories`).pipe(
+      map(res => res.data || res)
+    );
+  }
+
   // ─── Error Handler ────────────────────────────────────────────────────────
 
   private handleError(error: HttpErrorResponse): Observable<never> {

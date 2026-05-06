@@ -15,11 +15,12 @@ export class Dashboard {
   private router = inject(Router);
 
   menuItems = [
-    { label: 'Overview',          icon: 'fas fa-th-large',    link: '/dashboard',           exact: true  },
-    { label: 'My Bids',           icon: 'fas fa-gavel',       link: '/dashboard/bids',      exact: false },
-    { label: 'Watchlist',         icon: 'fas fa-heart',       link: '/dashboard/watchlist', exact: false },
-    { label: 'Profile',           icon: 'fas fa-user-edit',   link: '/dashboard/profile',   exact: false },
-    { label: 'Settings',          icon: 'fas fa-cog',         link: '/dashboard/settings',  exact: false },
+    { label: 'Overview',     icon: 'fas fa-th-large',  link: '/dashboard',                  exact: true  },
+    { label: 'My Bids',      icon: 'fas fa-gavel',     link: '/dashboard/bids',             exact: false },
+    { label: 'My Listings',  icon: 'fas fa-store',     link: '/dashboard/my-listings',      exact: false },
+    { label: 'Watchlist',    icon: 'fas fa-heart',     link: '/dashboard/watchlist',        exact: false },
+    { label: 'Profile',      icon: 'fas fa-user-edit', link: '/dashboard/profile',          exact: false },
+    { label: 'Settings',     icon: 'fas fa-cog',       link: '/dashboard/settings',         exact: false },
   ];
 
   get user() { return this.authService.currentUser(); }

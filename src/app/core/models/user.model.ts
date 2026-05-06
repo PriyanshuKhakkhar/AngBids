@@ -11,7 +11,7 @@ export interface User {
   roles?: string[];
   role?: string;
   is_admin?: boolean;
-  isVerified: boolean;
+  isVerified?: boolean;
   phone?: string;
   address?: string;
 }
@@ -22,4 +22,15 @@ export interface User {
 export interface AuthResponse {
   token: string;
   user: User;
+  message?: string;
+  success?: boolean;
+}
+
+/**
+ * Defines the structure for the initial Registration response (pending OTP).
+ */
+export interface RegisterResponse {
+  success: boolean;
+  message: string;
+  email: string;
 }

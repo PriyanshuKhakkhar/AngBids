@@ -6,6 +6,11 @@ export const PUBLIC_ROUTES: Routes = [
     loadComponent: () => import('./home/home').then(m => m.Home),
   },
   {
+    path: 'home',
+    redirectTo: '',
+    pathMatch: 'full'
+  },
+  {
     path: 'about',
     loadComponent: () => import('./about/about').then(m => m.About),
   },

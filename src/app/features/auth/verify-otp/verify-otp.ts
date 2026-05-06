@@ -32,37 +32,88 @@ export class VerifyOtp implements OnInit {
   ]);
 
   ngOnInit(): void {
-    const emailParam = this.route.snapshot.queryParams['email'] ?? '';
+    // Use observable to handle query params reliably
+    this.route.queryParams.subscribe(params => {
+      let emailParam = params['email'] || '';
+      
+      // Fallback to localStorage if query param is missing (e.g. on refresh)
+      if (!emailParam) {
+        emailParam = localStorage.getItem('pending_email') || '';
+        console.log('[VerifyOtp] Query param missing, falling back to localStorage:', emailParam);
+      } else {
+        // Update localStorage with current param to keep them in sync
+        localStorage.setItem('pending_email', emailParam);
+      }
 
-    if (!emailParam) {
-      // No email context — send the user back to register to restart the flow
-      this.router.navigate(['/register']);
+      console.log('[VerifyOtp] Final email context:', emailParam);
+      
+      if (!emailParam) {
+        console.error('[VerifyOtp] No email context found anywhere. Redirecting to /register...');
+        this.errorMessage.set('Session lost. Redirecting to registration...');
+        setTimeout(() => this.router.navigate(['/register']), 2000);
+      } else {
+        this.email.set(emailParam);
+      }
+    });
+  }
+
+  onVerify(event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    if (this.otpControl.invalid || this.isLoading()) {
+      console.warn('[VerifyOtp] Cannot verify: Form invalid or already loading', {
+        value: this.otpControl.value,
+        errors: this.otpControl.errors
+      });
+      this.otpControl.markAsTouched();
       return;
     }
 
-    this.email.set(emailParam);
-  }
+    const otp = this.otpControl.value?.trim();
+    if (!otp || otp.length !== 6) {
+      this.errorMessage.set('Please enter a valid 6-digit code.');
+      return;
+    }
 
-  onVerify(): void {
-    if (this.otpControl.invalid || this.isLoading()) return;
-
-    this.otpControl.markAsTouched();
     this.isLoading.set(true);
     this.errorMessage.set(null);
     this.successMessage.set(null);
 
-    this.authService.verifyOtp(this.email(), this.otpControl.value!).subscribe({
+    console.log(`[VerifyOtp] OTP submitted for: ${this.email()} - Code: ${otp}`);
+
+    this.authService.verifyOtp(this.email(), otp).subscribe({
       next: (res) => {
+        console.log('[VerifyOtp] Verification SUCCESS:', {
+          message: res.message,
+          hasToken: !!res.token,
+          user: res.user?.email
+        });
+        
         this.isLoading.set(false);
-        this.successMessage.set(res.message || 'Account verified! Redirecting...');
-        // Navigate to login so user can sign in with their verified account
-        setTimeout(() => this.router.navigate(['/login']), 1500);
+        this.successMessage.set('Verification successful! Redirecting to dashboard...');
+        
+        // Ensure the success message is seen before navigating
+        setTimeout(() => {
+          console.log('[VerifyOtp] Storing session and navigating to home...');
+          localStorage.removeItem('pending_email');
+          
+          // Redirect to home/dashboard since we are now logged in
+          this.router.navigate(['/']); 
+        }, 1500);
       },
       error: (err: Error) => {
+        console.error('[VerifyOtp] Verification FAILED:', err);
         this.isLoading.set(false);
-        this.errorMessage.set(err.message);
-        // Clear OTP so user can re-enter without manually deleting
-        this.otpControl.reset();
+        this.errorMessage.set(err.message || 'Verification failed. Please check the code and try again.');
+        
+        // If it's a 404/422 indicating user doesn't exist, we might want to redirect
+        if (err.message.includes('not found') || err.message.includes('doesn\'t exist')) {
+           console.warn('[VerifyOtp] User not found, redirecting back to register');
+           setTimeout(() => this.router.navigate(['/register']), 3000);
+        }
       }
     });
   }
@@ -73,6 +124,8 @@ export class VerifyOtp implements OnInit {
     this.isResending.set(true);
     this.errorMessage.set(null);
     this.successMessage.set(null);
+
+    console.log(`[VerifyOtp] Resending OTP to: ${this.email()}`);
 
     this.authService.resendOtp(this.email()).subscribe({
       next: (res) => {

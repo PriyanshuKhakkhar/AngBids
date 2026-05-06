@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
@@ -9,6 +9,7 @@ import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angula
   templateUrl: './login.html',
   styleUrl: './login.css',
   standalone: true,
+  
   imports: [RouterLink, CommonModule, ReactiveFormsModule],
 })
 export class Login {
@@ -19,6 +20,11 @@ export class Login {
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
   showPassword = signal(false);
+
+  ngOnInit(): void {
+    // Proactively clear any stale session data when landing on the login page
+    this.authService.clearSession();
+  }
 
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -43,9 +49,11 @@ export class Login {
     this.authService.login(email!, password!).subscribe({
       next: () => {
         this.isLoading.set(false);
-        // Navigate to the return URL or fall back to the dashboard
-        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
-        this.router.navigateByUrl(returnUrl);
+        if (this.authService.isAdmin()) {
+          this.router.navigateByUrl('/admin');
+        } else {
+          this.router.navigateByUrl('/home');
+        }
       },
       error: (err: Error) => {
         this.isLoading.set(false);

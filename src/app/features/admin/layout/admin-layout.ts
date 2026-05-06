@@ -27,12 +27,17 @@ import { AuthService } from '../../../core/services/auth.service';
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link text-white-50 rounded-3 d-flex align-items-center gap-2" routerLink="/admin/auction-approvals" routerLinkActive="active bg-primary text-white shadow-sm">
+                    <i class="fas fa-clipboard-check me-2"></i> Auction Approvals
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link text-white-50 rounded-3" routerLink="/admin/users" routerLinkActive="active bg-primary text-white shadow-sm" [routerLinkActiveOptions]="{exact: true}">
                     <i class="fas fa-users me-2"></i> Manage Users
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-white-50 rounded-3" href="javascript:void(0)">
+                <a class="nav-link text-white-50 rounded-3" routerLink="/admin/bids" routerLinkActive="active bg-primary text-white shadow-sm">
                     <i class="fas fa-history me-2"></i> Manage Bids
                 </a>
             </li>

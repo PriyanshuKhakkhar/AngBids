@@ -46,19 +46,29 @@
                         </div>
 
                         <!-- Password -->
-                        <div class="mb-3 text-start">
+                        <div class="mb-3 text-start position-relative">
                             <label class="small text-secondary mb-2 px-1">Password</label>
-                            <input type="password" class="form-control form-control-elite shadow-none"
-                                formControlName="password" placeholder="Create password">
+                            <div class="password-wrapper">
+                                <input [type]="showPassword() ? 'text' : 'password'" class="form-control form-control-elite shadow-none pe-5"
+                                    formControlName="password" placeholder="Create password">
+                                <button type="button" class="btn btn-link password-toggle-btn" (click)="togglePassword()" tabindex="-1">
+                                    <i class="fas" [ngClass]="showPassword() ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                </button>
+                            </div>
                             <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
                                 class="text-danger small mt-1">Password must be at least 8 characters.</div>
                         </div>
 
                         <!-- Confirm Password -->
-                        <div class="mb-4 text-start">
+                        <div class="mb-4 text-start position-relative">
                             <label class="small text-secondary mb-2 px-1">Confirm Password</label>
-                            <input type="password" class="form-control form-control-elite shadow-none"
-                                formControlName="password_confirmation" placeholder="Re-enter password">
+                            <div class="password-wrapper">
+                                <input [type]="showConfirmPassword() ? 'text' : 'password'" class="form-control form-control-elite shadow-none pe-5"
+                                    formControlName="password_confirmation" placeholder="Re-enter password">
+                                <button type="button" class="btn btn-link password-toggle-btn" (click)="toggleConfirmPassword()" tabindex="-1">
+                                    <i class="fas" [ngClass]="showConfirmPassword() ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                </button>
+                            </div>
                             <div *ngIf="registerForm.errors?.['passwordMismatch'] && registerForm.get('password_confirmation')?.touched"
                                 class="text-danger small mt-1">Passwords do not match.</div>
                         </div>

@@ -21,13 +21,23 @@
                                 Please enter a valid email.
                             </div>
                         </div>
-                        <div class="mb-4 text-start">
+                        <div class="mb-4 text-start position-relative">
                             <div class="d-flex justify-content-between">
                                 <label class="small text-secondary mb-2">Password</label>
                                 <a routerLink="/forgot-password" class="small text-gold text-decoration-none">Forgotten?</a>
                             </div>
-                            <input type="password" class="form-control form-control-elite" 
-                                   formControlName="password" placeholder="••••••••">
+                            <div class="password-wrapper">
+                                <input [type]="showPassword() ? 'text' : 'password'" 
+                                       class="form-control form-control-elite pe-5" 
+                                       formControlName="password" 
+                                       placeholder="••••••••">
+                                <button type="button" 
+                                        class="btn btn-link password-toggle-btn" 
+                                        (click)="togglePassword()"
+                                        tabindex="-1">
+                                    <i class="fas" [ngClass]="showPassword() ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                </button>
+                            </div>
                             <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="text-danger small mt-1">
                                 Password must be at least 6 characters.
                             </div>
