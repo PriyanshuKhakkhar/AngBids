@@ -169,14 +169,19 @@ import { AuthService } from '../../../core/services/auth.service';
         font-size: 0.65rem;
     }
     .form-control-elite {
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.1);
+        background: #fff;
+        border: 1px solid #dee2e6;
         color: #333;
+        transition: all 0.2s ease-in-out;
     }
     .form-control-elite:focus {
-        background: rgba(255,255,255,0.08);
-        border-color: var(--gold-color, #d4af37);
-        box-shadow: none;
+        background: #fff;
+        border-color: #d4af37;
+        box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.1);
+        outline: 0;
+    }
+    .form-control-elite::placeholder {
+        color: #adb5bd;
     }
   `]
 })
@@ -206,6 +211,11 @@ export class Verification implements OnInit {
   }
 
   ngOnInit(): void {
+    const user = this.authService.currentUser();
+    if (user?.roles?.includes('admin') || user?.roles?.includes('super admin')) {
+      this.kycStatus.set('approved');
+      return;
+    }
     this.loadStatus();
   }
 

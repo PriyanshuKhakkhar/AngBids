@@ -144,6 +144,8 @@ export class AuctionService {
       endDate: raw.end_date ?? raw.endDate ?? raw.end_time ?? '',
       status: raw.status ?? 'active',
       category: raw.category?.name ?? raw.category ?? 'Luxury Collection',
+      user_id: raw.user_id ?? raw.user?.id,
+      seller_id: raw.user?.id,
       seller: raw.user ? { name: raw.user.name, avatar: sellerAvatar } : null,
       totalBids: raw.bid_count ?? raw.bids_count ?? (raw.bids ? raw.bids.length : 0),
       minIncrement: raw.min_increment ?? 1,
@@ -155,6 +157,34 @@ export class AuctionService {
         time: b.created_at || new Date().toISOString()
       })) : []
     };
+  }
+
+  /**
+   * Update auction status (Admin/Owner action)
+   */
+  updateAuctionStatus(id: number, status: string, reason?: string): Observable<any> {
+    const url = `${environment.apiUrl}/admin/auctions/${id}/${status === 'active' ? 'approve' : 'cancel'}`;
+    return this.http.post(url, { reason }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * Update auction details
+   */
+  updateAuction(id: number, data: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/auctions/${id}`, data).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * Delete an auction
+   */
+  deleteAuction(id: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/auctions/${id}`).pipe(
+      catchError(this.handleError)
+    );
   }
 
   /**

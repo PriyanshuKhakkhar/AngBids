@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { Auction, Bid } from '../../../core/models/auction.model';
 import { AuctionService } from '../../../core/services/auction.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -12,7 +12,45 @@ import { Subscription } from 'rxjs';
   selector: 'app-auction-details',
   templateUrl: './auction-details.html',
   standalone: true,
-  imports: [RouterLink, CountdownTimer, CommonModule, ReactiveFormsModule],
+  imports: [RouterLink, CountdownTimer, CommonModule, FormsModule, ReactiveFormsModule],
+  styles: [`
+    .admin-control-panel {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 16px;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+    .admin-btn {
+        transition: all 0.2s ease;
+        border-width: 1px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+    }
+    .admin-btn:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .admin-btn-approve:hover { background: #198754; color: white; border-color: #198754; }
+    .admin-btn-pause:hover { background: #ffc107; color: black; border-color: #ffc107; }
+    .admin-btn-close:hover { background: #0dcaf0; color: black; border-color: #0dcaf0; }
+    .admin-btn-cancel:hover { background: #dc3545; color: white; border-color: #dc3545; }
+    
+    .admin-reason-input {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        color: #333;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+    }
+    .admin-reason-input:focus {
+        border-color: #d4af37;
+        box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.1);
+        outline: none;
+    }
+    .x-small { font-size: 0.65rem; }
+  `]
 })
 export class AuctionDetails implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
@@ -44,20 +82,38 @@ export class AuctionDetails implements OnInit, OnDestroy {
     return current > 0 ? current + inc : inc;
   });
 
-  /** Derived auction status: 'Live' | 'Upcoming' | 'Closed' */
-  auctionStatus = computed((): 'Live' | 'Upcoming' | 'Closed' => {
+  /** Derived auction status: 'Live' | 'Upcoming' | 'Closed' | 'Cancelled' */
+  auctionStatus = computed((): 'Live' | 'Upcoming' | 'Closed' | 'Cancelled' => {
     const a = this.auction();
     if (!a) return 'Closed';
+    
+    if (a.status === 'cancelled') return 'Cancelled';
+    
     const now   = new Date();
     const end   = new Date(a.endDate);
-    // startDate isn't in the model yet, fall back to status field
-    if (a.status === 'closed' || end <= now) return 'Closed';
+    
+    if (a.status === 'closed' || a.status === 'ended' || end <= now) return 'Closed';
     if (a.status === 'pending') return 'Upcoming';
     return 'Live';
   });
   
   /** True if user is verified to bid */
   isKycApproved = computed(() => this.authService.isKycApproved());
+
+  /** Administrative roles */
+  isAdmin = computed(() => this.authService.isAdmin());
+  isSuperAdmin = computed(() => this.authService.isSuperAdmin());
+
+  /** Permission to manage: Creator OR Admin */
+  canManage = computed(() => {
+    const user = this.authService.currentUser();
+    const auction = this.auction();
+    if (!user || !auction) return false;
+    
+    // Check ownership (backend IDs might be string or number)
+    const isOwner = Number(user.id) === Number(auction.user_id);
+    return isOwner || this.isAdmin();
+  });
 
   // ─── Reactive Form ────────────────────────────────────────────
   bidControl = new FormControl<number | null>(null, [Validators.required, Validators.min(1)]);
@@ -85,6 +141,75 @@ export class AuctionDetails implements OnInit, OnDestroy {
   /** Navigate back to the auctions listing */
   goBack(): void {
     this.router.navigate(['/auctions']);
+  }
+
+  // ─── Management Actions ────────────────────────────────────────
+
+  adminReason = signal<string>('');
+
+  updateAuctionStatus(status: string): void {
+    if (!this.canManage()) return;
+    
+    // Require reason for cancellation
+    if (status === 'cancelled' && !this.adminReason().trim()) {
+      this.bidError.set('A reason is required to cancel this auction.');
+      return;
+    }
+
+    const id = this.auction()?.id;
+    if (!id) return;
+
+    this.isBidding.set(true); 
+    this.auctionService.updateAuctionStatus(id, status, this.adminReason()).subscribe({
+      next: (res) => {
+        this.bidSuccess.set(`Auction status updated to ${status}`);
+        this.adminReason.set('');
+        this.loadAuction(id);
+        this.isBidding.set(false);
+      },
+      error: (err) => {
+        this.bidError.set(err.message);
+        this.isBidding.set(false);
+      }
+    });
+  }
+
+  extendAuction(days: number): void {
+    if (!this.canManage()) return;
+    const auction = this.auction();
+    if (!auction) return;
+
+    const currentEnd = new Date(auction.endDate);
+    currentEnd.setDate(currentEnd.getDate() + days);
+
+    this.isBidding.set(true);
+    this.auctionService.updateAuction(auction.id, { end_time: currentEnd.toISOString() }).subscribe({
+      next: () => {
+        this.bidSuccess.set(`Auction extended by ${days} days`);
+        this.loadAuction(auction.id);
+        this.isBidding.set(false);
+      },
+      error: (err) => {
+        this.bidError.set(err.message);
+        this.isBidding.set(false);
+      }
+    });
+  }
+
+  deleteAuction(): void {
+    if (!this.canManage()) return;
+    if (!confirm('Are you sure you want to permanently delete this auction? This cannot be undone.')) return;
+
+    const id = this.auction()?.id;
+    if (!id) return;
+
+    this.auctionService.deleteAuction(id).subscribe({
+      next: () => {
+        alert('Auction deleted successfully');
+        this.router.navigate(['/auctions']);
+      },
+      error: (err) => alert(err.message)
+    });
   }
 
   // ─── Data Loading ─────────────────────────────────────────────

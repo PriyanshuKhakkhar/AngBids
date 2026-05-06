@@ -10,8 +10,10 @@ export interface Auction {
   currentBid: string | number;
   startingPrice: number;
   endDate: string | Date;
-  status: 'active' | 'closed' | 'pending';
+  status: 'active' | 'closed' | 'pending' | 'cancelled' | 'ended' | 'past';
   category: string;
+  user_id?: number;
+  seller_id?: number;
   seller?: { name: string; avatar?: string } | null;
   totalBids?: number;
   minIncrement?: number;
