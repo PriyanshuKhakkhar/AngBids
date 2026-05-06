@@ -11,6 +11,11 @@ class BidService
 {
     public function placeBid(Auction $auction, array $bidData, $user): array
     {
+        // 0. Check KYC status
+        if (!$user->isKycApproved()) {
+            throw new Exception('KYC verification required before bidding.');
+        }
+
         // 1. Check if auction is active
         if ($auction->status !== 'active') {
             throw new Exception('Bidding is only allowed on active auctions.');

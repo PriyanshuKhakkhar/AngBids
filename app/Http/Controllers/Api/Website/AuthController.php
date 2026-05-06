@@ -25,6 +25,7 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
+        $user->load('roles');
         \Log::info("User authenticated successfully: ID " . $user->id . " - Email: " . $user->email);
 
         if (is_null($user->email_verified_at)) {
@@ -38,7 +39,7 @@ class AuthController extends Controller
         $token = $user->createToken('api_token')->plainTextToken;
 
         return response()->json([
-            'user' => $user,
+            'user' => new \App\Http\Resources\UserResource($user),
             'token' => $token
         ]);
     }

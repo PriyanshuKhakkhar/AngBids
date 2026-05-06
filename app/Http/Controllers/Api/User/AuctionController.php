@@ -130,6 +130,15 @@ class AuctionController extends Controller
     {
         $auction = Auction::findOrFail($id);
         $user = auth()->user();
+        
+        // KYC Check
+        if (!$user->isKycApproved()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'KYC verification required before bidding.'
+            ], 403);
+        }
+
         $amount = $request->input('amount');
 
         // Simple validation: amount must be higher than current price

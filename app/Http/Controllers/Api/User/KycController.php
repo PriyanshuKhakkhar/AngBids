@@ -89,6 +89,9 @@ class KycController extends Controller
             ]);
         }
 
+        // Synchronize user kyc_status
+        $user->update(['kyc_status' => 'submitted']);
+
         return (new KycResource($kyc))->additional([
             'success' => true,
             'message' => 'KYC submitted successfully and is pending verification.'
