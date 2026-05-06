@@ -19,6 +19,7 @@ class UserResource extends JsonResource
             'bio' => $this->bio,
             'avatar_url' => $this->avatar_url,
             'email_verified_at' => $this->email_verified_at?->toIso8601String(),
+            'kyc_status' => $this->kyc_status, // Added for KYC verification status
             'created_at' => $this->created_at?->toIso8601String(),
             'roles' => $this->roles->pluck('name'),
             'statistics' => $this->when($request->route()->getName() === 'api.user.profile.show', function () {

@@ -115,6 +115,11 @@ class KycController extends Controller
             'admin_note' => $validated['status'] === 'rejected' ? $validated['admin_note'] : null,
         ]);
 
+        // Sync user kyc_status
+        $kyc->user->update([
+            'kyc_status' => $validated['status']
+        ]);
+
         $kyc->user->notify(new \App\Notifications\KycStatusUpdatedNotification($kyc));
 
         return response()->json([

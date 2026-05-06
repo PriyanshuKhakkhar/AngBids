@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Bid;
 use App\Models\Category;
 use App\Models\Contact;
+use App\Models\Kyc;
 use App\Http\Resources\AuctionResource;
 use App\Http\Resources\UserResource;
 
@@ -54,6 +55,8 @@ class DashboardController extends Controller
             'total_contacts' => Contact::count(),
 
             'unread_contacts' => Contact::where('status', 'unread')->count(),
+            
+            'pending_kyc_count' => Kyc::where('status', 'pending')->count(),
         ];
 
         // Recent auctions

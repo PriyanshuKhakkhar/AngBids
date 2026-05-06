@@ -10,6 +10,7 @@ class Kyc extends Model
         'user_id',
         'full_name',
         'date_of_birth',
+        'address',
         'gender',
         'id_type',
         'id_number',
