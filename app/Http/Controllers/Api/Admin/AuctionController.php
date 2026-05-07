@@ -219,6 +219,14 @@ class AuctionController extends Controller
             ], 404);
         }
 
+        $user = auth()->user();
+        if (($auction->created_by_role === 'super admin' || $auction->created_by_role === 'super_admin') && !$user->isSuperAdmin()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'This auction was created by Super Admin and can only be deleted by Super Admin.'
+            ], 403);
+        }
+
         $this->auctionService->deleteAuction($id);
 
         return response()->json([
@@ -257,6 +265,14 @@ class AuctionController extends Controller
                 'status' => false,
                 'message' => 'Auction not found'
             ], 404);
+        }
+
+        $user = auth()->user();
+        if (($auction->created_by_role === 'super admin' || $auction->created_by_role === 'super_admin') && !$user->isSuperAdmin()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'This auction was created by Super Admin and can only be deleted by Super Admin.'
+            ], 403);
         }
 
         $this->auctionService->forceDeleteAuction($id);

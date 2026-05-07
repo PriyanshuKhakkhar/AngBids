@@ -32,6 +32,7 @@ class AuctionResource extends JsonResource
             'start_time' => $this->start_time?->toIso8601String(),
             'end_time' => $this->end_time?->toIso8601String(),
             'time_remaining' => $timeRemaining,
+            'created_by_role' => $this->created_by_role,
             'time_remaining_human' => ($endTime && $endTime->isFuture()) ? $endTime->diffForHumans($now, true) : 'Ended',
 
             'user' => [

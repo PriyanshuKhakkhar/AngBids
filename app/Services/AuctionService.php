@@ -131,6 +131,7 @@ class AuctionService
         $auction->starting_price = $data['starting_price'];
         $auction->current_price  = $data['starting_price'];
         $auction->status         = $user->hasAnyRole(['admin', 'super admin']) ? 'active' : 'pending';
+        $auction->created_by_role= $user->role;
         $auction->specifications = $data['specifications'] ?? null;
         $auction->min_increment  = $data['min_increment'] ?? 0.01;
 

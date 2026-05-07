@@ -32,6 +32,7 @@ class Auction extends Model
         'winner_id',
         'reserve_price',
         'location',
+        'created_by_role',
     ];
 
     protected $casts = [

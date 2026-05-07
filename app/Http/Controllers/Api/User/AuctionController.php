@@ -375,6 +375,13 @@ class AuctionController extends Controller
             ], 403);
         }
 
+        if (($auction->created_by_role === 'super admin' || $auction->created_by_role === 'super_admin') && !$user->isSuperAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This auction was created by Super Admin and can only be deleted by Super Admin.'
+            ], 403);
+        }
+
         try {
             $auction->delete();
             return response()->json([
