@@ -11,6 +11,14 @@ export const authGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
   if (auth.isLoggedIn()) {
+    // Fallback to prevent admins from entering user dashboard
+    if (state.url.startsWith('/dashboard') && auth.isAdmin()) {
+      if (auth.isSuperAdmin()) {
+        return router.createUrlTree(['/admin/super-dashboard']);
+      }
+      return router.createUrlTree(['/admin/dashboard']);
+    }
+
     return true;
   }
 

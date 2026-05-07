@@ -14,7 +14,16 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('./pages/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent) 
       },
       { 
+        path: 'profile', 
+        loadComponent: () => import('./pages/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent) 
+      },
+      { 
         path: 'super-dashboard', 
+        canActivate: [superAdminGuard],
+        loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.SuperAdminDashboard) 
+      },
+      { 
+        path: 'super-profile', 
         canActivate: [superAdminGuard],
         loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.SuperAdminDashboard) 
       },

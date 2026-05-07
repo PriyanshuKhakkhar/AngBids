@@ -23,6 +23,18 @@ export class Navbar {
     return this.authService.currentUser();
   }
 
+  get dashboardLink(): string {
+    if (this.authService.isSuperAdmin()) return '/admin/super-dashboard';
+    if (this.authService.isAdmin()) return '/admin/dashboard';
+    return '/dashboard';
+  }
+
+  get profileLink(): string {
+    if (this.authService.isSuperAdmin()) return '/admin/super-profile';
+    if (this.authService.isAdmin()) return '/admin/profile';
+    return '/dashboard/profile';
+  }
+
   onGlobalSearch(event: Event): void {
     const el = event.target as HTMLInputElement;
     const value = el.value.trim();

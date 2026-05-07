@@ -35,13 +35,13 @@ import { AuthService } from '../../../../core/services/auth.service';
           <div class="row g-4 justify-content-center">
             <!-- User / Client Side Flow -->
             <div class="col-md-6">
-              <a routerLink="/dashboard" class="card h-100 border-0 shadow-sm rounded-4 text-decoration-none transition-all hover-translate-y selection-card">
+              <a routerLink="/" class="card h-100 border-0 shadow-sm rounded-4 text-decoration-none transition-all hover-translate-y selection-card">
                 <div class="card-body p-5 text-center d-flex flex-column align-items-center">
                   <div class="p-4 rounded-circle bg-success bg-opacity-10 text-success mb-4 flex-shrink-0">
                     <i class="fas fa-store fs-2"></i>
                   </div>
                   <h3 class="h4 fw-bold text-dark mb-3">View Client Side</h3>
-                  <p class="text-secondary mb-0">Browse auctions, place bids, and view your personal user dashboard.</p>
+                  <p class="text-secondary mb-0">Browse auctions and view the public facing website.</p>
                 </div>
               </a>
             </div>

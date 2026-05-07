@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../services/admin.service';
+import { AuthService } from '../../../../core/services/auth.service';
 
 interface AdminAuction {
   id: number;
@@ -15,6 +16,7 @@ interface AdminAuction {
   imageUrl?: string;
   user?: { name: string; email: string };
   category_info?: { name: string };
+  created_by_role?: string;
 }
 
 @Component({
@@ -128,8 +130,12 @@ interface AdminAuction {
                                 <button class="btn btn-light btn-sm text-warning p-2 transition-all hover-warning" (click)="onCancel(auction)" *ngIf="auction.status === 'active' || auction.status === 'pending'" title="Cancel auction">
                                     <i class="fas fa-ban"></i>
                                 </button>
-                                <button class="btn btn-light btn-sm text-danger p-2 transition-all hover-danger" (click)="onDelete(auction.id)" title="Full delete">
-                                    <i class="fas fa-trash-alt"></i>
+                                <button class="btn btn-light btn-sm p-2 transition-all" 
+                                        [ngClass]="(auction.created_by_role === 'super_admin' || auction.created_by_role === 'super admin') && !authService.isSuperAdmin() ? 'text-secondary' : 'text-danger hover-danger'"
+                                        [disabled]="(auction.created_by_role === 'super_admin' || auction.created_by_role === 'super admin') && !authService.isSuperAdmin()"
+                                        [title]="(auction.created_by_role === 'super_admin' || auction.created_by_role === 'super admin') && !authService.isSuperAdmin() ? 'Super Admin protected auction' : 'Full delete'"
+                                        (click)="onDelete(auction.id)">
+                                    <i class="fas" [ngClass]="(auction.created_by_role === 'super_admin' || auction.created_by_role === 'super admin') && !authService.isSuperAdmin() ? 'fa-lock' : 'fa-trash-alt'"></i>
                                 </button>
                             </div>
                         </td>
@@ -192,8 +198,13 @@ interface AdminAuction {
                    <button class="btn btn-warning px-4 fw-bold rounded-pill" (click)="onCancel(selectedAuction)" *ngIf="selectedAuction.status === 'active' || selectedAuction.status === 'pending'">
                       <i class="fas fa-ban me-2"></i> Cancel Auction
                    </button>
-                   <button class="btn btn-outline-danger px-4 fw-bold rounded-pill" (click)="onDelete(selectedAuction.id)">
-                      <i class="fas fa-trash-alt me-2"></i> Delete Forever
+                   <button class="btn px-4 fw-bold rounded-pill"
+                           [ngClass]="(selectedAuction.created_by_role === 'super_admin' || selectedAuction.created_by_role === 'super admin') && !authService.isSuperAdmin() ? 'btn-outline-secondary' : 'btn-outline-danger'"
+                           [disabled]="(selectedAuction.created_by_role === 'super_admin' || selectedAuction.created_by_role === 'super admin') && !authService.isSuperAdmin()"
+                           [title]="(selectedAuction.created_by_role === 'super_admin' || selectedAuction.created_by_role === 'super admin') && !authService.isSuperAdmin() ? 'Super Admin protected auction' : 'Delete Forever'"
+                           (click)="onDelete(selectedAuction.id)">
+                      <i class="fas me-2" [ngClass]="(selectedAuction.created_by_role === 'super_admin' || selectedAuction.created_by_role === 'super admin') && !authService.isSuperAdmin() ? 'fa-lock' : 'fa-trash-alt'"></i>
+                      {{ (selectedAuction.created_by_role === 'super_admin' || selectedAuction.created_by_role === 'super admin') && !authService.isSuperAdmin() ? 'Protected' : 'Delete Forever' }}
                    </button>
                 </div>
             </div>
@@ -300,6 +311,7 @@ interface AdminAuction {
 })
 export class ManageAuctionsComponent implements OnInit {
   private adminService = inject(AdminService);
+  protected authService = inject(AuthService);
   
   searchTerm: string = '';
   statusFilter: string = 'All';

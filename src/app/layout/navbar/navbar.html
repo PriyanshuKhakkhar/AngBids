@@ -50,8 +50,8 @@
                         <span class="small">{{currentUser.firstName}}</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end glass-panel border-gold border-opacity-25 w-100 w-lg-auto">
-                        <li><a class="dropdown-item small d-flex align-items-center mb-1" routerLink="/dashboard"><i class="fas fa-th-large me-2 text-primary"></i> <span class="text-dark">Dashboard</span></a></li>
-                        <li><a class="dropdown-item small d-flex align-items-center mb-1" routerLink="/dashboard/profile"><i class="fas fa-user-edit me-2 text-primary"></i> <span class="text-dark">Profile</span></a></li>
+                        <li><a class="dropdown-item small d-flex align-items-center mb-1" [routerLink]="dashboardLink"><i class="fas fa-th-large me-2 text-primary"></i> <span class="text-dark">Dashboard</span></a></li>
+                        <li><a class="dropdown-item small d-flex align-items-center mb-1" [routerLink]="profileLink"><i class="fas fa-user-edit me-2 text-primary"></i> <span class="text-dark">Profile</span></a></li>
                         <li><a class="dropdown-item small d-flex align-items-center mb-1" routerLink="/dashboard/watchlist"><i class="fas fa-heart me-2 text-primary"></i> <span class="text-dark">Watchlist</span></a></li>
                         <li><hr class="dropdown-divider border-dark border-opacity-10"></li>
                         <li><a class="dropdown-item text-danger small d-flex align-items-center" (click)="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
