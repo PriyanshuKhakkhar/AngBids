@@ -154,3 +154,18 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::delete('contacts/{id}/force-delete', [AdminContactController::class, 'forceDelete']);
         });
 });
+Route::post('/test-admin-auction', function (Illuminate\Http\Request $request) {
+    $validator = Illuminate\Support\Facades\Validator::make($request->all(), [
+        'user_id'        => 'required|exists:users,id',
+        'category_id'    => 'required|exists:categories,id',
+        'title'          => 'required|string|max:255',
+        'description'    => 'required|string',
+        'starting_price' => 'required|numeric|min:0',
+        'start_time'     => 'required|date',
+        'end_time'       => 'required|date|after:start_time',
+        'status'         => 'nullable|in:active,pending,closed,cancelled',
+        'images'         => 'required|array|min:1|max:5',
+        'images.*'       => 'file|image|mimes:jpeg,png,jpg,webp|max:5120',
+    ]);
+    return response()->json(['errors' => $validator->errors()]);
+});

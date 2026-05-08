@@ -68,9 +68,12 @@ class AuctionController extends Controller
             'start_time'     => 'required|date',
             'end_time'       => 'required|date|after:start_time',
             'status'         => 'nullable|in:active,pending,closed,cancelled',
+            'images'         => 'required|array|min:1|max:5',
+            'images.*'       => 'file|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
         if ($validator->fails()) {
+            \Log::error('Validation failed: ' . json_encode($validator->errors()));
             return response()->json([
                 'status' => false,
                 'errors' => $validator->errors()
