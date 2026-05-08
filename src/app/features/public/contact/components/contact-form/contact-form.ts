@@ -36,7 +36,14 @@ export class ContactForm {
       this.submitError = '';
       this.submitSuccess = false;
 
-      this.http.post(`${environment.apiUrl}/contact`, this.contactForm.value)
+      const payload = {
+        name: this.contactForm.value.full_name,
+        email: this.contactForm.value.email,
+        subject: this.contactForm.value.subject,
+        message: this.contactForm.value.message
+      };
+
+      this.http.post(`${environment.apiUrl}/contact`, payload)
         .pipe(finalize(() => this.isSubmitting = false))
         .subscribe({
           next: () => {

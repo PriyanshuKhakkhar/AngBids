@@ -188,10 +188,8 @@ export class AuthService {
 
     // 1. Check Spatie roles array (handles both strings and objects)
     if (user.roles?.length) {
-      console.log('[AuthService] Checking roles:', user.roles);
       return user.roles.some((r: any) => {
         const name = typeof r === 'string' ? r.toLowerCase() : r.name?.toLowerCase();
-        console.log(`[AuthService] Comparing role "${name}" with target "${target}"`);
         return name === target;
       });
     }

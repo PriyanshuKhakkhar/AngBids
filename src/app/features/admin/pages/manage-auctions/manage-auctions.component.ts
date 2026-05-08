@@ -273,6 +273,50 @@ interface AdminAuction {
                         <input type="datetime-local" class="form-control rounded-3 border-secondary border-opacity-10" 
                                [(ngModel)]="newAuction.end_time" name="end_time" required>
                     </div>
+
+                    <div class="col-12 mt-3">
+                        <label class="form-label small fw-bold text-secondary d-block">
+                          Item Images <span class="text-danger">*</span>
+                          <span class="text-muted fw-normal"> (at least 1, max 5)</span>
+                        </label>
+            
+                        <!-- Preview Grid -->
+                        <div class="d-flex flex-wrap gap-2 mb-3" *ngIf="imagePreviews().length > 0">
+                          <div *ngFor="let preview of imagePreviews(); let i = index"
+                               class="position-relative rounded-3 overflow-hidden border"
+                               style="height: 100px; width: 100px;">
+                            <img [src]="preview" class="w-100 h-100 object-fit-cover">
+                            <button type="button"
+                                    class="btn btn-danger btn-sm rounded-circle p-0 position-absolute top-0 end-0 m-1 shadow"
+                                    style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;"
+                                    (click)="removeImage(i)">
+                              <i class="fas fa-times" style="font-size: 0.65rem;"></i>
+                            </button>
+                          </div>
+                        </div>
+            
+                        <!-- Upload Zone -->
+                        <div class="upload-zone rounded-4 border p-4 text-center"
+                             [class.border-danger]="submitAttempted && imagePreviews().length === 0"
+                             [class.border-secondary]="!(submitAttempted && imagePreviews().length === 0)"
+                             (click)="fileInput.click()"
+                             style="cursor: pointer; background: #f8f9fc; border-style: dashed !important; border-opacity: 0.25;">
+                          <i class="fas fa-cloud-upload-alt fs-2 text-secondary mb-2 d-block"></i>
+                          <span class="small fw-semibold text-secondary">Click to upload images</span><br>
+                          <span class="x-small text-muted">JPG, PNG, WEBP — Max 5MB each</span>
+                          <input type="file"
+                                 #fileInput
+                                 multiple
+                                 accept="image/jpeg,image/png,image/jpg,image/webp"
+                                 class="d-none"
+                                 (change)="onFilesSelected($event)">
+                        </div>
+            
+                        <div *ngIf="submitAttempted && imagePreviews().length === 0"
+                             class="text-danger small mt-1">
+                          <i class="fas fa-exclamation-circle me-1"></i>At least one image is required.
+                        </div>
+                    </div>
                 </div>
 
                 <div class="mt-4 pt-3 border-top d-flex gap-2">
@@ -325,6 +369,9 @@ export class ManageAuctionsComponent implements OnInit {
   isSubmitting = signal(false);
   categories = signal<any[]>([]);
   users = signal<any[]>([]);
+  imagePreviews = signal<string[]>([]);
+  selectedFiles: File[] = [];
+  submitAttempted = false;
   newAuction = {
     title: '',
     category_id: 0,
@@ -379,6 +426,7 @@ export class ManageAuctionsComponent implements OnInit {
 
   onCreateNew() {
     this.resetNewAuctionForm();
+    this.submitAttempted = false;
     this.showCreateModal.set(true);
   }
 
@@ -387,10 +435,17 @@ export class ManageAuctionsComponent implements OnInit {
   }
 
   onSubmitCreate() {
-    if (this.isSubmitting()) return;
+    this.submitAttempted = true;
+    if (this.isSubmitting() || this.selectedFiles.length === 0) return;
 
     this.isSubmitting.set(true);
-    this.adminService.createAuction(this.newAuction).subscribe({
+    
+    const payload = {
+      ...this.newAuction,
+      images: this.selectedFiles
+    };
+
+    this.adminService.createAuction(payload).subscribe({
       next: (res) => {
         this.showToast('New auction created successfully!');
         this.showCreateModal.set(false);
@@ -416,6 +471,42 @@ export class ManageAuctionsComponent implements OnInit {
       end_time: this.formatDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)), // +7 days
       status: 'pending'
     };
+    this.selectedFiles = [];
+    this.imagePreviews.set([]);
+    this.submitAttempted = false;
+  }
+
+  onFilesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files) return;
+
+    const newFiles = Array.from(input.files);
+    const combined = [...this.selectedFiles, ...newFiles];
+
+    if (combined.length > 5) {
+      alert('You can upload a maximum of 5 images.');
+      return;
+    }
+
+    for (const file of newFiles) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert(`"${file.name}" exceeds 5MB. Please choose a smaller image.`);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imagePreviews.update(prev => [...prev, e.target.result]);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    this.selectedFiles = combined;
+    input.value = '';
+  }
+
+  removeImage(index: number): void {
+    this.selectedFiles = this.selectedFiles.filter((_, i) => i !== index);
+    this.imagePreviews.update(prev => prev.filter((_, i) => i !== index));
   }
 
   formatDate(date: Date): string {

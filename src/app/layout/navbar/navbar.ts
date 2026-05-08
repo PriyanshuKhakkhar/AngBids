@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { User } from '../../core/models/user.model';
@@ -23,17 +23,17 @@ export class Navbar {
     return this.authService.currentUser();
   }
 
-  get dashboardLink(): string {
+  dashboardLink = computed(() => {
     if (this.authService.isSuperAdmin()) return '/admin/super-dashboard';
     if (this.authService.isAdmin()) return '/admin/dashboard';
     return '/dashboard';
-  }
+  });
 
-  get profileLink(): string {
+  profileLink = computed(() => {
     if (this.authService.isSuperAdmin()) return '/admin/super-profile';
     if (this.authService.isAdmin()) return '/admin/profile';
     return '/dashboard/profile';
-  }
+  });
 
   onGlobalSearch(event: Event): void {
     const el = event.target as HTMLInputElement;

@@ -115,6 +115,20 @@ export class AdminService {
   }
 
   createAuction(data: any): Observable<any> {
+    if (data.images && Array.isArray(data.images) && data.images.length > 0) {
+      const formData = new FormData();
+      Object.keys(data).forEach(key => {
+        if (key !== 'images') {
+          if (data[key] !== null && data[key] !== undefined) {
+            formData.append(key, data[key]);
+          }
+        }
+      });
+      data.images.forEach((file: File, index: number) => {
+        formData.append(`images[${index}]`, file, file.name);
+      });
+      return this.http.post(`${this.apiUrl}/auctions`, formData);
+    }
     return this.http.post(`${this.apiUrl}/auctions`, data);
   }
 
